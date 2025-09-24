@@ -42,3 +42,7 @@ npm install -D @types/axios  # Types TypeScript
 
 
 
+
+
+les commandes que j'ai effectué pour instller l'application : 
+    - 

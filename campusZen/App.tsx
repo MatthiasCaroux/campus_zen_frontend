@@ -1,20 +1,71 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+
+import HomeScreen from './screens/HomeScreen';
+import MapsScreen from './screens/MapsScreen';
+import CalendrierScreen from './screens/CalendrierScreen';
+import StatsScreen from './screens/StatsScreen';
+import CompteScreen from './screens/CompteScreen';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: '#007AFF',
+          tabBarInactiveTintColor: 'gray',
+          headerStyle: {
+            backgroundColor: '#007AFF',
+          },
+          headerTintColor: 'white',
+        }}
+      >
+        <Tab.Screen 
+          name="Home" 
+          component={HomeScreen}
+          options={{
+            title: 'Accueil',
+            tabBarLabel: 'Accueil',
+          }}
+        />
+        <Tab.Screen 
+          name="Maps" 
+          component={MapsScreen}
+          options={{
+            title: 'Maps',
+            tabBarLabel: 'Maps',
+          }}
+        />
+        <Tab.Screen 
+          name="Calendrier" 
+          component={CalendrierScreen}
+          options={{
+            title: 'Calendrier',
+            tabBarLabel: 'Calendrier',
+          }}
+        />
+        <Tab.Screen 
+          name="Stats" 
+          component={StatsScreen}
+          options={{
+            title: 'Statistiques',
+            tabBarLabel: 'Stats',
+          }}
+        />
+        <Tab.Screen 
+          name="Compte" 
+          component={CompteScreen}
+          options={{
+            title: 'Mon Compte',
+            tabBarLabel: 'Compte',
+          }}
+        />
+      </Tab.Navigator>
+      <StatusBar style="light" />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
