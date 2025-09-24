@@ -7,7 +7,9 @@ Installation du projet test 1 avec REACT et TypeScript
 
 Étape 1 : 
 
-npx @react-native-community/cli@latest init campusZen --template react-native-template-typescript
+npx create-expo-app campusZen --template blank-typescript
+sudo npm install --global @expo/ngrok@^4.1.0
+
 
 Étape 2 : 
 
