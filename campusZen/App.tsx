@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from './screens/HomeScreen';
 import MapsScreen from './screens/MapsScreen';
@@ -15,14 +16,33 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        screenOptions={{
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName: keyof typeof Ionicons.glyphMap;
+
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Maps') {
+              iconName = focused ? 'map' : 'map-outline';
+            } else if (route.name === 'Calendrier') {
+              iconName = focused ? 'calendar' : 'calendar-outline';
+            } else if (route.name === 'Stats') {
+              iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+            } else if (route.name === 'Compte') {
+              iconName = focused ? 'person' : 'person-outline';
+            } else {
+              iconName = 'help-outline';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
           tabBarActiveTintColor: '#007AFF',
           tabBarInactiveTintColor: 'gray',
           headerStyle: {
             backgroundColor: '#007AFF',
           },
           headerTintColor: 'white',
-        }}
+        })}
       >
         <Tab.Screen 
           name="Home" 
