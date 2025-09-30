@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import * as colors from "../src/theme/colors.js";
 
 export default function HomeScreen() {
   return (
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.FOND_BLEU,
   },
   title: {
     fontSize: 24,

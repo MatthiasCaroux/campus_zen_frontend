@@ -1,0 +1,1 @@
+export const FOND_BLEU = '#4da6ff';
