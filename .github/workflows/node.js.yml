@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: CampusZen   # ton vrai dossier où il y a package.json et package-lock.json
+        working-directory: campusZen  
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
