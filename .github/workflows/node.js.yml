@@ -12,7 +12,9 @@ on:
 jobs:
   build-and-lint:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: CampusZen   # ton vrai dossier où il y a package.json et package-lock.json
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -26,23 +28,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: CampusZen/package-lock.json  # <-- très important
 
       - name: Install dependencies
         run: npm ci
 
-      # Essayer de démarrer l'application afin de vérifier qu'elle ne crash pas
       - name: Check app start
-        run: |
-          timeout 10s npm start || true
+        run: timeout 10s npm start || true
 
-      # Vérifie les erreurs ESLint
       - name: Run ESLint
         run: npm run lint --if-present
 
-      # Vérifie la mise en forme Prettier
       - name: Run Prettier check
         run: npm run format:check --if-present
 
-      # Build (si nécessaire)
       - name: Build project
         run: npm run build --if-present
