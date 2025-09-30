@@ -42,4 +42,4 @@ jobs:
         continue-on-error: true   
 
       - name: Build project
-        run: npm run build 
+        run: npm run start 
