@@ -1,4 +1,5 @@
 import React from 'react';
+import * as colors from "../src/theme/colors.js";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
   cloudIcon: {
     position: 'relative',
     alignItems: 'center',
+    backgroundColor: colors.FOND_BLEU,
     justifyContent: 'center',
     marginBottom: 20,
   },
