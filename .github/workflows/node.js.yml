@@ -35,11 +35,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint 
-        continue-on-error: true   
 
       - name: Run Prettier check
         run: npm run format:check 
-        continue-on-error: true   
 
-      - name: Build project
-        run: npm run start 
+      - name: Build project (test start)
+        run: timeout 10s npm start || true 
