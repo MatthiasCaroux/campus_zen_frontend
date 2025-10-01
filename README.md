@@ -1,48 +1,77 @@
-# campus_zen_frontend
-Ici le FrontEnd (react native)
+# Campus Zen - Frontend
 
+Application mobile React Native développée avec Expo et TypeScript pour le projet Campus Zen.
 
-Installation du projet test 1 avec REACT et TypeScript
+## 📋 Prérequis
 
+- Node.js (version 18 ou supérieure)
+- npm ou yarn
+- Expo CLI
+- Un émulateur Android/iOS ou l'application Expo Go sur votre téléphone
 
-Étape 1 : 
+## 🚀 Installation
 
-npx create-expo-app campusZen --template blank-typescript
-sudo npm install --global @expo/ngrok@^4.1.0
+1. **Cloner le repository**
+   ```bash
+   git clone <url-du-repo>
+   cd campus_zen_frontend
+   ```
 
+2. **Installer les dépendances**
+   ```bash
+   cd campusZen
+   npm install
+   ```
 
-Étape 2 : 
+3. **Installer Expo ngrok (si nécessaire)**
+   ```bash
+   sudo npm install --global @expo/ngrok@^4.1.0
+   ```
 
-npx create-expo-app campusZen --template
-# Choisir "TypeScript" dans les options
+## 🏃 Lancement de l'application
 
-Structure du projet : 
+- **Démarrer le serveur de développement**
+  ```bash
+  npm start
+  ```
+
+- **Lancer sur Android**
+  ```bash
+  npm run android
+  ```
+
+- **Lancer sur iOS**
+  ```bash
+  npm run ios
+  ```
+
+- **Lancer sur le web**
+  ```bash
+  npm run web
+  ```
+
+## 📁 Structure du projet
+
+```
 campusZen/
-├── src/
-│   ├── components/
-│   ├── screens/
-│   ├── types/
-│   └── utils/
-├── App.tsx
-├── tsconfig.json
-└── package.json
+├── screens/          # Écrans de l'application
+├── config/           # Configuration de l'application
+├── assets/           # Images, fonts, etc.
+├── App.tsx           # Point d'entrée de l'application
+├── index.ts          # Index principal
+├── tsconfig.json     # Configuration TypeScript
+└── package.json      # Dépendances du projet
+```
 
-Étape 3 : 
+## 🛠️ Technologies utilisées
 
-npm install axios
-npm install -D @types/axios  # Types TypeScript
+- **React Native** - Framework mobile
+- **Expo** - Plateforme de développement
+- **TypeScript** - Typage statique
+- **React Navigation** - Navigation entre les écrans
+- **Axios** - Requêtes HTTP vers l'API
+- **Expo Linear Gradient** - Dégradés de couleurs
 
+## 🔗 API
 
-
-
-
-
-
-
-
-
-
-
-
-les commandes que j'ai effectué pour instller l'application : 
-    - 
+L'application se connecte à l'API Backend de Campus Zen pour récupérer et envoyer des données.
