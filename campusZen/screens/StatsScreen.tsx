@@ -1,6 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Dimensions, Image } from 'react-native';
 import { testApiConnection } from '../config/axiosConfig';
+import { BarChart } from 'react-native-chart-kit';
+
+const screenWidth = Dimensions.get("window").width - 130;
+
+const data = {
+  labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+  datasets: [
+    {
+      data: [20, 45, 28, 80, 99],
+    },
+  ],
+};
+
+
+const chartConfig = {
+  backgroundGradientFrom: "#ffffff",
+  backgroundGradientTo: "#ffffff",
+  color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  strokeWidth: 2,
+  barPercentage: 0.5,
+  useShadowColorFromDataset: false,
+};  
 
 export default function StatsScreen() {
   const [apiStatus, setApiStatus] = useState<'loading' | 'connected' | 'error'>('loading');
@@ -24,6 +47,18 @@ export default function StatsScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Statistiques</Text>
       <Text style={styles.subtitle}>Suivez vos performances</Text>
+
+      <View>
+        <BarChart
+          data={data}
+          width={screenWidth - 16}
+          height={220}
+          chartConfig={chartConfig}
+          verticalLabelRotation={30}
+          yAxisLabel="Mois"
+          yAxisSuffix="Jours"
+        />
+      </View>
 
       <View style={styles.apiStatusContainer}>
         {apiStatus === 'loading' && (

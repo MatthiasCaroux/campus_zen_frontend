@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'react-native';
 
 import HomeScreen from './screens/HomeScreen';
 import MapsScreen from './screens/MapsScreen';
@@ -18,30 +19,37 @@ export default function App() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
-            let iconName: keyof typeof Ionicons.glyphMap;
+        let iconName: keyof typeof Ionicons.glyphMap;
 
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Maps') {
-              iconName = focused ? 'map' : 'map-outline';
-            } else if (route.name === 'Calendrier') {
-              iconName = focused ? 'calendar' : 'calendar-outline';
-            } else if (route.name === 'Stats') {
-              iconName = focused ? 'stats-chart' : 'stats-chart-outline';
-            } else if (route.name === 'Compte') {
-              iconName = focused ? 'person' : 'person-outline';
-            } else {
-              iconName = 'help-outline';
-            }
+        if (route.name === 'Home') {
+          iconName = focused ? 'home' : 'home-outline';
+        } else if (route.name === 'Maps') {
+          iconName = focused ? 'map' : 'map-outline';
+        } else if (route.name === 'Calendrier') {
+          iconName = focused ? 'calendar' : 'calendar-outline';
+        } else if (route.name === 'Stats') {
+          iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+        } else if (route.name === 'Compte') {
+          iconName = focused ? 'person' : 'person-outline';
+        } else {
+          iconName = 'help-outline';
+        }
 
-            return <Ionicons name={iconName} size={size} color={color} />;
+        return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: '#007AFF',
           tabBarInactiveTintColor: 'gray',
           headerStyle: {
-            backgroundColor: '#007AFF',
+        backgroundColor: '#007AFF',
           },
           headerTintColor: 'white',
+          headerTitleAlign: 'center', // Centrer le titre
+          headerTitle: () => (
+        <Image
+          source={require('./assets/logo.png')}
+          style={{ width: 40, height: 40, resizeMode: 'contain' }}
+        />
+          ),
         })}
       >
         <Tab.Screen 
@@ -64,24 +72,24 @@ export default function App() {
           name="Calendrier" 
           component={CalendrierScreen}
           options={{
-            title: 'Calendrier',
-            tabBarLabel: 'Calendrier',
+              title: 'Calendrier',
+              tabBarLabel: 'Calendrier',
           }}
         />
         <Tab.Screen 
           name="Stats" 
           component={StatsScreen}
           options={{
-            title: 'Statistiques',
-            tabBarLabel: 'Stats',
+              title: 'Statistiques',
+              tabBarLabel: 'Stats',
           }}
         />
         <Tab.Screen 
           name="Compte" 
           component={CompteScreen}
           options={{
-            title: 'Mon Compte',
-            tabBarLabel: 'Compte',
+        title: 'Mon Compte',
+        tabBarLabel: 'Compte',
           }}
         />
       </Tab.Navigator>
