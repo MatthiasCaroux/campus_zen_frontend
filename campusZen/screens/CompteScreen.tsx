@@ -1,29 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Button } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function CompteScreen() {
+export default function CompteScreen({ navigation }: any) {
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("refreshToken");
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mon Compte</Text>
-      <Text style={styles.subtitle}>Gérez votre profil</Text>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Button title="Se déconnecter" onPress={handleLogout} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-});
