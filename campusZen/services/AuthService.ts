@@ -27,3 +27,21 @@ export const login = async (emailPers: string, passwordPers: string) => {
     throw error;
   }
 };
+
+export async function getProfile(token: string) {
+  const response = await axios.get(`${API_URL}/me/`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export async function changePassword(token: string, oldPassword: string, newPassword: string) {
+  const response = await axios.post(
+    `${API_URL}/change-password/`,
+    { old_password: oldPassword, new_password: newPassword },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return response.data;
+};
+
+

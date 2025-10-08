@@ -1,27 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
 
+import { AuthProvider, AuthContext } from "./context/AuthContext";
 import MainTabs from "./MainTabs";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await AsyncStorage.getItem("accessToken");
-      setIsAuthenticated(!!token);
-    };
-    checkAuth();
-  }, []);
-
-  if (isAuthenticated === null) return null; // peut afficher un splash screen ici
+function AppNavigator() {
+  const { isAuthenticated } = useContext(AuthContext);
 
   return (
     <NavigationContainer>
@@ -38,4 +28,10 @@ export default function App() {
   );
 }
 
-
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppNavigator />
+    </AuthProvider>
+  );
+}
