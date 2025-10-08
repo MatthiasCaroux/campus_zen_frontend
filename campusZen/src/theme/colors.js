@@ -1,5 +1,4 @@
 export const COULEUR_FOND_BLEU = '#4da6ff';
-export const COULEUR_FOND = '#f5f5f5';
 export const COULEUR_SOUS_TITRE = '#666';
 
 export const COULEUR_HEADER_BLEU = '#4A90E2';
