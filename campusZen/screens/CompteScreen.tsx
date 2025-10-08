@@ -1,12 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { View, Text, StyleSheet, Button } from 'react-native';
 import { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE } from '../src/theme/colors';
 
 export default function CompteScreen() {
+  const { logout } = useContext(AuthContext);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mon Compte</Text>
-      <Text style={styles.subtitle}>Gérez votre profil</Text>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Button title="Se déconnecter" onPress={logout} />
     </View>
   );
 }
@@ -28,3 +30,4 @@ const styles = StyleSheet.create({
     color: COULEUR_SOUS_TITRE,
   },
 });
+
