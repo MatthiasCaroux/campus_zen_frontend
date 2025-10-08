@@ -7,15 +7,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 export default function HomeScreen() {
   return (
     <LinearGradient
-      colors={['#4A90E2', '#7BB3F0']}
+      colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
       style={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Section principale avec icône nuage et message */}
         <View style={styles.welcomeSection}>
           <View style={styles.cloudIcon}>
-            <Ionicons name="cloud" size={80} color="#ffffff" />
-            <Ionicons name="sunny" size={30} color="#FFD700" style={styles.sunIcon} />
+            <Ionicons name="cloud" size={80} color={colors.COULEUR_WHITE} />
+            <Ionicons name="sunny" size={30} color={colors.COULEUR_SOLEIL} style={styles.sunIcon} />
           </View>
 
           <Text style={styles.appTitle}>CampusZen</Text>
@@ -45,7 +45,7 @@ export default function HomeScreen() {
           <TouchableOpacity style={styles.videoButton}>
             <View style={styles.buttonContent}>
               <View style={styles.youtubeIcon}>
-                <Ionicons name="logo-youtube" size={20} color="#ffffff" />
+                <Ionicons name="logo-youtube" size={20} color={colors.COULEUR_WHITE} />
               </View>
               <Text style={styles.videoButtonText}>
                 Voir une vidéo de 5 min sur{'\n'}le bien-être
@@ -56,7 +56,7 @@ export default function HomeScreen() {
           <TouchableOpacity style={styles.podcastButton}>
             <View style={styles.buttonContent}>
               <View style={styles.youtubeIcon}>
-                <Ionicons name="logo-youtube" size={20} color="#ffffff" />
+                <Ionicons name="logo-youtube" size={20} color={colors.COULEUR_WHITE} />
               </View>
               <Text style={styles.podcastButtonText}>écouter un podcast</Text>
             </View>
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   cloudIcon: {
     position: 'relative',
     alignItems: 'center',
-    backgroundColor: colors.FOND_BLEU,
+    backgroundColor: colors.COULEUR_FOND_BLEU,
     justifyContent: 'center',
     marginBottom: 20,
   },
@@ -97,23 +97,23 @@ const styles = StyleSheet.create({
   appTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#ffffff',
+  color: colors.COULEUR_WHITE,
     marginBottom: 15,
   },
   motivationalMessage: {
     fontSize: 16,
-    color: '#ffffff',
+  color: colors.COULEUR_WHITE,
     textAlign: 'center',
     lineHeight: 22,
     opacity: 0.9,
   },
   consultButton: {
-    backgroundColor: '#ffffff',
+  backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 30,
     marginBottom: 30,
-    shadowColor: '#000',
+  shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   consultButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+  color: colors.COULEUR_TEXT_DARK,
     textAlign: 'center',
   },
   sectionContainer: {
@@ -134,16 +134,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+  color: colors.COULEUR_WHITE,
     marginBottom: 15,
   },
   actionButton: {
-    backgroundColor: '#ffffff',
+  backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginBottom: 10,
-    shadowColor: '#000',
+  shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -155,16 +155,16 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#333',
+  color: colors.COULEUR_TEXT_DARK,
     textAlign: 'center',
   },
   videoButton: {
-    backgroundColor: '#ffffff',
+  backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginBottom: 10,
-    shadowColor: '#000',
+  shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -174,11 +174,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   podcastButton: {
-    backgroundColor: '#ffffff',
+  backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    shadowColor: '#000',
+  shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -192,20 +192,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   youtubeIcon: {
-    backgroundColor: '#FF0000',
+  backgroundColor: colors.COULEUR_YOUTUBE,
     borderRadius: 4,
     padding: 4,
     marginRight: 15,
   },
   videoButtonText: {
     fontSize: 15,
-    color: '#333',
+  color: colors.COULEUR_TEXT_DARK,
     fontWeight: '500',
     flex: 1,
   },
   podcastButtonText: {
     fontSize: 15,
-    color: '#333',
+    color: colors.COULEUR_TEXT_DARK,
     fontWeight: '500',
     flex: 1,
   },

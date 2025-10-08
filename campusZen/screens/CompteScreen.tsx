@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE } from '../src/theme/colors';
 
 export default function CompteScreen() {
   return (
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COULEUR_FOND_BLEU,
   },
   title: {
     fontSize: 24,
@@ -24,6 +25,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: COULEUR_SOUS_TITRE,
   },
 });
