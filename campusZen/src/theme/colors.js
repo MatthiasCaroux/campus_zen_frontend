@@ -10,3 +10,6 @@ export const COULEUR_BLACK = '#000';
 export const COULEUR_TEXT_DARK = '#333';
 
 export const COULEUR_YOUTUBE = COULEUR_RED;
+
+export const COULEUR_BOUTON = "#FF6B6B"; 
+export const COULEUR_BOUTON_TEXTE = "#FFFFFF";
