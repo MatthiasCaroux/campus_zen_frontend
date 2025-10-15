@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_URL = "https://campuszenbackend-production.up.railway.app/api/"; 
+// const API_URL = "http://127.0.0.1:8000/api/"; 
 
 export const register = async (emailPers: string, passwordPers: string) => {
   try {
@@ -15,11 +16,11 @@ export const register = async (emailPers: string, passwordPers: string) => {
   }
 };
 
-export const login = async (emailPers: string, passwordPers: string) => {
+export const login = async (emailPers: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}login/`, {
+    const response = await axios.post(`${API_URL}token/`, {
       emailPers,
-      passwordPers,
+      password,
     });
     return response.data;
   } catch (error: any) {
@@ -28,20 +29,16 @@ export const login = async (emailPers: string, passwordPers: string) => {
   }
 };
 
-export async function getProfile(token: string) {
-  const response = await axios.get(`${API_URL}/me/`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-};
-
-export async function changePassword(token: string, oldPassword: string, newPassword: string) {
-  const response = await axios.post(
-    `${API_URL}/change-password/`,
-    { old_password: oldPassword, new_password: newPassword },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  return response.data;
+export async function getCurrentUser (token: string) {
+  try {
+    const response = await axios.get(`${API_URL}me/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur récupération utilisateur:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 
