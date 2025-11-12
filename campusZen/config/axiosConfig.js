@@ -3,7 +3,7 @@ import axios from 'axios';
 // Configuration de l'URL de base de l'API
 const API_BASE_URL = __DEV__
   // ? 'http://localhost:8000/api/' // URL pour le développement
-  ? 'https://campuszenbackend-production.up.railway.app/api/' // URL pour le développement
+  ? 'https://campuszenbackend-prod.up.railway.app/api/' // URL pour le développement
   : 'https://votre-api-production.com/api'; // URL pour la production
 
 // Création de l'instance axios
