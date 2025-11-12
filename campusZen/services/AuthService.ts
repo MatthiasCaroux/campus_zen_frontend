@@ -1,7 +1,6 @@
 import axios from "axios";
-
-const API_URL = "https://campuszenbackend-production.up.railway.app/api/"; 
-// const API_URL = "http://127.0.0.1:8000/api/"; 
+import { API_URL } from "../config/endpoints";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const register = async (emailPers: string, passwordPers: string) => {
   try {
@@ -29,7 +28,7 @@ export const login = async (emailPers: string, password: string) => {
   }
 };
 
-export async function getCurrentUser (token: string) {
+export async function getAPICurrentUser (token: string) {
   try {
     const response = await axios.get(`${API_URL}me/`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -40,5 +39,13 @@ export async function getCurrentUser (token: string) {
     throw error;
   }
 };
+
+export async function getCurrentUser() {
+  const data = await AsyncStorage.getItem("user");
+  if (data) {
+    return JSON.parse(data);
+  }
+  return null;
+}
 
 

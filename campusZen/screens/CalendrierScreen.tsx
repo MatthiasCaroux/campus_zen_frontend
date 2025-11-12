@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import * as Colors from '../src/theme/colors';
-const { COULEUR_FOND_BLEU,COULEUR_FOND, COULEUR_SOUS_TITRE } = Colors;
+const { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE } = Colors;
 
 export default function CalendrierScreen() {
   return (

@@ -5,12 +5,14 @@ type AuthContextType = {
   isAuthenticated: boolean;
   login: (access: string, refresh: string) => Promise<void>;
   logout: () => Promise<void>;
+  setUser: (user: any) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   login: async () => {},
   logout: async () => {},
+  setUser: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -36,8 +38,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(false);
   };
 
+  const setUser = async (user: any) => {
+    await AsyncStorage.setItem("user", JSON.stringify(user));
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

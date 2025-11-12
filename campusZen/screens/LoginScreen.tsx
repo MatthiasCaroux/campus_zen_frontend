@@ -7,11 +7,13 @@ export default function LoginScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const { login } = useContext(AuthContext);
+  const { login, setUser } = useContext(AuthContext);
 
   const handleLogin = async () => {
     try {
       const data = await apiLogin(emailPers, passwordPers);
+      const user = {idPers : data.idPers, emailPers: emailPers, role: data.role};
+      await setUser(user); 
       await login(data.access, data.refresh); // ✅ Met à jour le contexte global
       setMessage("Connexion réussie ✅");
     } catch (error) {
