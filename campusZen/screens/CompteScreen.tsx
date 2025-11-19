@@ -7,30 +7,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CompteScreen() {
   const { logout } = useContext(AuthContext);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const user = getCurrentUser();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await getCurrentUser();
-        if (data) {
-          setUser(data);
-        }
-      } catch (error) {
-        console.error("Erreur récupération utilisateur", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
-
-  if (loading) {
+  if (user === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#fff" />
-        <Text style={styles.loadingText}>Chargement des informations...</Text>
+        <Text style={styles.loadingText}>L'utilisateur n'est pas connecté.</Text>
       </View>
     );
   }

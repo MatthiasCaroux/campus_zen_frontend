@@ -40,8 +40,8 @@ export async function getAPICurrentUser (token: string) {
   }
 };
 
-export async function getCurrentUser() {
-  const data = await AsyncStorage.getItem("user");
+export function getCurrentUser() {
+  const data = localStorage.getItem("user");
   if (data) {
     return JSON.parse(data);
   }

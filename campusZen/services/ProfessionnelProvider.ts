@@ -1,8 +1,12 @@
 import axios from "axios";
 import { API_URL } from "../config/endpoints";
 
-export async function getProfessionnels (token: string) {
+export async function getProfessionnels () {
   try {
+    const token = localStorage.getItem("accessToken");
+    if (token === null) {
+      throw new Error("Token d'accès manquant");
+    }
     const response = await axios.get(`${API_URL}professionnels/`, {
       headers: { Authorization: `Bearer ${token}` },
     });
