@@ -1,0 +1,109 @@
+import { StyleSheet, Platform } from 'react-native';
+import { COULEUR_FOND_BLEU } from '../theme/colors';
+
+export const mapStyles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COULEUR_FOND_BLEU,
+  },
+  loadingText: {
+    color: '#fff',
+    marginTop: 10,
+    fontSize: 16,
+  },
+  container: {
+    flex: 1,
+    flexDirection: Platform.OS === 'web' ? 'row' : 'column',
+    backgroundColor: '#f5f5f5',
+  },
+  mapContainer: {
+    flex: Platform.OS === 'web' ? 2 : 1,
+    minHeight: Platform.OS === 'web' ? '100%' : 300,
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+  listContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderLeftWidth: Platform.OS === 'web' ? 1 : 0,
+    borderTopWidth: Platform.OS === 'web' ? 0 : 1,
+    borderColor: '#e0e0e0',
+  },
+  listHeader: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    backgroundColor: COULEUR_FOND_BLEU,
+  },
+  listTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  listSubtitle: {
+    fontSize: 14,
+    color: '#e0e0e0',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  proCard: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    backgroundColor: '#fff',
+  },
+  proCardSelected: {
+    backgroundColor: '#e3f2fd',
+    borderLeftWidth: 4,
+    borderLeftColor: COULEUR_FOND_BLEU,
+  },
+  proHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  proFonction: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  proAddress: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  selectedIndicator: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  selectedText: {
+    fontSize: 12,
+    color: COULEUR_FOND_BLEU,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    padding: 32,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+  },
+});
+
