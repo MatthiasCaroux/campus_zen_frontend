@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
-import { View, TextInput, Button, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, TextInput, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { login as apiLogin } from "../services/AuthService";
 import { AuthContext } from "../context/AuthContext";
+import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
 
 export default function LoginScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
@@ -12,74 +13,64 @@ export default function LoginScreen({ navigation }: any) {
   const handleLogin = async () => {
     try {
       const data = await apiLogin(emailPers, passwordPers);
-      const user = {idPers : data.idPers, emailPers: emailPers, role: data.role};
-      await setUser(user); 
-      await login(data.access, data.refresh); // ✅ Met à jour le contexte global
+      const user = { idPers: data.idPers, emailPers, role: data.role };
+      await setUser(user);
+      await login(data.access, data.refresh);
       setMessage("Connexion réussie ✅");
-    } catch (error) {
+    } catch {
       setMessage("Erreur de connexion ❌");
     }
   };
 
   return (
-    <View>
-      <View style={styles.container}>
-        <Image 
-          source={require('../assets/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Se Connecter</Text>
-        <TextInput
-          placeholder="Email"
-          value={emailPers}
-          onChangeText={setEmail}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Mot de passe"
-          value={passwordPers}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-        <Button title="Se connecter" onPress={handleLogin} />
-        {message ? <Text>{message}</Text> : null}
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text style={styles.registerText}>
-            Pas encore de compte ? <Text style={styles.registerLink}>S’inscrire</Text>
-          </Text>
-        </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#ffffff" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={loginRegisterStyle.wrapper}>
+        
+        {/* Card container */}
+        <View style={loginRegisterStyle.card}>
+          
+          <Image 
+            source={require('../assets/logo.png')}
+            style={loginRegisterStyle.logo}
+            resizeMode="contain"
+          />
+
+          <Text style={loginRegisterStyle.title}>Se Connecter</Text>
+
+          <TextInput
+            placeholder="Email"
+            value={emailPers}
+            onChangeText={setEmail}
+            style={loginRegisterStyle.input}
+          />
+
+          <TextInput
+            placeholder="Mot de passe"
+            value={passwordPers}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={loginRegisterStyle.input}
+          />
+
+          <TouchableOpacity style={loginRegisterStyle.button} onPress={handleLogin}>
+            <Text style={loginRegisterStyle.buttonText}>Se connecter</Text>
+          </TouchableOpacity>
+
+          {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
+
+          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+            <Text style={loginRegisterStyle.registerText}>
+              Pas encore de compte ? <Text style={loginRegisterStyle.registerLink}>S’inscrire</Text>
+            </Text>
+          </TouchableOpacity>
+
+        </View>
+
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1,
-    padding: 20,
-    marginHorizontal: 50,
-    marginVertical: 160,
-    backgroundColor: '#fff9e8',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5 
-  },
-  input: { 
-    borderWidth: 1, 
-    padding: 10, 
-    marginBottom: 10, 
-    borderRadius: 10, 
-    borderColor: '#ccc' 
-  },
-  logo: { width: 100, height: 100, alignSelf: 'center' },
-  title: { fontSize: 24, textAlign: 'center', marginBottom: 20 },
-  message: { textAlign: 'center', marginTop: 10 },
-  registerText: { textAlign: 'center', marginTop: 20, fontSize: 14 },
-  registerLink: { color: '#007AFF', fontWeight: 'bold' },
-});
 

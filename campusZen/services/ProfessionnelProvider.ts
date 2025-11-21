@@ -1,9 +1,10 @@
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../config/endpoints";
 
 export async function getProfessionnels () {
   try {
-    const token = localStorage.getItem("accessToken");
+    const token = await AsyncStorage.getItem("accessToken");
     if (token === null) {
       throw new Error("Token d'accès manquant");
     }

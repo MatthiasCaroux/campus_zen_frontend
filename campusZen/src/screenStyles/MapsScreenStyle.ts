@@ -52,16 +52,22 @@ export const mapStyles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  proCard: {
+    proCard: {
+    margin: 12,
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
     backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 3,
   },
   proCardSelected: {
-    backgroundColor: '#e3f2fd',
-    borderLeftWidth: 4,
-    borderLeftColor: COULEUR_FOND_BLEU,
+    backgroundColor: '#e8f3ff',
+    borderColor: COULEUR_FOND_BLEU,
+    borderWidth: 2,
   },
   proHeader: {
     flexDirection: 'row',
@@ -104,6 +110,34 @@ export const mapStyles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
     textAlign: 'center',
+  },
+  floatingHeader: {
+    position: 'absolute',
+    top: 15,
+    left: 15,
+    right: 15,
+    padding: 14,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  floatingTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  floatingCount: {
+    marginTop: 2,
+    fontSize: 14,
+    color: '#555',
+  },
+  scrollContent: {
+    paddingBottom: 100,
   },
 });
 

@@ -1,44 +1,68 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { getAPICurrentUser, getCurrentUser } from "../services/AuthService";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
+import { getCurrentUser } from "../services/AuthService";
+import { compteStyles } from "../src/screenStyles/CompteStyle";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Platform } from "react-native";
 import { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE, COULEUR_BOUTON, COULEUR_BOUTON_TEXTE } from '../src/theme/colors';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CompteScreen() {
   const { logout } = useContext(AuthContext);
-  const user = getCurrentUser();
+  const [user, setUser] = useState<any>(null); 
+  const [loading, setLoading] = useState(true);
 
-  if (user === null) {
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await getCurrentUser();
+        if (data) {
+          setUser(data);
+        }
+      } catch (error) {
+        console.error("Erreur récupération utilisateur", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-        <Text style={styles.loadingText}>L'utilisateur n'est pas connecté.</Text>
+      <View style={compteStyles.loadingContainer}>
+        <ActivityIndicator size="large" color={COULEUR_BOUTON} />
+        <Text style={compteStyles.loadingText}>Chargement des informations...</Text>
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={compteStyles.loadingContainer}>
+        <Text style={compteStyles.noUser}>Utilisateur non connecté.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {user ? (
-        <View style={styles.card}>
-          <Text style={styles.title}>Bonjour, {user.emailPers} !</Text>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>ID :</Text>
-            <Text style={styles.value}>{user.idPers}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>Rôle :</Text>
-            <Text style={styles.value}>{user.role}</Text>
-          </View>
-          {/* Ajouter d'autres infos ici si besoin */}
-        </View>
-      ) : (
-        <Text style={styles.noUser}>Impossible de récupérer les informations.</Text>
-      )}
+    <ScrollView contentContainerStyle={compteStyles.container}>
+      <View style={compteStyles.card}>
+        <Text style={compteStyles.title}>Bonjour, {user.emailPers} !</Text>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-        <Text style={styles.logoutButtonText}>Se déconnecter</Text>
+        <View style={compteStyles.infoRow}>
+          <Text style={compteStyles.label}>ID :</Text>
+          <Text style={compteStyles.value}>{user.idPers}</Text>
+        </View>
+
+        <View style={compteStyles.infoRow}>
+          <Text style={compteStyles.label}>Rôle :</Text>
+          <Text style={compteStyles.value}>{user.role}</Text>
+        </View>
+
+        {/* Ajouter d'autres infos ici si besoin */}
+      </View>
+
+      <TouchableOpacity style={compteStyles.logoutButton} onPress={logout}>
+        <Text style={compteStyles.logoutButtonText}>Se déconnecter</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -50,18 +74,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    backgroundColor: "#ffffff",
   },
   card: {
-    width: "75%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
+    width: "100%",
+    maxWidth: 400,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 15,
+    padding: 25,
     marginBottom: 30,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
   title: {
     fontSize: 22,
@@ -72,7 +98,8 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: "row",
-    marginBottom: 10,
+    marginBottom: 12,
+    justifyContent: "space-between",
   },
   label: {
     fontSize: 16,
@@ -80,9 +107,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   value: {
-    marginLeft: 10,
     fontSize: 16,
     fontWeight: "600",
+    color: "#333",
   },
   logoutButton: {
     backgroundColor: COULEUR_BOUTON,
@@ -92,7 +119,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 4,
     elevation: 5,
   },
   logoutButtonText: {
@@ -105,15 +132,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COULEUR_FOND_BLEU,
+    backgroundColor: "#ffffff",
+    padding: 20,
   },
   loadingText: {
-    color: "#fff",
+    color: "#333",
     marginTop: 10,
     fontSize: 16,
   },
   noUser: {
-    color: "#fff",
+    color: "#333",
     fontSize: 16,
+    textAlign: "center",
   },
 });
+

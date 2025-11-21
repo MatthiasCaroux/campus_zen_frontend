@@ -40,12 +40,16 @@ export async function getAPICurrentUser (token: string) {
   }
 };
 
-export function getCurrentUser() {
-  const data = localStorage.getItem("user");
-  if (data) {
-    return JSON.parse(data);
+export async function getCurrentUser() {
+  const data = await AsyncStorage.getItem("user");
+  if (!data) {
+    return null;
   }
-  return null;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
 }
 
 
