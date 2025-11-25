@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { MapView, Marker } from '../components/Map';
 import { Region } from 'react-native-maps';
@@ -8,8 +8,13 @@ import { mapStyles } from '../src/screenStyles/MapsScreenStyle';
 
 export default function MapsScreen() {
   const { professionnels, loading } = useProfessionnels();
-  let filteredPros = professionnels;
+  // let filteredPros = professionnels;
+
+
   const [selectedPro, setSelectedPro] = useState<number | null>(null);
+  const [visiblePros, setVisiblePros] = useState<Professionnel[]>([]);
+  const [nonVisiblePros, setNonVisiblePros] = useState<Professionnel[]>([]);
+
   const [currentRegion, setCurrentRegion] = useState<Region>({
     latitude: -0.4814965375088253, // Centre par défaut
     longitude: 15.89751099904558, // Owando, République du Congo
@@ -21,19 +26,25 @@ export default function MapsScreen() {
 
   // Filtrer les professionnels en fonction de la région visible
   const filterProfessionnelsByRegion = (region: Region) => {
-    const filtered = professionnels.filter((pro) => {
+    if (!professionnels || professionnels.length === 0) return;
+
+    const visible = professionnels.filter((pro) => {
       if (!pro.lat || !pro.long) return false;
-      
+
       const latDiff = Math.abs(pro.lat - region.latitude);
       const longDiff = Math.abs(pro.long - region.longitude);
-      
+
       return latDiff <= region.latitudeDelta / 2 && longDiff <= region.longitudeDelta / 2;
     });
-    
-    filteredPros = filtered;
+
+    const nonVisible = professionnels.filter((pro) => !visible.includes(pro));
+
+    setVisiblePros(visible);
+    setNonVisiblePros(nonVisible);
   };
 
   const handleRegionChange = (region: Region) => {
+    console.log("Nouvelle région :", region);
     setCurrentRegion(region);
     filterProfessionnelsByRegion(region);
   };
@@ -62,6 +73,10 @@ export default function MapsScreen() {
     }
   };
 
+  useEffect(() => {
+    filterProfessionnelsByRegion(currentRegion);
+  }, [professionnels]);
+
   if (loading) {
     return (
       <View style={mapStyles.loadingContainer}>
@@ -71,12 +86,14 @@ export default function MapsScreen() {
     );
   }
 
+  const orderedPros = [...visiblePros, ...nonVisiblePros];
+
   return (
   <View style={mapStyles.container}>
 
     <View style={mapStyles.mapContainer}>
       <MapView
-        //ref={mapRef}
+        ref={mapRef}
         style={mapStyles.map}
         initialRegion={currentRegion}
         onRegionChangeComplete={handleRegionChange}
@@ -97,10 +114,12 @@ export default function MapsScreen() {
         ))}
       </MapView>
 
+      {/*
       <View style={mapStyles.floatingHeader}>
         <Text style={mapStyles.floatingTitle}>Professionnels dans la zone</Text>
-        <Text style={mapStyles.floatingCount}>{filteredPros.length} résultat(s)</Text>
+        <Text style={mapStyles.floatingCount}>{visiblePros.length} visible(s)</Text>
       </View>
+      */}
     </View>
 
     <View style={mapStyles.listContainer}>
@@ -111,38 +130,56 @@ export default function MapsScreen() {
       </View>
 
       <ScrollView style={mapStyles.scrollView} contentContainerStyle={mapStyles.scrollContent}>
-        {filteredPros.length === 0 ? (
-          <View style={mapStyles.emptyContainer}>
-            <Text style={mapStyles.emptyText}>Aucun professionnel dans cette zone</Text>
-            <Text style={mapStyles.emptySubtext}>Dézoomer pour voir plus de résultats</Text>
-          </View>
-        ) : (
-          filteredPros.map((pro) => (
-            <TouchableOpacity
-              key={pro.idPro}
-              style={[
-                mapStyles.proCard,
-                selectedPro === pro.idPro && mapStyles.proCardSelected,
-              ]}
-              onPress={() => handleProCardPress(pro)}
-            >
-              <View style={mapStyles.proHeader}>
-                <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
-              </View>
-
-              <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
-
-              {selectedPro === pro.idPro && (
-                <View style={mapStyles.selectedIndicator}>
-                  <Text style={mapStyles.selectedText}>● Sélectionné</Text>
-                </View>
+          {orderedPros.length === 0 ? (
+            <View style={mapStyles.emptyContainer}>
+              <Text style={mapStyles.emptyText}>Aucun professionnel trouvé</Text>
+            </View>
+          ) : (
+            <>
+              {visiblePros.length > 0 && (
+                <Text style={mapStyles.sectionTitle}>Dans la zone visible :</Text>
               )}
-            </TouchableOpacity>
-          ))
-        )}
-      </ScrollView>
+              {visiblePros.map((pro) => (
+                <TouchableOpacity
+                  key={pro.idPro}
+                  style={[
+                    mapStyles.proCard,
+                    selectedPro === pro.idPro && mapStyles.proCardSelected,
+                  ]}
+                  onPress={() => handleProCardPress(pro)}
+                >
+                  <View style={mapStyles.proHeader}>
+                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
+                  </View>
+                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
+                </TouchableOpacity>
+              ))}
+
+              {nonVisiblePros.length > 0 && (
+                <Text style={mapStyles.sectionTitle}>Hors de la zone :</Text>
+              )}
+              {nonVisiblePros.map((pro) => (
+                <TouchableOpacity
+                  key={pro.idPro}
+                  style={[
+                    mapStyles.proCard,
+                    selectedPro === pro.idPro && mapStyles.proCardSelected,
+                  ]}
+                  onPress={() => handleProCardPress(pro)}
+                >
+                  <View style={mapStyles.proHeader}>
+                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
+                  </View>
+                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
+                </TouchableOpacity>
+              ))}
+            </>
+          )}
+        </ScrollView>
+      </View>
+
     </View>
-  </View>
-);
+  );
 }
+
 

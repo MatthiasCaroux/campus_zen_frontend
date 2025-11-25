@@ -139,5 +139,14 @@ export const mapStyles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 100,
   },
+  sectionTitle: {
+    marginTop: 16,
+    marginHorizontal: 16,
+    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    opacity: 0.8,
+  },
 });
 

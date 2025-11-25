@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker as LeafletMarker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker as LeafletMarker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 
 // Importez le CSS sans les images locales
@@ -29,6 +29,7 @@ interface MapViewProps {
   style?: any;
   initialRegion?: Region;
   children?: React.ReactNode;
+  onRegionChangeComplete?: (region: Region) => void;
 }
 
 interface MarkerProps {
@@ -38,7 +39,57 @@ interface MarkerProps {
   onPress?: () => void;
 }
 
-export const MapView: React.FC<MapViewProps> = ({ style, initialRegion, children }) => {
+const MapEventHandler: React.FC<{ onRegionChange?: (region: Region) => void }> = ({ onRegionChange }) => {
+  const map = useMapEvents({
+    moveend: () => {
+      if (onRegionChange) {
+        const center = map.getCenter();
+        const bounds = map.getBounds();
+        const latDelta = bounds.getNorth() - bounds.getSouth();
+        const lngDelta = bounds.getEast() - bounds.getWest();
+        
+        console.log('Map moveend - Nouvelle région:', {
+          latitude: center.lat,
+          longitude: center.lng,
+          latitudeDelta: latDelta,
+          longitudeDelta: lngDelta,
+        });
+        
+        onRegionChange({
+          latitude: center.lat,
+          longitude: center.lng,
+          latitudeDelta: latDelta,
+          longitudeDelta: lngDelta,
+        });
+      }
+    },
+    zoomend: () => {
+      if (onRegionChange) {
+        const center = map.getCenter();
+        const bounds = map.getBounds();
+        const latDelta = bounds.getNorth() - bounds.getSouth();
+        const lngDelta = bounds.getEast() - bounds.getWest();
+        
+        console.log('Map zoomend - Nouvelle région:', {
+          latitude: center.lat,
+          longitude: center.lng,
+          latitudeDelta: latDelta,
+          longitudeDelta: lngDelta,
+        });
+        
+        onRegionChange({
+          latitude: center.lat,
+          longitude: center.lng,
+          latitudeDelta: latDelta,
+          longitudeDelta: lngDelta,
+        });
+      }
+    },
+  });
+  return null;
+};
+
+export const MapView: React.FC<MapViewProps> = ({ style, initialRegion, children, onRegionChangeComplete }) => {
   useEffect(() => {
     fixLeafletIcons();
   }, []);
@@ -63,6 +114,7 @@ export const MapView: React.FC<MapViewProps> = ({ style, initialRegion, children
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
+        <MapEventHandler onRegionChange={onRegionChangeComplete} />
         {children}
       </MapContainer>
     </div>
