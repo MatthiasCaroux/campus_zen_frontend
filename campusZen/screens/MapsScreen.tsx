@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Animated, PanResponder, Platform } from 'react-native';
 import { MapView, Marker } from '../components/Map';
 import { Region } from 'react-native-maps';
 import Professionnel from '../types/Professionnel';
 import { useProfessionnels } from '../hooks/useProfessionnels';
 import { mapStyles } from '../src/screenStyles/MapsScreenStyle';
 
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+const COLLAPSED_PERCENT = 0.50; 
+const EXPANDED_PERCENT = 0.85;  
+
 export default function MapsScreen() {
   const { professionnels, loading } = useProfessionnels();
-  // let filteredPros = professionnels;
-
 
   const [selectedPro, setSelectedPro] = useState<number | null>(null);
   const [visiblePros, setVisiblePros] = useState<Professionnel[]>([]);
@@ -23,6 +25,66 @@ export default function MapsScreen() {
   });
   
   const mapRef = useRef<any>(null);
+
+  const sheetHeightCollapsed = SCREEN_HEIGHT * COLLAPSED_PERCENT;
+  const sheetHeightExpanded = SCREEN_HEIGHT * EXPANDED_PERCENT;
+  const minY = SCREEN_HEIGHT - sheetHeightCollapsed; 
+  const maxY = SCREEN_HEIGHT - sheetHeightExpanded;
+
+  const sheetY = useRef(new Animated.Value(minY)).current;
+  
+
+  useEffect(() => {
+    sheetY.setValue(minY);
+  }, []);
+
+    const lastY = useRef(minY);
+  
+    const panResponder = useRef(
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dy) > 5,
+        onPanResponderGrant: () => {
+          // Enregistre la position actuelle au début du geste
+          sheetY.stopAnimation((value) => {
+            lastY.current = value;
+          });
+        },
+        onPanResponderMove: (_, gesture) => {
+          // Calcule la nouvelle position basée sur le delta du geste
+          const newPos = lastY.current + gesture.dy;
+          
+          // Limite le déplacement entre maxY (haut) et minY (bas)
+          // Ne peut pas descendre en dessous de la position minimale 
+          if (newPos >= maxY && newPos <= minY) {
+            sheetY.setValue(newPos);
+          } else if (newPos < maxY) {
+            // Bloque en haut
+            sheetY.setValue(maxY);
+          } else if (newPos > minY) {
+            // Bloque en bas (50%)
+            sheetY.setValue(minY);
+          }
+        },
+        onPanResponderRelease: (_, gesture) => {
+          // Calcule la position finale
+          const finalY = lastY.current + gesture.dy;
+          const midPoint = (maxY + minY) / 2;
+          
+          // Si on est au-dessus du milieu, on ouvre complètement
+          // Sinon on revient à la position minimale 
+          const shouldExpand = finalY < midPoint;
+  
+          Animated.spring(sheetY, {
+            toValue: shouldExpand ? maxY : minY,
+            useNativeDriver: false,
+            tension: 50,
+            friction: 8,
+          }).start(() => {
+            lastY.current = shouldExpand ? maxY : minY;
+          });
+        },
+      })
+    ).current;
 
   // Filtrer les professionnels en fonction de la région visible
   const filterProfessionnelsByRegion = (region: Region) => {
@@ -44,7 +106,6 @@ export default function MapsScreen() {
   };
 
   const handleRegionChange = (region: Region) => {
-    console.log("Nouvelle région :", region);
     setCurrentRegion(region);
     filterProfessionnelsByRegion(region);
   };
@@ -122,7 +183,80 @@ export default function MapsScreen() {
       */}
     </View>
 
-    <View style={mapStyles.listContainer}>
+    {Platform.OS !== "web" ? (
+            <Animated.View
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                height: sheetHeightExpanded,
+                top: sheetY,
+                backgroundColor: "#fff",
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+                overflow: "hidden",
+                elevation: 20,
+                shadowColor: "#000",
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+              }}
+              {...panResponder.panHandlers}
+            >
+      <View style={mapStyles.listHeader}>
+        <Text style={mapStyles.listTitle}>Liste des professionnels</Text>
+        <Text style={mapStyles.listSubtitle}>Sélectionne un professionnel pour centrer la carte</Text>
+      </View>
+
+      <ScrollView style={mapStyles.scrollView} contentContainerStyle={mapStyles.scrollContent}>
+          {orderedPros.length === 0 ? (
+            <View style={mapStyles.emptyContainer}>
+              <Text style={mapStyles.emptyText}>Aucun professionnel trouvé</Text>
+            </View>
+          ) : (
+            <>
+              {visiblePros.length > 0 && (
+                <Text style={mapStyles.sectionTitle}>Dans la zone visible :</Text>
+              )}
+              {visiblePros.map((pro) => (
+                <TouchableOpacity
+                  key={pro.idPro}
+                  style={[
+                    mapStyles.proCard,
+                    selectedPro === pro.idPro && mapStyles.proCardSelected,
+                  ]}
+                  onPress={() => handleProCardPress(pro)}
+                >
+                  <View style={mapStyles.proHeader}>
+                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
+                  </View>
+                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
+                </TouchableOpacity>
+              ))}
+
+              {nonVisiblePros.length > 0 && (
+                <Text style={mapStyles.sectionTitle}>Hors de la zone :</Text>
+              )}
+              {nonVisiblePros.map((pro) => (
+                <TouchableOpacity
+                  key={pro.idPro}
+                  style={[
+                    mapStyles.proCard,
+                    selectedPro === pro.idPro && mapStyles.proCardSelected,
+                  ]}
+                  onPress={() => handleProCardPress(pro)}
+                >
+                  <View style={mapStyles.proHeader}>
+                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
+                  </View>
+                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
+                </TouchableOpacity>
+              ))}
+            </>
+          )}
+        </ScrollView>
+      </Animated.View>
+    ) : (
+      <View style={mapStyles.listContainer}>
 
       <View style={mapStyles.listHeader}>
         <Text style={mapStyles.listTitle}>Liste des professionnels</Text>
@@ -177,8 +311,9 @@ export default function MapsScreen() {
           )}
         </ScrollView>
       </View>
+    )}
 
-    </View>
+  </View>
   );
 }
 
