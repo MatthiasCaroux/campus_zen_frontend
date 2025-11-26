@@ -4,17 +4,10 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-type RootStackParamList = {
-  HomeMain: undefined;
-  Questionnaire: undefined;
-};
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function HomeScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<any>();
   return (
     <LinearGradient
       colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
@@ -36,7 +29,12 @@ export default function HomeScreen() {
         </View>
 
         {/* Bouton Consulter mon état */}
-        <TouchableOpacity style={styles.consultButton}>
+        <TouchableOpacity
+          style={styles.consultButton}
+          onPress={() => {
+            navigation.navigate('ConsultEtat');
+          }}
+        >
           <Text style={styles.consultButtonText}>Consulter mon état</Text>
         </TouchableOpacity>
 

@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import MainTabs from "./MainTabs";
+import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 
@@ -17,7 +18,10 @@ function AppNavigator() {
     <NavigationContainer>
       <StatusBar style="light" />
       {isAuthenticated ? (
-        <MainTabs />
+        <Stack.Navigator>
+          <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
+          <Stack.Screen name="ConsultEtat" component={ConsultEtatScreen} options={{ headerShown: false }} />
+        </Stack.Navigator>
       ) : (
         <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginScreen} options={{ title: "Connexion" }} />

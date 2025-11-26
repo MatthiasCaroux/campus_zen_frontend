@@ -9,7 +9,7 @@ import MapsScreen from "./screens/MapsScreen";
 import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
-import QuestionnaireScreen from "./screens/QuestionnaireScreen";
+import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -59,6 +59,7 @@ export default function MainTabs() {
           />
         ),
       })}
+      
     >
       <Tab.Screen name="Home" component={HomeStackNavigator} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
       <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
@@ -67,6 +68,4 @@ export default function MainTabs() {
       <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
     </Tab.Navigator>
   );
-}
-
-
+} 
