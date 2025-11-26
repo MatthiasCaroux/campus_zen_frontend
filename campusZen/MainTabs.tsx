@@ -9,8 +9,7 @@ import MapsScreen from "./screens/MapsScreen";
 import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
-import ConsultEtatScreen from "./screens/ConsultEtatScreen";
-
+import QuestionnaireScreen from "./screens/QuestionnaireScreen";
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 
