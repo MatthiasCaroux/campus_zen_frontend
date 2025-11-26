@@ -17,3 +17,22 @@ export async function getProfessionnels () {
     throw error;
   }
 };
+
+
+export async function getProfessionnelsById (id: number) {
+  try {
+    const token = await AsyncStorage.getItem("accessToken");
+    if (token === null) {
+      throw new Error("Token d'accès manquant");
+    }
+    const response = await axios.get(`${API_URL}professionnels/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur récupération des professionnels :", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+

@@ -1,5 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "react-native";
 
@@ -8,8 +9,27 @@ import MapsScreen from "./screens/MapsScreen";
 import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
+import ProDetailsScreen from "./screens/ProDetailsScreen";
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function MapsStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="MapsMain" 
+        component={MapsScreen} 
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen 
+        name="ProDetailsScreen" 
+        component={ProDetailsScreen} 
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 export default function MainTabs() {
   return (
@@ -41,7 +61,7 @@ export default function MainTabs() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
-      <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
+      <Tab.Screen name="Maps" component={MapsStack} options={{ title: "Maps", tabBarLabel: "Maps" }} />
       <Tab.Screen name="Calendrier" component={CalendrierScreen} options={{ title: "Calendrier", tabBarLabel: "Calendrier" }} />
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
       <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />

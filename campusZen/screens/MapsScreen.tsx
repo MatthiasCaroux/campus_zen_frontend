@@ -4,7 +4,8 @@ import { MapView, Marker } from '../components/Map';
 import { Region } from 'react-native-maps';
 import Professionnel from '../types/Professionnel';
 import { useProfessionnels } from '../hooks/useProfessionnels';
-import { mapStyles } from '../src/screenStyles/MapsScreenStyle';
+import { mapStyles } from '../src/screenStyles/MapsStyle';
+import { useNavigation } from '@react-navigation/native';
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const COLLAPSED_PERCENT = 0.50; 
@@ -12,6 +13,7 @@ const EXPANDED_PERCENT = 0.85;
 
 export default function MapsScreen() {
   const { professionnels, loading } = useProfessionnels();
+  const navigation = useNavigation();
 
   const [selectedPro, setSelectedPro] = useState<number | null>(null);
   const [visiblePros, setVisiblePros] = useState<Professionnel[]>([]);
@@ -133,6 +135,16 @@ export default function MapsScreen() {
       // Il faudra peut être implémenter une fonction flyTo dans le composant Map pour le web
     }
   };
+ 
+  const handleViewDetails = (proId: number) => {
+    navigation.navigate('ProDetailsScreen', { proId: proId });
+  };
+
+  /*
+  const handleViewDetails = (pro: Professionnel) => {
+    navigation.navigate('ProDetailsScreen', { professionnel: pro });
+  };
+  */
 
   useEffect(() => {
     filterProfessionnelsByRegion(currentRegion);
@@ -148,6 +160,33 @@ export default function MapsScreen() {
   }
 
   const orderedPros = [...visiblePros, ...nonVisiblePros];
+
+  const renderProCard = (pro: Professionnel, isVisible: boolean) => (
+    <View key={pro.idPro} style={mapStyles.proCardWrapper}>
+      <TouchableOpacity
+        style={[
+          mapStyles.proCard,
+          selectedPro === pro.idPro && mapStyles.proCardSelected,
+        ]}
+        onPress={() => handleProCardPress(pro)}
+      >
+        <View style={mapStyles.proHeader}>
+          <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
+        </View>
+        <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
+      </TouchableOpacity>
+      
+      {selectedPro === pro.idPro && (
+        <TouchableOpacity
+          style={mapStyles.detailsButton}
+          onPress={() => handleViewDetails(pro.idPro)}
+          // onPress={() => handleViewDetails(pro)}
+        >
+          <Text style={mapStyles.detailsButtonText}>Voir les détails</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 
   return (
   <View style={mapStyles.container}>
@@ -217,40 +256,12 @@ export default function MapsScreen() {
               {visiblePros.length > 0 && (
                 <Text style={mapStyles.sectionTitle}>Dans la zone visible :</Text>
               )}
-              {visiblePros.map((pro) => (
-                <TouchableOpacity
-                  key={pro.idPro}
-                  style={[
-                    mapStyles.proCard,
-                    selectedPro === pro.idPro && mapStyles.proCardSelected,
-                  ]}
-                  onPress={() => handleProCardPress(pro)}
-                >
-                  <View style={mapStyles.proHeader}>
-                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
-                  </View>
-                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
-                </TouchableOpacity>
-              ))}
+              {visiblePros.map((pro) => (renderProCard(pro, true)))}
 
               {nonVisiblePros.length > 0 && (
                 <Text style={mapStyles.sectionTitle}>Hors de la zone :</Text>
               )}
-              {nonVisiblePros.map((pro) => (
-                <TouchableOpacity
-                  key={pro.idPro}
-                  style={[
-                    mapStyles.proCard,
-                    selectedPro === pro.idPro && mapStyles.proCardSelected,
-                  ]}
-                  onPress={() => handleProCardPress(pro)}
-                >
-                  <View style={mapStyles.proHeader}>
-                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
-                  </View>
-                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
-                </TouchableOpacity>
-              ))}
+              {nonVisiblePros.map((pro) => renderProCard(pro, false))}
             </>
           )}
         </ScrollView>
@@ -273,40 +284,12 @@ export default function MapsScreen() {
               {visiblePros.length > 0 && (
                 <Text style={mapStyles.sectionTitle}>Dans la zone visible :</Text>
               )}
-              {visiblePros.map((pro) => (
-                <TouchableOpacity
-                  key={pro.idPro}
-                  style={[
-                    mapStyles.proCard,
-                    selectedPro === pro.idPro && mapStyles.proCardSelected,
-                  ]}
-                  onPress={() => handleProCardPress(pro)}
-                >
-                  <View style={mapStyles.proHeader}>
-                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
-                  </View>
-                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
-                </TouchableOpacity>
-              ))}
+              {visiblePros.map((pro) => renderProCard(pro, true))}
 
               {nonVisiblePros.length > 0 && (
                 <Text style={mapStyles.sectionTitle}>Hors de la zone :</Text>
               )}
-              {nonVisiblePros.map((pro) => (
-                <TouchableOpacity
-                  key={pro.idPro}
-                  style={[
-                    mapStyles.proCard,
-                    selectedPro === pro.idPro && mapStyles.proCardSelected,
-                  ]}
-                  onPress={() => handleProCardPress(pro)}
-                >
-                  <View style={mapStyles.proHeader}>
-                    <Text style={mapStyles.proFonction}>{pro.fonctionPro}</Text>
-                  </View>
-                  <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
-                </TouchableOpacity>
-              ))}
+              {nonVisiblePros.map((pro) => renderProCard(pro, false))}
             </>
           )}
         </ScrollView>

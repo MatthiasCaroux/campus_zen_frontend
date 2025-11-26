@@ -148,5 +148,26 @@ export const mapStyles = StyleSheet.create({
     color: '#333',
     opacity: 0.8,
   },
+  proCardWrapper: {
+    marginBottom: 10,
+  },
+  detailsButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 8,
+    marginHorizontal: 12,
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  detailsButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });
 
