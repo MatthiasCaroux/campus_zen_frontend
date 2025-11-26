@@ -10,6 +10,8 @@ import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
 import QuestionnaireScreen from "./screens/QuestionnaireScreen";
+import ConsultEtatScreen from "./screens/ConsultEtatScreen";
+
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 
@@ -25,6 +27,11 @@ function HomeStackNavigator() {
         name="Questionnaire"
         component={QuestionnaireScreen}
         options={{ title: "Questionnaire" }}
+      />
+      <HomeStack.Screen
+        name="ConsultEtat"
+        component={ConsultEtatScreen}
+        options={{ title: "Mon état" }}
       />
     </HomeStack.Navigator>
   );
