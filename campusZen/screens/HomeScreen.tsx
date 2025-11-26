@@ -3,8 +3,11 @@ import * as colors from "../src/theme/colors.js";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function HomeScreen() {
+  const navigation = useNavigation<any>();
   return (
     <LinearGradient
       colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
@@ -26,14 +29,22 @@ export default function HomeScreen() {
         </View>
 
         {/* Bouton Consulter mon état */}
-        <TouchableOpacity style={styles.consultButton}>
+        <TouchableOpacity
+          style={styles.consultButton}
+          onPress={() => {
+            navigation.navigate('ConsultEtat');
+          }}
+        >
           <Text style={styles.consultButtonText}>Consulter mon état</Text>
         </TouchableOpacity>
 
         {/* Section Ce soir */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Ce soir</Text>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('Questionnaire')}>
+              
             <Text style={styles.actionButtonText}>Évaluer mon bien-être</Text>
           </TouchableOpacity>
         </View>

@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { getCurrentUser } from "../services/AuthService";
+import { getCurrentUser, getStoredUser } from "../services/AuthService";
 import { compteStyles } from "../src/screenStyles/CompteStyle";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Platform } from "react-native";
+
 import { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE, COULEUR_BOUTON, COULEUR_BOUTON_TEXTE } from '../src/theme/colors';
 
 export default function CompteScreen() {
@@ -13,7 +14,7 @@ export default function CompteScreen() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await getCurrentUser();
+        const data = await getStoredUser();
         if (data) {
           setUser(data);
         }
