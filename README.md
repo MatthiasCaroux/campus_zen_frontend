@@ -32,7 +32,7 @@ Application mobile React Native développée avec Expo et TypeScript pour le pro
 
 - **Démarrer le serveur de développement**
   ```bash
-  npm start
+  npx expo start
   ```
 
 - **Lancer sur Android**
