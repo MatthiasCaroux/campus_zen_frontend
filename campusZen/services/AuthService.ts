@@ -28,16 +28,6 @@ export const login = async (emailPers: string, password: string) => {
   }
 };
 
-export const refreshToken = async (refresh: string) => {
-  try {
-    const response = await axios.post(`${API_URL}token/refresh/`, { refresh });
-    return response.data;
-  } catch (error: any) {
-    console.error("Erreur rafraîchissement token:", error.response?.data || error.message);
-    throw error;
-  } 
-};
-
 export async function getAPICurrentUser (token: string) {
   try {
     const response = await axios.get(`${API_URL}me/`, {

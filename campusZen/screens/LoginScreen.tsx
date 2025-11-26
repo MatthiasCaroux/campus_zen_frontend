@@ -13,7 +13,7 @@ export default function LoginScreen({ navigation }: any) {
   const handleLogin = async () => {
     try {
       const data = await apiLogin(emailPers, passwordPers);
-      const user = { idPers: data.idPers, emailPers, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.dateEndRefresh };
+      const user = { idPers: data.idPers, emailPers, role: data.role };
       await setUser(user);
       await login(data.access, data.refresh);
       setMessage("Connexion réussie ✅");
