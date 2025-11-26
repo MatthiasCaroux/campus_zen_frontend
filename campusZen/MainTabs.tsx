@@ -8,18 +8,7 @@ import MapsScreen from "./screens/MapsScreen";
 import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
-[
-    {
-        "idMessage": 1,
-        "message": "Tu es qui ?",
-        "idClimat": 1
-    },
-    {
-        "idMessage": 2,
-        "message": "chef",
-        "idClimat": 1
-    }
-]
+import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -51,14 +40,13 @@ export default function MainTabs() {
           />
         ),
       })}
+      
     >
-  <Tab.Screen name="Home" component={HomeScreen} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
-  <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
-  <Tab.Screen name="Calendrier" component={CalendrierScreen} options={{ title: "Calendrier", tabBarLabel: "Calendrier" }} />
-  <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
-  <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
+      <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
+      <Tab.Screen name="Calendrier" component={CalendrierScreen} options={{ title: "Calendrier", tabBarLabel: "Calendrier" }} />
+      <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
+      <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
     </Tab.Navigator>
   );
-}
-
-
+} 

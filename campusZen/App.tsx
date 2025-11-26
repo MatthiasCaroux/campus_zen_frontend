@@ -20,7 +20,7 @@ function AppNavigator() {
       {isAuthenticated ? (
         <Stack.Navigator>
           <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
-          <Stack.Screen name="ConsultEtat" component={ConsultEtatScreen} options={{ title: "Mon état" }} />
+          <Stack.Screen name="ConsultEtat" component={ConsultEtatScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator>

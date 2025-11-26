@@ -2,14 +2,13 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { getStoredUser, getStatuts, getClimatById, getRandomMessageByClimatId } from '../services/AuthService';
 
-// Fonction utilitaire pour choisir l'image selon le nom du climat
 function getClimatImage(nom: string) {
   switch (nom.toLowerCase()) {
-    case 'Nuageux':
+    case 'nuageux':
       return require('../assets/nuageux.png');
-    case 'Soleil':
+    case 'soleil':
       return require('../assets/soleil.png');
-    case 'Pluvieux':
+    case 'pluvieux':
       return require('../assets/pluvieux.png');
     default:
       return require('../assets/nuageux.png');
@@ -35,14 +34,12 @@ const ConsultEtatScreen: React.FC = () => {
           }
         }
       } catch (error) {
-        // Optionally log error
       } finally {
         setLoading(false);
       }
     };
     fetchUser();
   }, []);
-
 
   const fetchAndGetLastStatuts = async (userId: number) => {
     try {
