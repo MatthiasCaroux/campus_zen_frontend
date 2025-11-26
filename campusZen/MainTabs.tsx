@@ -40,13 +40,12 @@ export default function MainTabs() {
           />
         ),
       })}
-      
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
-      <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
-      <Tab.Screen name="Calendrier" component={CalendrierScreen} options={{ title: "Calendrier", tabBarLabel: "Calendrier" }} />
-      <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
-      <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
+  <Tab.Screen name="Home" component={HomeScreen} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
+  <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
+  <Tab.Screen name="Calendrier" component={CalendrierScreen} options={{ title: "Calendrier", tabBarLabel: "Calendrier" }} />
+  <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
+  <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
     </Tab.Navigator>
   );
-} 
+}

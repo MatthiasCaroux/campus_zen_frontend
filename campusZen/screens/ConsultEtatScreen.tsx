@@ -2,13 +2,14 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { getStoredUser, getStatuts, getClimatById, getRandomMessageByClimatId } from '../services/AuthService';
 
+// Fonction utilitaire pour choisir l'image selon le nom du climat
 function getClimatImage(nom: string) {
   switch (nom.toLowerCase()) {
-    case 'nuageux':
+    case 'Nuageux':
       return require('../assets/nuageux.png');
-    case 'soleil':
+    case 'Soleil':
       return require('../assets/soleil.png');
-    case 'pluvieux':
+    case 'Pluvieux':
       return require('../assets/pluvieux.png');
     default:
       return require('../assets/nuageux.png');
@@ -41,6 +42,7 @@ const ConsultEtatScreen: React.FC = () => {
     fetchUser();
   }, []);
 
+
   const fetchAndGetLastStatuts = async (userId: number) => {
     try {
       const statuts = await getStatuts();
@@ -62,7 +64,7 @@ const ConsultEtatScreen: React.FC = () => {
             setClimatId(lastStatut.climat);
             const message = await getRandomMessageByClimatId(lastStatut.climat);
             setRandomMessage(message);
-          } catch {
+          } catch (err) {
             setClimatNom(null);
             setClimatId(null);
             setRandomMessage(null);
@@ -76,7 +78,7 @@ const ConsultEtatScreen: React.FC = () => {
         setFilteredStatuts([]);
         setClimatNom(null);
       }
-    } catch {
+    } catch (err) {
       setFilteredStatuts([]);
       setClimatNom(null);
     }
@@ -90,12 +92,13 @@ const ConsultEtatScreen: React.FC = () => {
     );
   }
 
+  // Log affichage du contenu
   return (
     <View style={styles.pageContainer}>
       {climatNom && (
         <>
           <Image
-            source={getClimatImage(climatNom)}
+            source={getClimatImage(climatNom || "")}
             style={styles.climatImage}
             resizeMode="contain"
           />
