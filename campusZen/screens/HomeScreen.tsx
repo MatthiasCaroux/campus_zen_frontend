@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
+
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   return (
@@ -40,7 +41,10 @@ export default function HomeScreen() {
         {/* Section Ce soir */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Ce soir</Text>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('Questionnaire')}>
+              
             <Text style={styles.actionButtonText}>Évaluer mon bien-être</Text>
           </TouchableOpacity>
         </View>
