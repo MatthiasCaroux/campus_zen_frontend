@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { getAPICurrentUser, getCurrentUser } from "../services/AuthService";
+import { getAPICurrentUser, getStoredUser } from "../services/AuthService";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
 import { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE, COULEUR_BOUTON, COULEUR_BOUTON_TEXTE } from '../src/theme/colors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -13,7 +13,7 @@ export default function CompteScreen() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await getCurrentUser();
+        const data = await getStoredUser();
         if (data) {
           setUser(data);
         }
