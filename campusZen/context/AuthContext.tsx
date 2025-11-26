@@ -1,8 +1,9 @@
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode, Dispatch, SetStateAction } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AuthContextType = {
   isAuthenticated: boolean;
+  setIsAuthenticated: Dispatch<SetStateAction<boolean>>;
   login: (access: string, refresh: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: any) => Promise<void>;
@@ -10,6 +11,7 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
+  setIsAuthenticated: () => {},
   login: async () => {},
   logout: async () => {},
   setUser: async () => {},
@@ -44,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, setUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
