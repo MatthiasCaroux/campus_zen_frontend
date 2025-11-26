@@ -8,6 +8,7 @@ import MapsScreen from "./screens/MapsScreen";
 import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
+import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -39,6 +40,7 @@ export default function MainTabs() {
           />
         ),
       })}
+      
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
       <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
@@ -47,6 +49,4 @@ export default function MainTabs() {
       <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
     </Tab.Navigator>
   );
-}
-
-
+} 
