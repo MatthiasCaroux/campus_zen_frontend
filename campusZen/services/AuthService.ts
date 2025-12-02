@@ -79,18 +79,6 @@ export async function getAPICurrentUser (token: string) {
   }
 };
 
-export async function getCurrentUser() {
-  const data = await AsyncStorage.getItem("user");
-  if (!data) {
-    return null;
-  }
-  try {
-    return JSON.parse(data);
-  } catch {
-    return null;
-  }
-}
-
 export async function getStatuts() {
   try {
     const response = await axios.get(`${API_URL}statuts/`);
@@ -101,4 +89,13 @@ export async function getStatuts() {
   }
 }
 
+export const refreshToken = async (refresh: string) => {
+  try {
+    const response = await axios.post(`${API_URL}token/refresh/`, { refresh });
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur rafraîchissement token:", error.response?.data || error.message);
+    throw error;
+  } 
+};
 

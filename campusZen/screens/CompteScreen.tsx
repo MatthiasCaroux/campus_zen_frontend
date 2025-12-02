@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { getCurrentUser, getStoredUser } from "../services/AuthService";
+import { getStoredUser } from "../services/AuthService";
 import { compteStyles } from "../src/screenStyles/CompteStyle";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Platform } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
 
-import { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE, COULEUR_BOUTON, COULEUR_BOUTON_TEXTE } from '../src/theme/colors';
+import { COULEUR_BOUTON } from '../src/theme/colors';
 
 export default function CompteScreen() {
   const { logout } = useContext(AuthContext);
