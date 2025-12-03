@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, Dispatch, SetStateAction } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { saveTokens, getTokens, deleteTokens, getAccessToken } from "../services/SecureStorage";
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -7,10 +8,6 @@ type AuthContextType = {
   login: (access: string, refresh: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: any) => Promise<void>;
-  getAccessToken: () => Promise<string | null>;
-  setAccessToken: (token: string) => Promise<void>;
-  getRefreshToken: () => Promise<string | null>;
-  setRefreshToken: (token: string) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -19,10 +16,6 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => { },
   logout: async () => { },
   setUser: async () => { },
-  getAccessToken: async () => null,
-  setAccessToken: async () => { },
-  getRefreshToken: async () => null,
-  setRefreshToken: async () => { },
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -30,21 +23,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem("accessToken");
+      const token = await getAccessToken();
       setIsAuthenticated(!!token);
     };
     checkAuth();
   }, []);
 
   const login = async (access: string, refresh: string) => {
-    await AsyncStorage.setItem("accessToken", access);
-    await AsyncStorage.setItem("refreshToken", refresh);
+    await saveTokens(access, refresh);
     setIsAuthenticated(true);
   };
 
   const logout = async () => {
-    await AsyncStorage.removeItem("accessToken");
-    await AsyncStorage.removeItem("refreshToken");
+    console.log("Déconnexion de l'utilisateur");
+    await deleteTokens();
+    console.log("Suppression des informations utilisateur stockées");
     await AsyncStorage.removeItem("user");
     setIsAuthenticated(false);
   };
@@ -53,24 +46,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await AsyncStorage.setItem("user", JSON.stringify(user));
   }
 
-  const getAccessToken = async (): Promise<string | null> => {
-    return await AsyncStorage.getItem("accessToken");
-  };
-
-  const setAccessToken = async (token: string): Promise<void> => {
-    await AsyncStorage.setItem("accessToken", token);
-  };
-
-  const getRefreshToken = async (): Promise<string | null> => {
-    return await AsyncStorage.getItem("refreshToken");
-  }
-
-  const setRefreshToken = async (token: string): Promise<void> => {
-    await AsyncStorage.setItem("refreshToken", token);
-  }
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, logout, setUser, getAccessToken, setAccessToken, getRefreshToken, setRefreshToken }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
