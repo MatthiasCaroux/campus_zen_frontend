@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { register as apiRegister } from "../services/AuthService";
+import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
 
 export default function RegisterScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
@@ -28,66 +29,62 @@ export default function RegisterScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image 
-        source={require('../assets/logo.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <Text style={styles.title}>Créer un compte</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#ffffff" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={loginRegisterStyle.wrapper}>
+        
+        {/* CARD */}
+        <View style={loginRegisterStyle.card}>
+          
+          <Image 
+            source={require('../assets/logo.png')}
+            style={loginRegisterStyle.logo}
+            resizeMode="contain"
+          />
 
-      <TextInput
-        placeholder="Email"
-        value={emailPers}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Mot de passe"
-        value={passwordPers}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Confirmer le mot de passe"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        style={styles.input}
-      />
+          <Text style={loginRegisterStyle.title}>Créer un compte</Text>
 
-      <Button title="S’inscrire" onPress={handleRegister} />
-      {message ? <Text style={styles.message}>{message}</Text> : null}
-    </View>
+          <TextInput
+            placeholder="Email"
+            value={emailPers}
+            autoCapitalize="none"
+            onChangeText={setEmail}
+            style={loginRegisterStyle.input}
+          />
+
+          <TextInput
+            placeholder="Mot de passe"
+            value={passwordPers}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={loginRegisterStyle.input}
+          />
+
+          <TextInput
+            placeholder="Confirmer le mot de passe"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            style={loginRegisterStyle.input}
+          />
+
+          <TouchableOpacity style={loginRegisterStyle.button} onPress={handleRegister}>
+            <Text style={loginRegisterStyle.buttonText}>S’inscrire</Text>
+          </TouchableOpacity>
+
+          {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
+
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={loginRegisterStyle.registerText}>
+              Déjà un compte ? <Text style={loginRegisterStyle.registerLink}>Se connecter</Text>
+            </Text>
+          </TouchableOpacity>
+
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1,
-    padding: 20,
-    marginHorizontal: 50,
-    marginVertical: 140,
-    backgroundColor: '#fff9e8',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5 
-  },
-  input: { 
-    borderWidth: 1, 
-    padding: 10, 
-    marginBottom: 10, 
-    borderRadius: 10, 
-    borderColor: '#ccc' 
-  },
-  logo: { width: 100, height: 100, alignSelf: 'center' },
-  title: { fontSize: 24, textAlign: 'center', marginBottom: 20 },
-  message: { textAlign: 'center', marginTop: 10 },
-  registerText: { textAlign: 'center', marginTop: 20, fontSize: 14 },
-  registerLink: { color: '#007AFF', fontWeight: 'bold' },
-});
 
