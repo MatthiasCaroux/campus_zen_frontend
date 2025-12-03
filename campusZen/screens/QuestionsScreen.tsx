@@ -65,8 +65,10 @@ export default function QuestionsScreen() {
     const fetchResponses = async (questionId: number) => {
         try {
             setLoadingResponses(true);
-            const response = await apiClient.get(`/reponses/${questionId}`);
-            setAvailableResponses(response.data);
+            const response = await apiClient.get(`/reponses/?question=${questionId}`);
+            // S'assurer que response.data est un tableau
+            const data = Array.isArray(response.data) ? response.data : [];
+            setAvailableResponses(data);
         } catch (err) {
             console.error('Erreur lors de la récupération des réponses:', err);
             setAvailableResponses([]);
@@ -75,21 +77,7 @@ export default function QuestionsScreen() {
         }
     };
 
-    // Génération des couleurs basées sur le score
-    const getColorForScore = (score: number, maxScore: number) => {
-        const ratio = score / maxScore;
-        if (ratio <= 0.2) return '#D32F2F'; // Rouge foncé
-        if (ratio <= 0.35) return '#F44336'; // Rouge
-        if (ratio <= 0.5) return '#FF9800'; // Orange
-        if (ratio <= 0.65) return '#FFC107'; // Jaune
-        if (ratio <= 0.8) return '#8BC34A'; // Vert clair
-        if (ratio <= 0.9) return '#4CAF50'; // Vert
-        return '#2E7D32'; // Vert foncé
-    };
 
-    const maxScore = availableResponses.length > 0
-        ? Math.max(...availableResponses.map(r => r.score))
-        : 0;
 
     const currentQuestion = questions[currentQuestionIndex];
     const currentResponse = responses[currentQuestion?.idQuestion];
@@ -188,27 +176,33 @@ export default function QuestionsScreen() {
             <View style={styles.likertContainer}>
                 {loadingResponses ? (
                     <ActivityIndicator size="large" color={colors.COULEUR_HEADER_BLEU} />
-                ) : (
+                ) : Array.isArray(availableResponses) && availableResponses.length > 0 ? (
                     availableResponses.map((response) => (
                         <TouchableOpacity
                             key={response.idReponse}
                             style={[
-                                styles.likertOption,
-                                currentResponse === response.idReponse && styles.likertOptionSelected,
+                                styles.responseOption,
+                                currentResponse === response.idReponse && styles.responseOptionSelected,
                             ]}
                             onPress={() => handleResponseSelect(response.idReponse)}
                         >
-                            <View style={[styles.likertCircle, { backgroundColor: getColorForScore(response.score, maxScore) }]} />
                             <Text
                                 style={[
-                                    styles.likertLabel,
-                                    currentResponse === response.idReponse && styles.likertLabelSelected,
+                                    styles.responseText,
+                                    currentResponse === response.idReponse && styles.responseTextSelected,
                                 ]}
                             >
                                 {response.texte}
                             </Text>
+                            {currentResponse === response.idReponse && (
+                                <View style={styles.checkmark}>
+                                    <Text style={styles.checkmarkText}>✓</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                     ))
+                ) : (
+                    <Text style={styles.emptyText}>Aucune réponse disponible pour cette question</Text>
                 )}
             </View>
 
@@ -297,52 +291,53 @@ const styles = StyleSheet.create({
     likertContainer: {
         marginBottom: 30,
     },
-    likertOption: {
+    responseOption: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         backgroundColor: colors.COULEUR_WHITE,
-        borderRadius: 12,
-        padding: 16,
+        borderRadius: 16,
+        padding: 20,
         marginBottom: 12,
         borderWidth: 2,
-        borderColor: '#E0E0E0',
+        borderColor: '#E8E8E8',
         shadowColor: colors.COULEUR_BLACK,
         shadowOffset: {
             width: 0,
-            height: 1,
+            height: 2,
         },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 2,
-    },
-    likertOptionSelected: {
-        borderColor: colors.COULEUR_HEADER_BLEU,
-        backgroundColor: '#E3F2FD',
-    },
-    likertCircle: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        marginRight: 16,
-        borderWidth: 2,
-        borderColor: colors.COULEUR_WHITE,
-        shadowColor: colors.COULEUR_BLACK,
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
         elevation: 3,
     },
-    likertLabel: {
+    responseOptionSelected: {
+        borderColor: colors.COULEUR_HEADER_BLEU,
+        backgroundColor: '#F0F7FF',
+        borderWidth: 2,
+    },
+    responseText: {
         flex: 1,
         fontSize: 16,
         color: colors.COULEUR_TEXT_DARK,
+        lineHeight: 22,
     },
-    likertLabelSelected: {
+    responseTextSelected: {
         fontWeight: '600',
         color: colors.COULEUR_HEADER_BLEU,
+    },
+    checkmark: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: colors.COULEUR_HEADER_BLEU,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 12,
+    },
+    checkmarkText: {
+        color: colors.COULEUR_WHITE,
+        fontSize: 18,
+        fontWeight: 'bold',
     },
     navigationContainer: {
         flexDirection: 'row',
