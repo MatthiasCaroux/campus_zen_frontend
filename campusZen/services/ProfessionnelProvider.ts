@@ -1,10 +1,11 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../config/endpoints";
+import { getAccessToken } from "./SecureStorage";
 
 export async function getProfessionnels () {
   try {
-    const token = await AsyncStorage.getItem("accessToken");
+    const token = await getAccessToken();
     if (token === null) {
       throw new Error("Token d'accès manquant");
     }
@@ -21,7 +22,7 @@ export async function getProfessionnels () {
 
 export async function getProfessionnelsById (id: number) {
   try {
-    const token = await AsyncStorage.getItem("accessToken");
+    const token = await getAccessToken();
     if (token === null) {
       throw new Error("Token d'accès manquant");
     }
