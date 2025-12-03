@@ -11,6 +11,7 @@ import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
 import QuestionnaireScreen from "./screens/QuestionnaireScreen";
 import ConsultEtatScreen from "./screens/ConsultEtatScreen";
+import RessourcesScreen from "./screens/RessourcesScreen";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -49,6 +50,7 @@ export default function MainTabs() {
           else if (route.name === "Calendrier") iconName = focused ? "calendar" : "calendar-outline";
           else if (route.name === "Stats") iconName = focused ? "stats-chart" : "stats-chart-outline";
           else if (route.name === "Compte") iconName = focused ? "person" : "person-outline";
+          else if (route.name === "Ressources") iconName = focused ? "book" : "book-outline";
           else iconName = "help-outline";
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -69,6 +71,7 @@ export default function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeStackNavigator} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
       <Tab.Screen name="Maps" component={MapsScreen} options={{ title: "Maps", tabBarLabel: "Maps" }} />
+      <Tab.Screen name="Ressources" component={RessourcesScreen} options={{ title: "Ressources", tabBarLabel: "Ressources" }} />
       <Tab.Screen name="Calendrier" component={CalendrierScreen} options={{ title: "Calendrier", tabBarLabel: "Calendrier" }} />
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
       <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
