@@ -4,10 +4,13 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from '../src/context/LanguageContext';
 
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
+
   return (
     <LinearGradient
       colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
@@ -23,8 +26,7 @@ export default function HomeScreen() {
 
           <Text style={styles.appTitle}>CampusZen</Text>
           <Text style={styles.motivationalMessage}>
-            chaque jour est une nouvelle{'\n'}
-            chance de prendre soin de toi.
+            {t('motivational_message')}
           </Text>
         </View>
 
@@ -35,23 +37,23 @@ export default function HomeScreen() {
             navigation.navigate('ConsultEtat');
           }}
         >
-          <Text style={styles.consultButtonText}>Consulter mon état</Text>
+          <Text style={styles.consultButtonText}>{t('consult_status')}</Text>
         </TouchableOpacity>
 
         {/* Section Ce soir */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Ce soir</Text>
-          <TouchableOpacity 
+          <Text style={styles.sectionTitle}>{t('tonight')}</Text>
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate('Questionnaire')}>
-              
-            <Text style={styles.actionButtonText}>Évaluer mon bien-être</Text>
+
+            <Text style={styles.actionButtonText}>{t('evaluate_wellbeing')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Section Aujourd'hui */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Aujourd'hui</Text>
+          <Text style={styles.sectionTitle}>{t('today')}</Text>
 
           <TouchableOpacity style={styles.videoButton}>
             <View style={styles.buttonContent}>
@@ -59,7 +61,7 @@ export default function HomeScreen() {
                 <Ionicons name="logo-youtube" size={20} color={colors.COULEUR_WHITE} />
               </View>
               <Text style={styles.videoButtonText}>
-                Voir une vidéo de 5 min sur{'\n'}le bien-être
+                {t('watch_video')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -69,7 +71,7 @@ export default function HomeScreen() {
               <View style={styles.youtubeIcon}>
                 <Ionicons name="logo-youtube" size={20} color={colors.COULEUR_WHITE} />
               </View>
-              <Text style={styles.podcastButtonText}>écouter un podcast</Text>
+              <Text style={styles.podcastButtonText}>{t('listen_podcast')}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -108,23 +110,23 @@ const styles = StyleSheet.create({
   appTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-  color: colors.COULEUR_WHITE,
+    color: colors.COULEUR_WHITE,
     marginBottom: 15,
   },
   motivationalMessage: {
     fontSize: 16,
-  color: colors.COULEUR_WHITE,
+    color: colors.COULEUR_WHITE,
     textAlign: 'center',
     lineHeight: 22,
     opacity: 0.9,
   },
   consultButton: {
-  backgroundColor: colors.COULEUR_WHITE,
+    backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 30,
     marginBottom: 30,
-  shadowColor: colors.COULEUR_BLACK,
+    shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
   consultButtonText: {
     fontSize: 16,
     fontWeight: '600',
-  color: colors.COULEUR_TEXT_DARK,
+    color: colors.COULEUR_TEXT_DARK,
     textAlign: 'center',
   },
   sectionContainer: {
@@ -145,16 +147,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-  color: colors.COULEUR_WHITE,
+    color: colors.COULEUR_WHITE,
     marginBottom: 15,
   },
   actionButton: {
-  backgroundColor: colors.COULEUR_WHITE,
+    backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginBottom: 10,
-  shadowColor: colors.COULEUR_BLACK,
+    shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -166,16 +168,16 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 16,
     fontWeight: '500',
-  color: colors.COULEUR_TEXT_DARK,
+    color: colors.COULEUR_TEXT_DARK,
     textAlign: 'center',
   },
   videoButton: {
-  backgroundColor: colors.COULEUR_WHITE,
+    backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginBottom: 10,
-  shadowColor: colors.COULEUR_BLACK,
+    shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -185,11 +187,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   podcastButton: {
-  backgroundColor: colors.COULEUR_WHITE,
+    backgroundColor: colors.COULEUR_WHITE,
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 20,
-  shadowColor: colors.COULEUR_BLACK,
+    shadowColor: colors.COULEUR_BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -203,14 +205,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   youtubeIcon: {
-  backgroundColor: colors.COULEUR_YOUTUBE,
+    backgroundColor: colors.COULEUR_YOUTUBE,
     borderRadius: 4,
     padding: 4,
     marginRight: 15,
   },
   videoButtonText: {
     fontSize: 15,
-  color: colors.COULEUR_TEXT_DARK,
+    color: colors.COULEUR_TEXT_DARK,
     fontWeight: '500',
     flex: 1,
   },

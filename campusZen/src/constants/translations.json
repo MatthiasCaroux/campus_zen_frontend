@@ -1,0 +1,66 @@
+{
+    "welcome": {
+        "fr": "Bienvenue",
+        "en": "Welcome"
+    },
+    "hello": {
+        "fr": "Bonjour",
+        "en": "Hello"
+    },
+    "change_language": {
+        "fr": "Changer de langue",
+        "en": "Change Language"
+    },
+    "login_title": {
+        "fr": "Se Connecter",
+        "en": "Login"
+    },
+    "email_placeholder": {
+        "fr": "Email",
+        "en": "Email"
+    },
+    "password_placeholder": {
+        "fr": "Mot de passe",
+        "en": "Password"
+    },
+    "login_button": {
+        "fr": "Se connecter",
+        "en": "Log In"
+    },
+    "no_account": {
+        "fr": "Pas encore de compte ?",
+        "en": "No account yet?"
+    },
+    "register_link": {
+        "fr": "S’inscrire",
+        "en": "Sign Up"
+    },
+    "motivational_message": {
+        "fr": "chaque jour est une nouvelle\nchance de prendre soin de toi.",
+        "en": "every day is a new\nchance to take care of yourself."
+    },
+    "consult_status": {
+        "fr": "Consulter mon état",
+        "en": "Check my status"
+    },
+    "tonight": {
+        "fr": "Ce soir",
+        "en": "Tonight"
+    },
+    "evaluate_wellbeing": {
+        "fr": "Évaluer mon bien-être",
+        "en": "Evaluate my well-being"
+    },
+    "today": {
+        "fr": "Aujourd'hui",
+        "en": "Today"
+    },
+    "watch_video": {
+        "fr": "Voir une vidéo de 5 min sur\nle bien-être",
+        "en": "Watch a 5 min video on\nwell-being"
+    },
+    "listen_podcast": {
+        "fr": "écouter un podcast",
+        "en": "listen to a podcast"
+    }
+}

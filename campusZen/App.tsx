@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 
 import { AuthProvider, AuthContext } from "./context/AuthContext";
+import { LanguageProvider } from "./src/context/LanguageContext";
 import MainTabs from "./MainTabs";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
@@ -15,7 +16,7 @@ const accessTokenDuration = 60 * 60 * 1000;
 
 function AppNavigator() {
   const { isAuthenticated, setIsAuthenticated, logout, setAccessToken } = useContext(AuthContext);
-  const [user, setUser] = useState<any>(null); 
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -86,7 +87,9 @@ function AppNavigator() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppNavigator />
+      <LanguageProvider>
+        <AppNavigator />
+      </LanguageProvider>
     </AuthProvider>
   );
 }
