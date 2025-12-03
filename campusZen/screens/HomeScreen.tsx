@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as colors from "../src/theme/colors.js";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
+  const [loadingQuestionnaire, setLoadingQuestionnaire] = useState(false);
   return (
     <LinearGradient
       colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
@@ -41,11 +42,38 @@ export default function HomeScreen() {
         {/* Section Ce soir */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Ce soir</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => navigation.navigate('Questionnaire')}>
-              
-            <Text style={styles.actionButtonText}>Évaluer mon bien-être</Text>
+            onPress={async () => {
+              try {
+                setLoadingQuestionnaire(true);
+                const response = await fetch('https://campuszenbackend-prod.up.railway.app/api/questionnaires');
+                if (!response.ok) throw new Error('Erreur lors de la récupération des questionnaires');
+                const data = await response.json();
+                if (!Array.isArray(data) || data.length === 0) {
+                  Alert.alert('Aucun questionnaire', "Aucun questionnaire n'est disponible pour le moment.");
+                  return;
+                }
+                const randomIndex = Math.floor(Math.random() * data.length);
+                const idQuestionnaire = data[randomIndex].idQuestionnaire ?? data[randomIndex].id ?? null;
+                if (!idQuestionnaire) {
+                  Alert.alert('Erreur', 'Identifiant du questionnaire introuvable.');
+                  return;
+                }
+                navigation.navigate('Questions', { idQuestionnaire });
+              } catch (err) {
+                console.error(err);
+                Alert.alert('Erreur', 'Impossible de lancer le questionnaire. Veuillez réessayer.');
+              } finally {
+                setLoadingQuestionnaire(false);
+              }
+            }}
+          >
+            {loadingQuestionnaire ? (
+              <ActivityIndicator color={colors.COULEUR_HEADER_BLEU} />
+            ) : (
+              <Text style={styles.actionButtonText}>Évaluer mon bien-être</Text>
+            )}
           </TouchableOpacity>
         </View>
 

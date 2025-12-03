@@ -10,6 +10,8 @@ import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
 import QuestionnaireScreen from "./screens/QuestionnaireScreen";
+import QuestionsScreen from "./screens/QuestionsScreen";
+import QuestionnaireCompletedScreen from "./screens/QuestionnaireCompletedScreen";
 import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 
 const Tab = createBottomTabNavigator();
@@ -27,6 +29,16 @@ function HomeStackNavigator() {
         name="Questionnaire"
         component={QuestionnaireScreen}
         options={{ title: "Questionnaire" }}
+      />
+      <HomeStack.Screen
+        name="Questions"
+        component={QuestionsScreen}
+        options={{ title: "Questions" }}
+      />
+      <HomeStack.Screen
+        name="QuestionnaireCompleted"
+        component={QuestionnaireCompletedScreen}
+        options={{ title: "Terminé", headerShown: false }}
       />
       <HomeStack.Screen
         name="ConsultEtat"

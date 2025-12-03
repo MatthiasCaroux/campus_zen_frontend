@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as colors from "../src/theme/colors.js";
 
 type Questionnaire = {
@@ -8,7 +10,12 @@ type Questionnaire = {
   descriptionQuestionnaire: string;
 };
 
+type RootStackParamList = {
+  Questions: { idQuestionnaire: number };
+};
+
 export default function QuestionnaireScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,8 +44,15 @@ export default function QuestionnaireScreen() {
     }
   };
 
+  const handleQuestionnairePress = (idQuestionnaire: number) => {
+    navigation.navigate('Questions', { idQuestionnaire });
+  };
+
   const renderQuestionnaireItem = ({ item }: { item: Questionnaire }) => (
-    <TouchableOpacity style={styles.questionnaireCard}>
+    <TouchableOpacity
+      style={styles.questionnaireCard}
+      onPress={() => handleQuestionnairePress(item.idQuestionnaire)}
+    >
       <Text style={styles.questionnaireName}>{item.nomQuestionnaire}</Text>
       <Text style={styles.questionnaireDescription}>{item.descriptionQuestionnaire}</Text>
     </TouchableOpacity>
