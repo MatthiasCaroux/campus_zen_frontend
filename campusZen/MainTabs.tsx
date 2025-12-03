@@ -37,7 +37,7 @@ function MapsStack() {
 
 function HomeStackNavigator() {
   return (
-    <HomeStack.Navigator>
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen
         name="HomeMain"
         component={HomeScreen}
@@ -76,15 +76,16 @@ export default function MainTabs() {
         },
         tabBarActiveTintColor: "#007AFF",
         tabBarInactiveTintColor: "gray",
-        headerStyle: { backgroundColor: "#007AFF" },
-        headerTintColor: "white",
-        headerTitleAlign: "center",
-        headerTitle: () => (
-          <Image
-            source={require("./assets/logo.png")}
-            style={{ width: 40, height: 40, resizeMode: "contain" }}
-          />
-        ),
+        headerShown: false,
+        // headerStyle: { backgroundColor: "#007AFF" },
+        // headerTintColor: "white",
+        // headerTitleAlign: "center",
+        // headerTitle: () => (
+        //   <Image
+        //     source={require("./assets/logo.png")}
+        //     style={{ width: 40, height: 40, resizeMode: "contain" }}
+        //   />
+        // ),
       })}
       
     >
