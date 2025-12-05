@@ -188,5 +188,38 @@ export const mapStyles = StyleSheet.create({
     fontWeight: '600',
     color: '#007AFF',
   },
+  recenterButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#fff',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  recenterButtonText: {
+    fontSize: 24,
+  },
+  dragHandleContainer: {
+    width: "100%",
+    alignItems: "center",
+    paddingTop: 6,
+    paddingBottom: 4,
+    backgroundColor: COULEUR_FOND_BLEU,
+  },
+
+  dragHandle: {
+    width: 50,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#ccc",
+  },
 });
 
