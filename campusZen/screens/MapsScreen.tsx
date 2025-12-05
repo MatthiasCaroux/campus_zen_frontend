@@ -6,6 +6,7 @@ import Professionnel from '../types/Professionnel';
 import { useProfessionnels } from '../hooks/useProfessionnels';
 import { mapStyles } from '../src/screenStyles/MapsStyle';
 import { useNavigation } from '@react-navigation/native';
+import { getStoredUser } from '../services/AuthService';
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const COLLAPSED_PERCENT = 0.50; 
@@ -35,9 +36,19 @@ export default function MapsScreen() {
 
   const sheetY = useRef(new Animated.Value(minY)).current;
   
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     sheetY.setValue(minY);
+    const fetchUser = async () => {
+      const userData = await getStoredUser();
+      if (userData) {
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    };
+    fetchUser();
   }, []);
 
     const lastY = useRef(minY);
@@ -244,6 +255,15 @@ export default function MapsScreen() {
       <View style={mapStyles.listHeader}>
         <Text style={mapStyles.listTitle}>Liste des professionnels</Text>
         <Text style={mapStyles.listSubtitle}>Sélectionne un professionnel pour centrer la carte</Text>
+
+        {user && user.role == "admin" && (
+          <TouchableOpacity
+            style={mapStyles.addButton}
+            onPress={() => navigation.navigate('ProFormScreen')} // Remplace par le screen d'ajout pro
+          >
+            <Text style={mapStyles.addButtonText}>+ Ajouter</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={mapStyles.scrollView} contentContainerStyle={mapStyles.scrollContent}>
@@ -272,6 +292,15 @@ export default function MapsScreen() {
       <View style={mapStyles.listHeader}>
         <Text style={mapStyles.listTitle}>Liste des professionnels</Text>
         <Text style={mapStyles.listSubtitle}>Sélectionne un professionnel pour centrer la carte</Text>
+
+          {user && user.role == "admin" && (
+          <TouchableOpacity
+            style={mapStyles.addButton}
+            onPress={() => navigation.navigate('RessourceFormScreen')} // Remplace par le screen d'ajout pro
+          >
+            <Text style={mapStyles.addButtonText}>+ Ajouter</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={mapStyles.scrollView} contentContainerStyle={mapStyles.scrollContent}>

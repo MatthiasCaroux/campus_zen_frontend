@@ -14,6 +14,7 @@ import QuestionnaireScreen from "./screens/QuestionnaireScreen";
 import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 import RessourcesScreen from "./screens/RessourcesScreen";
 import RessourceFormScreen from "./screens/RessourceFormScreen";
+import ProFormScreen from "./screens/ProFormScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -30,6 +31,11 @@ function MapsStack() {
       <Stack.Screen 
         name="ProDetailsScreen" 
         component={ProDetailsScreen} 
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="ProFormScreen" 
+        component={ProFormScreen} 
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

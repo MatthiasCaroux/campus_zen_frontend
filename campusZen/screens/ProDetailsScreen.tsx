@@ -4,6 +4,8 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import Professionnel from '../types/Professionnel';
 import { proDetailsStyles } from '../src/screenStyles/ProDetailsStyle';
 import { getProfessionnelsById } from '../services/ProfessionnelProvider';
+import { getStoredUser } from '../services/AuthService';
+import { Ionicons } from '@expo/vector-icons';
 
 type ProDetailsRouteProp = RouteProp<{ ProDetails: { proId: number } }, 'ProDetails'>;
 
@@ -14,6 +16,8 @@ export default function ProDetailsScreen() {
 
   const [professionnel, setProfessionnel] = useState<Professionnel | null>(null);
 
+  const [user, setUser] = useState<any>(null);
+
   useEffect(() => {
     async function fetchProfessionnel() {
       try {
@@ -23,6 +27,15 @@ export default function ProDetailsScreen() {
         console.error("Erreur lors de la récupération des détails du professionnel :", error);
       }
     }
+    const fetchUser = async () => {
+        const userData = await getStoredUser();
+        if (userData) {
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      };
+    fetchUser();
     fetchProfessionnel();
   }, [proId]);
 
@@ -71,9 +84,20 @@ export default function ProDetailsScreen() {
           style={proDetailsStyles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={proDetailsStyles.backButtonText}>← Retour</Text>
+          <Text style={proDetailsStyles.backButtonText}><Ionicons name="arrow-back" size={22}/> Retour</Text>
         </TouchableOpacity>
+        {/*
         <Text style={proDetailsStyles.headerTitle}>Détails du professionnel</Text>
+        */}
+
+        {user && user.role == "admin" && (
+          <TouchableOpacity
+            style={proDetailsStyles.editButton}
+            onPress={() => navigation.navigate('ProFormScreen', { proId: professionnel?.idPro })}
+          >
+            <Text style={proDetailsStyles.editButtonText}><Ionicons name="create-outline" size={22}/> Modifier</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={proDetailsStyles.scrollView} contentContainerStyle={proDetailsStyles.scrollContent}>
