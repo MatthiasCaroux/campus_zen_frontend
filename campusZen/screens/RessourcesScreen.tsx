@@ -1,8 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRessources } from "../hooks/useRessources";
 import { ressourcesStyles } from "../src/screenStyles/RessourcesStyle";
+import { getStoredUser } from "../services/AuthService";
+import { useNavigation } from "@react-navigation/native";
 
 const FILTERS = [
     { value: "all", label: "Tout" },
@@ -20,6 +22,20 @@ export default function RessourcesScreen() {
     const { ressources, loading } = useRessources();
     const [search, setSearch] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
+    const [user, setUser] = useState<any>(null);
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const userData = await getStoredUser();
+            if (userData) {
+                setUser(userData);
+            } else {
+                setUser(null);
+            }
+        };
+        fetchUser();
+    }, []);
 
     const getIcon = (type: string) => {
         switch (type) {
@@ -59,19 +75,31 @@ export default function RessourcesScreen() {
     return (
         <ScrollView contentContainerStyle={ressourcesStyles.container}>
 
-            {/* BARRE DE RECHERCHE */}
-            <View style={ressourcesStyles.searchContainer}>
-                <Ionicons name="search-outline" size={20} color="#666" />
-                <TextInput
-                    style={ressourcesStyles.searchInput}
-                    placeholder="Rechercher une ressource..."
-                    value={search}
-                    onChangeText={setSearch}
-                    placeholderTextColor="#999"
-                />
-                {search.length > 0 && (
-                    <TouchableOpacity onPress={() => setSearch("")}>
-                        <Ionicons name="close-circle" size={20} color="#999" />
+            <View style={ressourcesStyles.searchRow}>
+
+                {/* BARRE DE RECHERCHE */}
+                <View style={ressourcesStyles.searchContainer}>
+                    <Ionicons name="search-outline" size={20} color="#666" />
+                    <TextInput
+                        style={ressourcesStyles.searchInput}
+                        placeholder="Rechercher une ressource..."
+                        value={search}
+                        onChangeText={setSearch}
+                        placeholderTextColor="#999"
+                    />
+                    {search.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearch("")}>
+                            <Ionicons name="close-circle" size={20} color="#999" />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {user && user.role === "admin" && (
+                    <TouchableOpacity
+                        style={ressourcesStyles.addButton}
+                        onPress={() => navigation.navigate("RessourceForm")}
+                    >
+                        <Ionicons name="add-circle-outline" size={32} color="#3366FF" />
                     </TouchableOpacity>
                 )}
             </View>
@@ -116,9 +144,22 @@ export default function RessourcesScreen() {
                     <Text style={ressourcesStyles.title}>{ressource.titreR}</Text>
                     <Text style={ressourcesStyles.description}>{ressource.descriptionR}</Text>
 
-                    <TouchableOpacity onPress={() => Linking.openURL(ressource.lienR)}>
-                        <Text style={ressourcesStyles.link}>Voir la ressource →</Text>
-                    </TouchableOpacity>
+                    <View style={ressourcesStyles.linkRow}>
+                        <TouchableOpacity onPress={() => Linking.openURL(ressource.lienR)}>
+                            <Text style={ressourcesStyles.link}>Voir la ressource →</Text>
+                        </TouchableOpacity>
+
+                        {user && user.role === "admin" && (
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate("RessourceForm", { ressourceId: ressource.idR })}
+                            >
+                                <Text style={ressourcesStyles.editLink}>
+                                    <Ionicons name="create-outline" size={22}/>
+                                    Modifier
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
                 </View>
             ))}
 

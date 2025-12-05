@@ -4,7 +4,7 @@ export const ressourcesStyles = StyleSheet.create({
     container: {
         padding: 20,
         gap: 20,
-        alignItems: "center",
+        alignItems: "stretch",
     },
 
     loadingContainer: {
@@ -21,14 +21,15 @@ export const ressourcesStyles = StyleSheet.create({
 
     // 🔍 SEARCH BAR
     searchContainer: {
+        flex: 1,
         flexDirection: "row",
+        flexShrink: 1,
+        minWidth: 0,
         backgroundColor: "#fff",
         alignItems: "center",
         paddingHorizontal: 15,
         paddingVertical: 12,
         borderRadius: 14,
-        width: "100%",
-        maxWidth: 500,
         gap: 10,
 
         shadowColor: "#000",
@@ -42,6 +43,25 @@ export const ressourcesStyles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         color: "#333",
+    },
+
+    titlePage: {
+        fontSize: 22,
+        fontWeight: "700",
+        color: "#222",
+    },
+
+    searchRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%",
+        gap: 12,
+    },
+
+    addButton: {
+        flexShrink: 0,
+        justifyContent: "center",
+        alignItems: "center",
     },
 
     // 🎛️ FILTERS
@@ -113,6 +133,20 @@ export const ressourcesStyles = StyleSheet.create({
         color: "#555",
         marginBottom: 15,
         lineHeight: 22,
+    },
+
+    linkRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+
+    editLink: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#3366FF",
+        /* color: "#FF8800",*/
+        marginLeft: 15,
     },
 
     link: {
