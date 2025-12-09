@@ -5,6 +5,7 @@ export const proDetailsStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  /*
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -21,9 +22,17 @@ export const proDetailsStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
+  */
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    gap: 15,
+    justifyContent: 'space-between',
+  },
   backButton: {
     /* marginBottom: 10,*/
-    marginTop: 10,
+    /* marginTop: 10,*/
   },
   backButtonText: {
     fontSize: 16,
@@ -140,13 +149,22 @@ export const proDetailsStyles = StyleSheet.create({
     fontSize: 16,
   },
   editButton: {
+    /*
     marginTop: 10,
     alignItems: 'flex-end',
+    */
+   padding: 5,
   },
   editButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#007AFF',
+    alignItems: 'center',
+  },
+
+  editButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6, 
   },
 });
 

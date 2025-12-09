@@ -81,10 +81,9 @@ export default function ProDetailsScreen() {
       {/* Header */}
       <View style={proDetailsStyles.header}>
         <TouchableOpacity 
-          style={proDetailsStyles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={proDetailsStyles.backButtonText}><Ionicons name="arrow-back" size={22}/> Retour</Text>
+          <Ionicons name="arrow-back" size={28} color="#333" />
         </TouchableOpacity>
         {/*
         <Text style={proDetailsStyles.headerTitle}>Détails du professionnel</Text>
@@ -92,10 +91,13 @@ export default function ProDetailsScreen() {
 
         {user && user.role == "admin" && (
           <TouchableOpacity
-            style={proDetailsStyles.editButton}
+          style={proDetailsStyles.editButton}
             onPress={() => navigation.navigate('ProFormScreen', { proId: professionnel?.idPro })}
           >
-            <Text style={proDetailsStyles.editButtonText}><Ionicons name="create-outline" size={22}/> Modifier</Text>
+            <View style={proDetailsStyles.editButtonContent}>
+              <Text style={proDetailsStyles.editButtonText}>Modifier</Text>
+              <Ionicons name="create-outline" size={28}/>
+            </View>
           </TouchableOpacity>
         )}
       </View>
