@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -11,10 +11,24 @@ import {
 import apiClient from "../config/axiosConfig";
 import { useNavigation } from "@react-navigation/native";
 
-export default function QuestionnaireScreen() {
+export default function QuestionnaireScreen({ route }: any) {
     const [nomQuestionnaire, setNomQuestionnaire] = useState("");
     const [descriptionQuestionnaire, setDescriptionQuestionnaire] = useState("");
     const [loading, setLoading] = useState(false);
+    const isEdit = route?.params?.mode === "edit";
+    const editId =
+        route?.params?.questionnaireId ??
+        route?.params?.questionnaire?.idQuestionnaire ??
+        route?.params?.questionnaire?.id;
+
+    useEffect(() => {
+        if (isEdit && route?.params?.questionnaire) {
+            const q = route.params.questionnaire;
+            setNomQuestionnaire(q?.nomQuestionnaire ?? "");
+            setDescriptionQuestionnaire(q?.descriptionQuestionnaire ?? "");
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isEdit]);
 
     const handleSubmit = async () => {
         if (!nomQuestionnaire.trim()) {
@@ -27,18 +41,34 @@ export default function QuestionnaireScreen() {
             const payload = { nomQuestionnaire: nomQuestionnaire.trim(), descriptionQuestionnaire: descriptionQuestionnaire.trim() };
             console.log("Sending questionnaire payload:", payload);
 
-            const response = await apiClient.post("/questionnaires/", payload, {
-                headers: { Accept: "application/json" },
-            });
+            let response;
+            if (isEdit && editId) {
+                try {
+                    response = await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json" } });
+                } catch (e1: any) {
+                    const st = e1?.response?.status;
+                    if (st === 404 || st === 405) {
+                        response = await apiClient.put(`/questionnaire/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json" } });
+                    } else {
+                        throw e1;
+                    }
+                }
+            } else {
+                response = await apiClient.post("/questionnaires/", payload, { headers: { Accept: "application/json" } });
+            }
 
             setLoading(false);
-            Alert.alert("Succès", "Questionnaire créé avec succès.");
+                            console.log("Delete questionnaire button pressed", { editId });
+            Alert.alert("Succès", isEdit ? "Questionnaire modifié avec succès." : "Questionnaire créé avec succès.");
             // Reset form
-            setNomQuestionnaire("");
-            setDescriptionQuestionnaire("");
+            if (!isEdit) {
+                setNomQuestionnaire("");
+                setDescriptionQuestionnaire("");
+            }
             console.log("API response status:", response.status);
             console.log("API response data:", response.data);
         } catch (error: any) {
+                                            console.log("Delete confirmation accepted", { editId });
             setLoading(false);
             console.error("Erreur lors de l'envoi du questionnaire:", error);
 
@@ -66,8 +96,12 @@ export default function QuestionnaireScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Questionnaire</Text>
+            <Text style={styles.title}>{isEdit ? "Modifier un questionnaire" : "Questionnaire"}</Text>
             <Text style={styles.subtitle}>Participez à notre questionnaire pour améliorer votre expérience</Text>
+
+            <View style={{ marginBottom: 12 }}>
+                <Button title="Retour" onPress={() => navigation.goBack()} color="#6c757d" />
+            </View>
 
             <View style={styles.formGroup}>
                 <Text style={styles.label}>Nom du questionnaire</Text>
@@ -96,16 +130,79 @@ export default function QuestionnaireScreen() {
             {loading ? (
                 <ActivityIndicator size="small" color="#007AFF" />
             ) : (
-                <Button title="Envoyer" onPress={handleSubmit} color="#007AFF" />
+                <Button title={isEdit ? "Enregistrer" : "Envoyer"} onPress={handleSubmit} color="#007AFF" />
+            )}
+            {!isEdit && (
+                <Button
+                    title="Liste des questionnaires"
+                    onPress={() => {
+                        navigation.navigate("QuestionnaireList");
+                    }}
+                    color="#007AFF"
+                />
             )}
 
-            <Button
-                title="Liste des questionnaires"
-                onPress={() => {
-                    navigation.navigate("QuestionnaireList");
-                }}
-                color="#007AFF"
-            />
+            {isEdit && editId && !loading && (
+                <View style={{ marginTop: 12 }}>
+                    <Button
+                        title="Supprimer ce questionnaire"
+                        onPress={() => {
+                            Alert.alert(
+                                "Confirmation",
+                                "Supprimer ce questionnaire ?",
+                                [
+                                    { text: "Annuler", style: "cancel" },
+                                    {
+                                        text: "Supprimer",
+                                        style: "destructive",
+                                        onPress: async () => {
+                                            console.log("[DELETE] Tentative suppression questionnaire", { editId });
+                                            try {
+                                                setLoading(true);
+                                                let success = false;
+                                                try {
+                                                    console.log("[DELETE] Essai /questionnaires/{id}/");
+                                                    await apiClient.delete(`/questionnaires/${editId}/`);
+                                                    console.log("[DELETE] Succès /questionnaires/{id}/");
+                                                    success = true;
+                                                } catch (e1: any) {
+                                                    const st = e1?.response?.status;
+                                                    console.log("[DELETE] Erreur /questionnaires/{id}/", { status: st });
+                                                    if (st === 404 || st === 405) {
+                                                        try {
+                                                            console.log("[DELETE] Essai /questionnaire/{id}/");
+                                                            await apiClient.delete(`/questionnaire/${editId}/`);
+                                                            console.log("[DELETE] Succès /questionnaire/{id}/");
+                                                            success = true;
+                                                        } catch (e2: any) {
+                                                            console.log("[DELETE] Erreur /questionnaire/{id}/", { status: e2?.response?.status });
+                                                            throw e2;
+                                                        }
+                                                    } else {
+                                                        throw e1;
+                                                    }
+                                                }
+                                                setLoading(false);
+                                                if (success) {
+                                                    Alert.alert("Succès", "Questionnaire supprimé.");
+                                                    navigation.navigate("QuestionnaireList");
+                                                }
+                                            } catch (e: any) {
+                                                setLoading(false);
+                                                const status = e?.response?.status;
+                                                const body = typeof e?.response?.data === "string" ? e.response.data.slice(0, 400) : JSON.stringify(e?.response?.data ?? {});
+                                                console.log("[DELETE] Erreur finale", { status, body });
+                                                Alert.alert("Erreur", status ? `Erreur serveur ${status}` : "Suppression impossible");
+                                            }
+                                        },
+                                    },
+                                ]
+                            );
+                        }}
+                        color="#FF3B30"
+                    />
+                </View>
+            )}
         </View>
     );
 }
