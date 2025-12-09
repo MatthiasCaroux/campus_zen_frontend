@@ -17,8 +17,12 @@ export default function LoginScreen({ navigation }: any) {
       await setUser(user);
       await login(data.access, data.refresh);
       setMessage("Connexion réussie ✅");
-    } catch {
-      setMessage("Erreur de connexion ❌");
+    } catch (error: any) {
+      if (error?.response?.data?.detail?.[0]) {
+        setMessage(error.response.data.detail[0] + " ❌");
+      } else {
+        setMessage("Erreur de connexion ❌");
+      }
     }
   };
 
