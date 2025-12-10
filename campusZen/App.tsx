@@ -16,7 +16,7 @@ const Stack = createNativeStackNavigator();
 const accessTokenDuration = 60 * 60 * 1000;
 
 function AppNavigator() {
-  const { isAuthenticated, setIsAuthenticated, logout, setAccessToken } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, logout } = useContext(AuthContext);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -51,13 +51,13 @@ function AppNavigator() {
 
         const newAccessToken = await refreshToken(tokenRefresh);
         if (newAccessToken.access) {
-          console.log("Token d'accès rafraîchi avec succès.");
           await setAccessToken(newAccessToken.access);
           await AsyncStorage.setItem("user", JSON.stringify({
             ...data,
             endAccess: new Date(Date.now() + accessTokenDuration),
           }));
           setIsAuthenticated(true);
+          console.log("Token d'accès rafraîchi avec succès.");
         } else {
           console.log("Échec du rafraîchissement du token d'accès. Veuillez vous reconnecter.");
           setIsAuthenticated(false);
