@@ -10,6 +10,7 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import { getStoredUser, refreshToken } from "./services/AuthService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRefreshToken, setAccessToken } from "./services/SecureStorage";
 
 const Stack = createNativeStackNavigator();
 const accessTokenDuration = 60 * 60 * 1000;
@@ -41,7 +42,7 @@ function AppNavigator() {
         console.log("Le token de rafraîchissement a expiré. Veuillez vous reconnecter.");
         logout();
       } else if (now >= endAccess) {
-        const tokenRefresh = await AsyncStorage.getItem("refreshToken");
+        const tokenRefresh = await getRefreshToken();
         if (!tokenRefresh) {
           console.log("Aucun token de rafraîchissement trouvé. Veuillez vous reconnecter.");
           setIsAuthenticated(false);

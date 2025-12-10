@@ -5,9 +5,13 @@ export const proDetailsStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  /*
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#fff',
-    paddingTop: 15,// 50,
+    paddingTop: 15, 
     paddingBottom: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
@@ -18,8 +22,17 @@ export const proDetailsStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
+  */
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    gap: 15,
+    justifyContent: 'space-between',
+  },
   backButton: {
-    marginBottom: 10,
+    /* marginBottom: 10,*/
+    /* marginTop: 10,*/
   },
   backButtonText: {
     fontSize: 16,
@@ -27,9 +40,11 @@ export const proDetailsStyles = StyleSheet.create({
     fontWeight: '500',
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
+    textAlign: 'center',
+    flex: 1,
   },
 
   // Scroll
@@ -132,6 +147,24 @@ export const proDetailsStyles = StyleSheet.create({
     color: "#333",
     marginTop: 10,
     fontSize: 16,
+  },
+  editButton: {
+    /*
+    marginTop: 10,
+    alignItems: 'flex-end',
+    */
+   padding: 5,
+  },
+  editButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    alignItems: 'center',
+  },
+
+  editButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6, 
   },
 });
 

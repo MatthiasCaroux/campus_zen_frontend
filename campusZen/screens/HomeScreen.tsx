@@ -1,15 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as colors from "../src/theme/colors.js";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../src/context/LanguageContext';
+import { getStoredUser, getStatuts } from '../services/AuthService';
 
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
+  const [showConsultEtat, setShowConsultEtat] = useState(false);
+
+  useEffect(() => {
+    const checkStatut = async () => {
+      try {
+        const user = await getStoredUser();
+        if (user && user.idPers) {
+          const statuts = await getStatuts();
+          const hasStatut = Array.isArray(statuts) && statuts.some((s) => s.personne === user.idPers);
+          setShowConsultEtat(hasStatut);
+        } else {
+          setShowConsultEtat(false);
+        }
+      } catch {
+        setShowConsultEtat(false);
+      }
+    };
+    checkStatut();
+  }, []);
 
   return (
     <LinearGradient
@@ -29,17 +49,17 @@ export default function HomeScreen() {
             {t('motivational_message')}
           </Text>
         </View>
-
-        {/* Bouton Consulter mon état */}
-        <TouchableOpacity
-          style={styles.consultButton}
-          onPress={() => {
-            navigation.navigate('ConsultEtat');
-          }}
-        >
-          <Text style={styles.consultButtonText}>{t('consult_status')}</Text>
-        </TouchableOpacity>
-
+        {/* Bouton Consulter mon état (affiché seulement si statut trouvé) */}
+        {showConsultEtat && (
+          <TouchableOpacity
+            style={styles.consultButton}
+            onPress={() => {
+              navigation.navigate('ConsultEtat');
+            }}
+          >
+            <Text style={styles.consultButtonText}>Consulter mon état</Text>
+          </TouchableOpacity>
+        )}
         {/* Section Ce soir */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>{t('tonight')}</Text>

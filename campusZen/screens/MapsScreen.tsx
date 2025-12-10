@@ -6,10 +6,18 @@ import Professionnel from '../types/Professionnel';
 import { useProfessionnels } from '../hooks/useProfessionnels';
 import { mapStyles } from '../src/screenStyles/MapsStyle';
 import { useNavigation } from '@react-navigation/native';
+import { getStoredUser } from '../services/AuthService';
+import * as Location from 'expo-location';
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
-const COLLAPSED_PERCENT = 0.50; 
+const COLLAPSED_PERCENT = 0.40; 
 const EXPANDED_PERCENT = 0.85;  
+const DEFAULT_REGION: Region = {
+    latitude: -0.4814965375088253, // Centre par défaut
+    longitude: 15.89751099904558, // Owando, République du Congo
+    latitudeDelta: 0.5, 
+    longitudeDelta: 0.5,
+  }
 
 export default function MapsScreen() {
   const { professionnels, loading } = useProfessionnels();
@@ -19,12 +27,7 @@ export default function MapsScreen() {
   const [visiblePros, setVisiblePros] = useState<Professionnel[]>([]);
   const [nonVisiblePros, setNonVisiblePros] = useState<Professionnel[]>([]);
 
-  const [currentRegion, setCurrentRegion] = useState<Region>({
-    latitude: -0.4814965375088253, // Centre par défaut
-    longitude: 15.89751099904558, // Owando, République du Congo
-    latitudeDelta: 0.5, // TODO : Changer les valeurs en fonction de la position de l'utilisateur si val par défaut
-    longitudeDelta: 0.5,
-  });
+  const [currentRegion, setCurrentRegion] = useState<Region>(DEFAULT_REGION);
   
   const mapRef = useRef<any>(null);
 
@@ -35,9 +38,59 @@ export default function MapsScreen() {
 
   const sheetY = useRef(new Animated.Value(minY)).current;
   
+  const [user, setUser] = useState<any>(null);
+  const [locationLoading, setLocationLoading] = useState<boolean>(true);
+
+  const getUserLocation = async () => {
+    try {
+      // Demander la permission
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        console.log('Permission de localisation refusée');
+        setCurrentRegion(DEFAULT_REGION);
+        setLocationLoading(false);
+        return;
+      }
+
+      // Obtenir la position actuelle
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      const userRegion: Region = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.5, 
+        longitudeDelta: 0.5,
+      };
+
+      setCurrentRegion(userRegion);
+      
+      if (mapRef.current && mapRef.current.animateToRegion) {
+        mapRef.current.animateToRegion(userRegion, 1000);
+      }
+
+    } catch (error) {
+      console.error('Erreur lors de la récupération de la position:', error);
+      setCurrentRegion(DEFAULT_REGION);
+    } finally {
+      setLocationLoading(false);
+    }
+  };
 
   useEffect(() => {
     sheetY.setValue(minY);
+    const fetchUser = async () => {
+      const userData = await getStoredUser();
+      if (userData) {
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    };
+    getUserLocation();
+    fetchUser();
   }, []);
 
     const lastY = useRef(minY);
@@ -148,13 +201,15 @@ export default function MapsScreen() {
 
   useEffect(() => {
     filterProfessionnelsByRegion(currentRegion);
-  }, [professionnels]);
+  }, [professionnels, currentRegion]);
 
-  if (loading) {
+  if (loading || locationLoading) {
     return (
       <View style={mapStyles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={mapStyles.loadingText}>Chargement des professionnels...</Text>
+        <Text style={mapStyles.loadingText}>
+          {locationLoading ? 'Localisation en cours...' : 'Chargement des professionnels...'}
+        </Text>
       </View>
     );
   }
@@ -214,6 +269,13 @@ export default function MapsScreen() {
         ))}
       </MapView>
 
+      <TouchableOpacity
+        style={mapStyles.recenterButton}
+        onPress={getUserLocation}
+      >
+        <Text style={mapStyles.recenterButtonText}>📍</Text>
+      </TouchableOpacity>
+
       {/*
       <View style={mapStyles.floatingHeader}>
         <Text style={mapStyles.floatingTitle}>Professionnels dans la zone</Text>
@@ -241,9 +303,22 @@ export default function MapsScreen() {
               }}
               {...panResponder.panHandlers}
             >
+      <View style={mapStyles.dragHandleContainer}>
+        <View style={mapStyles.dragHandle} />
+      </View>
+      
       <View style={mapStyles.listHeader}>
         <Text style={mapStyles.listTitle}>Liste des professionnels</Text>
         <Text style={mapStyles.listSubtitle}>Sélectionne un professionnel pour centrer la carte</Text>
+
+        {user && user.role == "admin" && (
+          <TouchableOpacity
+            style={mapStyles.addButton}
+            onPress={() => navigation.navigate('ProFormScreen')} // Remplace par le screen d'ajout pro
+          >
+            <Text style={mapStyles.addButtonText}>+ Ajouter</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={mapStyles.scrollView} contentContainerStyle={mapStyles.scrollContent}>
@@ -272,6 +347,15 @@ export default function MapsScreen() {
       <View style={mapStyles.listHeader}>
         <Text style={mapStyles.listTitle}>Liste des professionnels</Text>
         <Text style={mapStyles.listSubtitle}>Sélectionne un professionnel pour centrer la carte</Text>
+
+          {user && user.role == "admin" && (
+          <TouchableOpacity
+            style={mapStyles.addButton}
+            onPress={() => navigation.navigate('RessourceFormScreen')} // Remplace par le screen d'ajout pro
+          >
+            <Text style={mapStyles.addButtonText}>+ Ajouter</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={mapStyles.scrollView} contentContainerStyle={mapStyles.scrollContent}>

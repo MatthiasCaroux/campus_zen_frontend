@@ -12,6 +12,8 @@ import QuestionnaireScreen from "./screens/QuestionnaireScreen";
 import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 import QuestionsScreen from "./screens/QuestionsScreen";
 import RessourcesScreen from "./screens/RessourcesScreen";
+import RessourceFormScreen from "./screens/RessourceFormScreen";
+import ProFormScreen from "./screens/ProFormScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,6 +30,11 @@ function MapsStack() {
       <Stack.Screen
         name="ProDetailsScreen"
         component={ProDetailsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="ProFormScreen" 
+        component={ProFormScreen} 
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -61,6 +68,23 @@ function HomeStackNavigator() {
   );
 }
 
+function RessourcesStackNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="RessourcesMain"
+        component={RessourcesScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="RessourceForm"
+        component={RessourceFormScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export default function MainTabs() {
   return (
     <Tab.Navigator
@@ -84,8 +108,8 @@ export default function MainTabs() {
 
     >
       <Tab.Screen name="Home" component={HomeStackNavigator} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
-      <Tab.Screen name="Ressources" component={RessourcesScreen} options={{ title: "Ressources", tabBarLabel: "Ressources" }} />
       <Tab.Screen name="Maps" component={MapsStack} options={{ title: "Maps", tabBarLabel: "Maps" }} />
+      <Tab.Screen name="Ressources" component={RessourcesStackNavigator} options={{ title: "Ressources", tabBarLabel: "Ressources" }} />
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
       <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
     </Tab.Navigator>
