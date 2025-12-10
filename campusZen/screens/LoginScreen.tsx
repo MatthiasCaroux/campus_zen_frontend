@@ -3,12 +3,16 @@ import { View, TextInput, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvo
 import { login as apiLogin } from "../services/AuthService";
 import { AuthContext } from "../context/AuthContext";
 import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
+import { useTranslation } from "../src/context/LanguageContext";
+import LanguageSelector from "../src/components/LanguageSelector";
 
 export default function LoginScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
+
   const { login, setUser } = useContext(AuthContext);
+  const { t } = useTranslation();
 
   const handleLogin = async () => {
     try {
@@ -32,27 +36,28 @@ export default function LoginScreen({ navigation }: any) {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={loginRegisterStyle.wrapper}>
-        
+
         {/* Card container */}
         <View style={loginRegisterStyle.card}>
-          
-          <Image 
+
+          <Image
             source={require('../assets/logo.png')}
             style={loginRegisterStyle.logo}
             resizeMode="contain"
           />
 
-          <Text style={loginRegisterStyle.title}>Se Connecter</Text>
+          <LanguageSelector />
+          <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
 
           <TextInput
-            placeholder="Email"
+            placeholder={t('email_placeholder')}
             value={emailPers}
             onChangeText={setEmail}
             style={loginRegisterStyle.input}
           />
 
           <TextInput
-            placeholder="Mot de passe"
+            placeholder={t('password_placeholder')}
             value={passwordPers}
             onChangeText={setPassword}
             secureTextEntry
@@ -60,14 +65,14 @@ export default function LoginScreen({ navigation }: any) {
           />
 
           <TouchableOpacity style={loginRegisterStyle.button} onPress={handleLogin}>
-            <Text style={loginRegisterStyle.buttonText}>Se connecter</Text>
+            <Text style={loginRegisterStyle.buttonText}>{t('login_button')}</Text>
           </TouchableOpacity>
 
           {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
 
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
             <Text style={loginRegisterStyle.registerText}>
-              Pas encore de compte ? <Text style={loginRegisterStyle.registerLink}>S’inscrire</Text>
+              {t('no_account')} <Text style={loginRegisterStyle.registerLink}>{t('register_link')}</Text>
             </Text>
           </TouchableOpacity>
 

@@ -75,3 +75,9 @@ campusZen/
 ## 🔗 API
 
 L'application se connecte à l'API Backend de Campus Zen pour récupérer et envoyer des données.
+
+## Pour se connecter au serveur via ssh : 
+
+```
+ssh ubuntu@54.38.35.105
+```

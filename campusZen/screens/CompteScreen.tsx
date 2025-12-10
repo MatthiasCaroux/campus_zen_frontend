@@ -5,11 +5,16 @@ import { compteStyles } from "../src/screenStyles/CompteStyle";
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
 
 import { COULEUR_BOUTON } from '../src/theme/colors';
+import { useTranslation } from "../src/context/LanguageContext";
+
+import LanguageSelector from "../src/components/LanguageSelector";
 
 export default function CompteScreen() {
   const { logout } = useContext(AuthContext);
-  const [user, setUser] = useState<any>(null); 
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -47,7 +52,7 @@ export default function CompteScreen() {
   return (
     <ScrollView contentContainerStyle={compteStyles.container}>
       <View style={compteStyles.card}>
-        <Text style={compteStyles.title}>Bonjour, {user.emailPers} !</Text>
+        <Text style={compteStyles.title}>{t('hello')}, {user.emailPers} !</Text>
 
         <View style={compteStyles.infoRow}>
           <Text style={compteStyles.label}>ID :</Text>
@@ -60,6 +65,10 @@ export default function CompteScreen() {
         </View>
 
         {/* Ajouter d'autres infos ici si besoin */}
+      </View>
+
+      <View style={{ marginVertical: 20 }}>
+        <LanguageSelector />
       </View>
 
       <TouchableOpacity style={compteStyles.logoutButton} onPress={logout}>

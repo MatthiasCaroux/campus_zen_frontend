@@ -8,7 +8,12 @@ type Questionnaire = {
   descriptionQuestionnaire: string;
 };
 
+import { useNavigation } from '@react-navigation/native';
+
+// ...
+
 export default function QuestionnaireScreen() {
+  const navigation = useNavigation<any>();
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +43,10 @@ export default function QuestionnaireScreen() {
   };
 
   const renderQuestionnaireItem = ({ item }: { item: Questionnaire }) => (
-    <TouchableOpacity style={styles.questionnaireCard}>
+    <TouchableOpacity
+      style={styles.questionnaireCard}
+      onPress={() => navigation.navigate('Questions', { idQuestionnaire: item.idQuestionnaire })}
+    >
       <Text style={styles.questionnaireName}>{item.nomQuestionnaire}</Text>
       <Text style={styles.questionnaireDescription}>{item.descriptionQuestionnaire}</Text>
     </TouchableOpacity>
