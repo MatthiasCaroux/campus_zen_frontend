@@ -1,8 +1,10 @@
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode, Dispatch, SetStateAction } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { saveTokens, getTokens, deleteTokens, getAccessToken } from "../services/SecureStorage";
 
 type AuthContextType = {
   isAuthenticated: boolean;
+  setIsAuthenticated: Dispatch<SetStateAction<boolean>>;
   login: (access: string, refresh: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: any) => Promise<void>;
@@ -10,9 +12,10 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
-  login: async () => {},
-  logout: async () => {},
-  setUser: async () => {},
+  setIsAuthenticated: () => { },
+  login: async () => { },
+  logout: async () => { },
+  setUser: async () => { },
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -20,21 +23,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem("accessToken");
+      const token = await getAccessToken();
       setIsAuthenticated(!!token);
     };
     checkAuth();
   }, []);
 
   const login = async (access: string, refresh: string) => {
-    await AsyncStorage.setItem("accessToken", access);
-    await AsyncStorage.setItem("refreshToken", refresh);
+    await saveTokens(access, refresh);
     setIsAuthenticated(true);
   };
 
   const logout = async () => {
-    await AsyncStorage.removeItem("accessToken");
-    await AsyncStorage.removeItem("refreshToken");
+    console.log("Déconnexion de l'utilisateur");
+    await deleteTokens();
+    console.log("Suppression des informations utilisateur stockées");
+    await AsyncStorage.removeItem("user");
     setIsAuthenticated(false);
   };
 
@@ -43,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, setUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,45 @@
+// Récupère le climat par son id
+export async function getClimatById(id: number) {
+  try {
+    const response = await axios.get(`${API_URL}climats/${id}/`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur récupération climat:", error.response?.data || error.message);
+    throw error;
+  }
+}
+// Fonction utilitaire pour récupérer l'utilisateur stocké
+export async function getStoredUser() {
+  try {
+    const data = await AsyncStorage.getItem("user");
+    if (data) {
+      return JSON.parse(data);
+    }
+    return null;
+  } catch (error) {
+    console.error("Erreur récupération utilisateur stocké:", error);
+    return null;
+  }
+}
 import axios from "axios";
 import { API_URL } from "../config/endpoints";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+export async function getRandomMessageByClimatId(idclimat: number) {
+  try {
+    const response = await axios.get(`${API_URL}messages/?idClimat=${idclimat}`);
+    const messages = response.data;
+    if (Array.isArray(messages) && messages.length > 0) {
+      // Sélectionne un message aléatoire
+      const randomIndex = Math.floor(Math.random() * messages.length);
+      return messages[randomIndex].message;
+    }
+    return null;
+  } catch (error: any) {
+    console.error("Erreur récupération message:", error.response?.data || error.message);
+    return null;
+  }
+}
 
 export const register = async (emailPers: string, passwordPers: string) => {
   try {
@@ -40,12 +79,23 @@ export async function getAPICurrentUser (token: string) {
   }
 };
 
-export async function getCurrentUser() {
-  const data = await AsyncStorage.getItem("user");
-  if (data) {
-    return JSON.parse(data);
+export async function getStatuts() {
+  try {
+    const response = await axios.get(`${API_URL}statuts/`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur récupération statuts:", error.response?.data || error.message);
+    throw error;
   }
-  return null;
 }
 
+export const refreshToken = async (refresh: string) => {
+  try {
+    const response = await axios.post(`${API_URL}token/refresh/`, { refresh });
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur rafraîchissement token:", error.response?.data || error.message);
+    throw error;
+  } 
+};
 

@@ -1,17 +1,74 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 
 import { AuthProvider, AuthContext } from "./context/AuthContext";
+import { LanguageProvider } from "./src/context/LanguageContext";
 import MainTabs from "./MainTabs";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import { getStoredUser, refreshToken } from "./services/AuthService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRefreshToken, setAccessToken } from "./services/SecureStorage";
 
 const Stack = createNativeStackNavigator();
+const accessTokenDuration = 60 * 60 * 1000;
 
 function AppNavigator() {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, logout } = useContext(AuthContext);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      const data = await getStoredUser();
+      if (!data) {
+        return;
+      }
+      setUser(data);
+
+      console.log("Vérification des tokens pour l'utilisateur");
+
+      if (!data.endRefresh) {
+        setIsAuthenticated(false);
+        return;
+      }
+
+      const now = new Date();
+      const endAccess = new Date(data.endAccess);
+      const endRefresh = new Date(data.endRefresh);
+
+      if (now >= endRefresh) {
+        console.log("Le token de rafraîchissement a expiré. Veuillez vous reconnecter.");
+        logout();
+      } else if (now >= endAccess) {
+        const tokenRefresh = await getRefreshToken();
+        if (!tokenRefresh) {
+          console.log("Aucun token de rafraîchissement trouvé. Veuillez vous reconnecter.");
+          setIsAuthenticated(false);
+          return;
+        }
+
+        const newAccessToken = await refreshToken(tokenRefresh);
+        if (newAccessToken.access) {
+          await setAccessToken(newAccessToken.access);
+          await AsyncStorage.setItem("user", JSON.stringify({
+            ...data,
+            endAccess: new Date(Date.now() + accessTokenDuration),
+          }));
+          setIsAuthenticated(true);
+          console.log("Token d'accès rafraîchi avec succès.");
+        } else {
+          console.log("Échec du rafraîchissement du token d'accès. Veuillez vous reconnecter.");
+          setIsAuthenticated(false);
+        }
+      } else {
+        console.log("Les tokens sont valides. L'utilisateur est authentifié.");
+        setIsAuthenticated(true);
+      }
+    };
+    init();
+  }, []);
 
   return (
     <NavigationContainer>
@@ -31,7 +88,9 @@ function AppNavigator() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppNavigator />
+      <LanguageProvider>
+        <AppNavigator />
+      </LanguageProvider>
     </AuthProvider>
   );
 }

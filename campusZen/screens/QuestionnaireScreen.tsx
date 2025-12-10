@@ -1,249 +1,168 @@
-import React, { useEffect, useState } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    Button,
-    Alert,
-    ActivityIndicator,
-} from "react-native";
-import apiClient from "../config/axiosConfig";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import * as colors from "../src/theme/colors.js";
 
-export default function QuestionnaireScreen({ route }: any) {
-    const [nomQuestionnaire, setNomQuestionnaire] = useState("");
-    const [descriptionQuestionnaire, setDescriptionQuestionnaire] = useState("");
-    const [loading, setLoading] = useState(false);
-    const isEdit = route?.params?.mode === "edit";
-    const editId =
-        route?.params?.questionnaireId ??
-        route?.params?.questionnaire?.idQuestionnaire ??
-        route?.params?.questionnaire?.id;
+type Questionnaire = {
+  idQuestionnaire: number;
+  nomQuestionnaire: string;
+  descriptionQuestionnaire: string;
+};
 
-    useEffect(() => {
-        if (isEdit && route?.params?.questionnaire) {
-            const q = route.params.questionnaire;
-            setNomQuestionnaire(q?.nomQuestionnaire ?? "");
-            setDescriptionQuestionnaire(q?.descriptionQuestionnaire ?? "");
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isEdit]);
+import { useNavigation } from '@react-navigation/native';
 
-    const handleSubmit = async () => {
-        if (!nomQuestionnaire.trim()) {
-            Alert.alert("Erreur", "Le nom du questionnaire est requis.");
-            return;
-        }
+// ...
 
-        setLoading(true);
-        try {
-            const payload = { nomQuestionnaire: nomQuestionnaire.trim(), descriptionQuestionnaire: descriptionQuestionnaire.trim() };
-            console.log("Sending questionnaire payload:", payload);
+export default function QuestionnaireScreen() {
+  const navigation = useNavigation<any>();
+  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-            let response;
-            if (isEdit && editId) {
-                try {
-                    response = await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json" } });
-                } catch (e1: any) {
-                    const st = e1?.response?.status;
-                    if (st === 404 || st === 405) {
-                        response = await apiClient.put(`/questionnaire/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json" } });
-                    } else {
-                        throw e1;
-                    }
-                }
-            } else {
-                response = await apiClient.post("/questionnaires/", payload, { headers: { Accept: "application/json" } });
-            }
+  useEffect(() => {
+    fetchQuestionnaires();
+  }, []);
 
-            setLoading(false);
-                            console.log("Delete questionnaire button pressed", { editId });
-            Alert.alert("Succès", isEdit ? "Questionnaire modifié avec succès." : "Questionnaire créé avec succès.");
-            // Reset form
-            if (!isEdit) {
-                setNomQuestionnaire("");
-                setDescriptionQuestionnaire("");
-            }
-            console.log("API response status:", response.status);
-            console.log("API response data:", response.data);
-        } catch (error: any) {
-                                            console.log("Delete confirmation accepted", { editId });
-            setLoading(false);
-            console.error("Erreur lors de l'envoi du questionnaire:", error);
+  const fetchQuestionnaires = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('https://campuszenbackend-prod.up.railway.app/api/questionnaires');
 
-            // Extra logging for debugging 500
-            if (error?.response) {
-                console.error("Response status:", error.response.status);
-                console.error("Response headers:", error.response.headers);
-                // If server returned HTML (stack trace page) or JSON, log a short preview
-                const body = typeof error.response.data === "string"
-                    ? error.response.data.substring(0, 2000)
-                    : JSON.stringify(error.response.data);
-                console.error("Response body (preview):", body);
-                Alert.alert(
-                    "Erreur serveur",
-                    `Le serveur a retourné ${error.response.status}. Vérifiez les logs du backend.`
-                );
-            } else {
-                const message = error.message || "Erreur réseau";
-                Alert.alert("Erreur", `Impossible d'envoyer le questionnaire: ${message}`);
-            }
-        }
-    };
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des questionnaires');
+      }
 
-    const navigation = useNavigation<any>();
+      const data = await response.json();
+      setQuestionnaires(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      console.error('Erreur:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const renderQuestionnaireItem = ({ item }: { item: Questionnaire }) => (
+    <TouchableOpacity
+      style={styles.questionnaireCard}
+      onPress={() => navigation.navigate('Questions', { idQuestionnaire: item.idQuestionnaire })}
+    >
+      <Text style={styles.questionnaireName}>{item.nomQuestionnaire}</Text>
+      <Text style={styles.questionnaireDescription}>{item.descriptionQuestionnaire}</Text>
+    </TouchableOpacity>
+  );
+
+  if (loading) {
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>{isEdit ? "Modifier un questionnaire" : "Questionnaire"}</Text>
-            <Text style={styles.subtitle}>Participez à notre questionnaire pour améliorer votre expérience</Text>
-
-            <View style={{ marginBottom: 12 }}>
-                <Button title="Retour" onPress={() => navigation.goBack()} color="#6c757d" />
-            </View>
-
-            <View style={styles.formGroup}>
-                <Text style={styles.label}>Nom du questionnaire</Text>
-                <TextInput
-                    value={nomQuestionnaire}
-                    onChangeText={setNomQuestionnaire}
-                    placeholder="Entrer le nomffffff"
-                    style={styles.input}
-                    accessibilityLabel="name-input"
-                />
-            </View>
-
-            <View style={styles.formGroup}>
-                <Text style={styles.label}>Description</Text>
-                <TextInput
-                    value={descriptionQuestionnaire}
-                    onChangeText={setDescriptionQuestionnaire}
-                    placeholder="Entrer la description"
-                    style={[styles.input, styles.textarea]}
-                    multiline
-                    numberOfLines={4}
-                    accessibilityLabel="description-input"
-                />
-            </View>
-
-            {loading ? (
-                <ActivityIndicator size="small" color="#007AFF" />
-            ) : (
-                <Button title={isEdit ? "Enregistrer" : "Envoyer"} onPress={handleSubmit} color="#007AFF" />
-            )}
-            {!isEdit && (
-                <Button
-                    title="Liste des questionnaires"
-                    onPress={() => {
-                        navigation.navigate("QuestionnaireList");
-                    }}
-                    color="#007AFF"
-                />
-            )}
-
-            {isEdit && editId && !loading && (
-                <View style={{ marginTop: 12 }}>
-                    <Button
-                        title="Supprimer ce questionnaire"
-                        onPress={() => {
-                            Alert.alert(
-                                "Confirmation",
-                                "Supprimer ce questionnaire ?",
-                                [
-                                    { text: "Annuler", style: "cancel" },
-                                    {
-                                        text: "Supprimer",
-                                        style: "destructive",
-                                        onPress: async () => {
-                                            console.log("[DELETE] Tentative suppression questionnaire", { editId });
-                                            try {
-                                                setLoading(true);
-                                                let success = false;
-                                                try {
-                                                    console.log("[DELETE] Essai /questionnaires/{id}/");
-                                                    await apiClient.delete(`/questionnaires/${editId}/`);
-                                                    console.log("[DELETE] Succès /questionnaires/{id}/");
-                                                    success = true;
-                                                } catch (e1: any) {
-                                                    const st = e1?.response?.status;
-                                                    console.log("[DELETE] Erreur /questionnaires/{id}/", { status: st });
-                                                    if (st === 404 || st === 405) {
-                                                        try {
-                                                            console.log("[DELETE] Essai /questionnaire/{id}/");
-                                                            await apiClient.delete(`/questionnaire/${editId}/`);
-                                                            console.log("[DELETE] Succès /questionnaire/{id}/");
-                                                            success = true;
-                                                        } catch (e2: any) {
-                                                            console.log("[DELETE] Erreur /questionnaire/{id}/", { status: e2?.response?.status });
-                                                            throw e2;
-                                                        }
-                                                    } else {
-                                                        throw e1;
-                                                    }
-                                                }
-                                                setLoading(false);
-                                                if (success) {
-                                                    Alert.alert("Succès", "Questionnaire supprimé.");
-                                                    navigation.navigate("QuestionnaireList");
-                                                }
-                                            } catch (e: any) {
-                                                setLoading(false);
-                                                const status = e?.response?.status;
-                                                const body = typeof e?.response?.data === "string" ? e.response.data.slice(0, 400) : JSON.stringify(e?.response?.data ?? {});
-                                                console.log("[DELETE] Erreur finale", { status, body });
-                                                Alert.alert("Erreur", status ? `Erreur serveur ${status}` : "Suppression impossible");
-                                            }
-                                        },
-                                    },
-                                ]
-                            );
-                        }}
-                        color="#FF3B30"
-                    />
-                </View>
-            )}
-        </View>
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color={colors.COULEUR_HEADER_BLEU} />
+        <Text style={styles.loadingText}>Chargement des questionnaires...</Text>
+      </View>
     );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={fetchQuestionnaires}>
+          <Text style={styles.retryButtonText}>Réessayer</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Questionnaires disponibles</Text>
+      <FlatList
+        data={questionnaires}
+        renderItem={renderQuestionnaireItem}
+        keyExtractor={(item) => item.idQuestionnaire.toString()}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Aucun questionnaire disponible</Text>
+        }
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: "#fff",
+  container: {
+    flex: 1,
+    backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR,
+    padding: 20,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.COULEUR_TEXT_DARK,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  questionnaireCard: {
+    backgroundColor: colors.COULEUR_WHITE,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 15,
+    shadowColor: colors.COULEUR_BLACK,
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    title: {
-        fontSize: 20,
-        fontWeight: "600",
-        textAlign: "center",
-        marginBottom: 8,
-    },
-    subtitle: {
-        textAlign: "center",
-        marginBottom: 16,
-        color: "#333",
-    },
-    formGroup: {
-        marginBottom: 12,
-    },
-    label: {
-        fontSize: 14,
-        marginBottom: 6,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 6,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        fontSize: 14,
-        backgroundColor: "#fff",
-    },
-    textarea: {
-        minHeight: 80,
-        textAlignVertical: "top",
-    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  questionnaireName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.COULEUR_TEXT_DARK,
+    marginBottom: 8,
+  },
+  questionnaireDescription: {
+    fontSize: 14,
+    color: colors.COULEUR_TEXT_DARK,
+    opacity: 0.7,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: colors.COULEUR_TEXT_DARK,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#D32F2F',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: colors.COULEUR_HEADER_BLEU,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  retryButtonText: {
+    color: colors.COULEUR_WHITE,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: colors.COULEUR_TEXT_DARK,
+    textAlign: 'center',
+    marginTop: 20,
+    opacity: 0.6,
+  },
 });
-
-

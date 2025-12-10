@@ -32,7 +32,7 @@ Application mobile React Native développée avec Expo et TypeScript pour le pro
 
 - **Démarrer le serveur de développement**
   ```bash
-  npm start
+  npx expo start
   ```
 
 - **Lancer sur Android**
@@ -75,3 +75,9 @@ campusZen/
 ## 🔗 API
 
 L'application se connecte à l'API Backend de Campus Zen pour récupérer et envoyer des données.
+
+## Pour se connecter au serveur via ssh : 
+
+```
+ssh ubuntu@54.38.35.105
+```
