@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import type { RouteProp } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { getStoredUser } from "../services/AuthService";
 import * as colors from "../src/theme/colors.js";
 import apiClient from '../config/axiosConfig.js';
+
+// --- TYPAGES ---
 
 type Question = {
     idQuestion: number;
@@ -12,87 +16,136 @@ type Question = {
     questionnaireId: number;
 };
 
-type Response = {
+type ResponseOption = {
     idReponse: number;
     texte: string;
     score: number;
     question: number;
 };
 
+export type UserAnswer = {
+    idQuestion: number;
+    idReponse: number;
+};
+
+// On garde le typage simple
 type RootStackParamList = {
     Questions: { idQuestionnaire: number };
 };
 
 type QuestionsScreenRouteProp = RouteProp<RootStackParamList, 'Questions'>;
+type NavigationProps = NativeStackNavigationProp<RootStackParamList, keyof RootStackParamList>;
+
+// --- COMPOSANT PRINCIPAL ---
 
 export default function QuestionsScreen() {
     const route = useRoute<QuestionsScreenRouteProp>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProps>();
     const { idQuestionnaire } = route.params;
 
+    // État principal
     const [questions, setQuestions] = useState<Question[]>([]);
+    const [userId, setUserId] = useState<number | null>(null);
+    
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [responses, setResponses] = useState<{ [key: number]: number }>({});
-    const [availableResponses, setAvailableResponses] = useState<Response[]>([]);
+    const [availableResponses, setAvailableResponses] = useState<ResponseOption[]>([]);
+    const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
+
     const [loading, setLoading] = useState(true);
     const [loadingResponses, setLoadingResponses] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchQuestions();
-    }, [idQuestionnaire]);
+    // NOUVEL ÉTAT : Pour gérer l'écran de succès
+    const [isSuccess, setIsSuccess] = useState(false);
 
-    useEffect(() => {
-        if (currentQuestion) {
-            fetchResponses(currentQuestion.idQuestion);
-        }
-    }, [currentQuestionIndex, questions]);
+    const currentQuestion = useMemo(() => questions[currentQuestionIndex], [questions, currentQuestionIndex]);
 
-    const fetchQuestions = async () => {
+    const currentSelectedResponseId = useMemo(() => {
+        return userAnswers.find(answer => answer.idQuestion === currentQuestion?.idQuestion)?.idReponse;
+    }, [userAnswers, currentQuestion]);
+
+    // --- FONCTIONS API ---
+
+    const fetchQuestions = useCallback(async () => {
         try {
             setLoading(true);
             const response = await apiClient.get(`/questions/?questionnaireId=${idQuestionnaire}`);
             setQuestions(response.data);
             setError(null);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Une erreur est survenue');
-            console.error('Erreur:', err);
+            const errorMessage = (err as any)?.message || 'Erreur lors du chargement des questions.';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
-    };
+    }, [idQuestionnaire]);
 
-    const fetchResponses = async (questionId: number) => {
+    const fetchResponses = useCallback(async (questionId: number) => {
         try {
             setLoadingResponses(true);
             const response = await apiClient.get(`/reponses/?question=${questionId}`);
-            // S'assurer que response.data est un tableau
-            const data = Array.isArray(response.data) ? response.data : [];
+            const data: ResponseOption[] = Array.isArray(response.data) ? response.data : [];
             setAvailableResponses(data);
-        } catch (err) {
-            console.error('Erreur lors de la récupération des réponses:', err);
+        } catch {
             setAvailableResponses([]);
         } finally {
             setLoadingResponses(false);
         }
-    };
+    }, []);
 
+    // --- EFFETS ---
 
+    useEffect(() => {
+        const initializeUser = async () => {
+            try {
+                const userData = await getStoredUser();
+                if (userData && typeof userData === 'object' && 'idPers' in userData) {
+                    setUserId(userData.idPers);
+                } else if (typeof userData === 'number' || typeof userData === 'string') {
+                    setUserId(Number(userData));
+                }
+            } catch (e) {
+                console.error("Erreur user:", e);
+            }
+        };
+        initializeUser();
+    }, []);
 
-    const currentQuestion = questions[currentQuestionIndex];
-    const currentResponse = responses[currentQuestion?.idQuestion];
+    useEffect(() => {
+        fetchQuestions();
+    }, [fetchQuestions]);
+
+    useEffect(() => {
+        if (currentQuestion?.idQuestion) {
+            fetchResponses(currentQuestion.idQuestion);
+        }
+    }, [currentQuestion?.idQuestion, fetchResponses]);
+
+    // --- ACTIONS ---
 
     const handleResponseSelect = (responseId: number) => {
-        if (currentQuestion) {
-            setResponses({ ...responses, [currentQuestion.idQuestion]: responseId });
-        }
+        if (!currentQuestion) return;
+        setUserAnswers(prevAnswers => {
+            const existingAnswerIndex = prevAnswers.findIndex(a => a.idQuestion === currentQuestion.idQuestion);
+            const newAnswer = { idQuestion: currentQuestion.idQuestion, idReponse: responseId };
+            if (existingAnswerIndex > -1) {
+                const updated = [...prevAnswers];
+                updated[existingAnswerIndex] = newAnswer;
+                return updated;
+            }
+            return [...prevAnswers, newAnswer];
+        });
     };
 
     const handleNext = () => {
+        if (!currentSelectedResponseId) {
+             Alert.alert("Oups", "Veuillez sélectionner une réponse.");
+             return;
+        }
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         } else {
-            // Toutes les questions sont répondues
             handleSubmit();
         }
     };
@@ -104,33 +157,76 @@ export default function QuestionsScreen() {
     };
 
     const handleSubmit = async () => {
-        // Ici, vous pouvez envoyer les réponses à votre API
-        console.log('Réponses:', responses);
+        if (isSubmitting) return;
 
-        // TODO: Envoyer les réponses au backend
-        // try {
-        //   const response = await fetch('URL_DE_VOTRE_API/reponses', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ questionnaireId: idQuestionnaire, responses })
-        //   });
-        // } catch (error) {
-        //   console.error('Erreur lors de l\'envoi des réponses:', error);
-        // }
+        if (!userId) {
+             Alert.alert("Erreur", "Utilisateur non identifié.");
+             return;
+        }
 
-        // Naviguer vers l'écran de confirmation
-        navigation.navigate('QuestionnaireCompleted' as never);
+        try {
+            setIsSubmitting(true);
+            const submissionPayload = { idPers: userId, reponses: userAnswers };
+            const endpoint = `/questionnaire/${idQuestionnaire}/submit`;
+            
+            console.log("Envoi...", submissionPayload);
+            const response = await apiClient.post(endpoint, submissionPayload);
+            console.log("Réponse...", response.status);
+
+            if (response.status === 200 || response.status === 201) {
+                // C'EST ICI QUE TOUT CHANGE : On affiche l'écran de succès
+                setIsSuccess(true);
+            }
+
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert('Erreur', "L'envoi a échoué. Vérifiez votre connexion.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
+    // --- RENDU (VIEWS) ---
+
+    // 1. Écran de chargement
     if (loading) {
         return (
             <View style={styles.centerContainer}>
                 <ActivityIndicator size="large" color={colors.COULEUR_HEADER_BLEU} />
-                <Text style={styles.loadingText}>Chargement des questions...</Text>
+                <Text style={styles.loadingText}>Chargement...</Text>
             </View>
         );
     }
 
+    // 2. Écran de Succès (Le nouveau "Message Sympa")
+    if (isSuccess) {
+        return (
+            <View style={[styles.centerContainer, { paddingHorizontal: 40 }]}>
+                <View style={styles.successIconContainer}>
+                    <Text style={{ fontSize: 50 }}>🎉</Text>
+                </View>
+                
+                <Text style={styles.successTitle}>Merci !</Text>
+                
+                <Text style={styles.successMessage}>
+                    Vos réponses ont bien été enregistrées.
+                </Text>
+                
+                <Text style={styles.successSubMessage}>
+                    Vous pouvez consulter l'évolution de votre état directement depuis la page d'accueil.
+                </Text>
+
+                <TouchableOpacity 
+                    style={styles.retryButton} 
+                    onPress={() => navigation.goBack()} // Retour simple à la page précédente
+                >
+                    <Text style={styles.retryButtonText}>Retour</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    // 3. Gestion des erreurs de chargement
     if (error) {
         return (
             <View style={styles.centerContainer}>
@@ -142,88 +238,74 @@ export default function QuestionsScreen() {
         );
     }
 
-    if (!currentQuestion) {
-        return (
-            <View style={styles.centerContainer}>
-                <Text style={styles.emptyText}>Aucune question disponible</Text>
-            </View>
-        );
-    }
+    // 4. Cas vide
+    if (!currentQuestion) return null;
+
+    // 5. Écran du Questionnaire (Normal)
+    const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-            {/* Indicateur de progression */}
             <View style={styles.progressContainer}>
-                <Text style={styles.progressText}>
-                    Question {currentQuestionIndex + 1} sur {questions.length}
-                </Text>
+                <Text style={styles.progressText}>Question {currentQuestionIndex + 1} / {questions.length}</Text>
                 <View style={styles.progressBar}>
-                    <View
-                        style={[
-                            styles.progressFill,
-                            { width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` },
-                        ]}
-                    />
+                    <View style={[styles.progressFill, { width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }]} />
                 </View>
             </View>
 
-            {/* Question */}
             <View style={styles.questionContainer}>
                 <Text style={styles.questionText}>{currentQuestion.intituleQuestion}</Text>
             </View>
 
-            {/* Échelle de réponses */}
             <View style={styles.likertContainer}>
                 {loadingResponses ? (
-                    <ActivityIndicator size="large" color={colors.COULEUR_HEADER_BLEU} />
-                ) : Array.isArray(availableResponses) && availableResponses.length > 0 ? (
+                    <ActivityIndicator color={colors.COULEUR_HEADER_BLEU} />
+                ) : (
                     availableResponses.map((response) => (
                         <TouchableOpacity
                             key={response.idReponse}
                             style={[
                                 styles.responseOption,
-                                currentResponse === response.idReponse && styles.responseOptionSelected,
+                                currentSelectedResponseId === response.idReponse && styles.responseOptionSelected,
                             ]}
                             onPress={() => handleResponseSelect(response.idReponse)}
+                            disabled={isSubmitting}
                         >
-                            <Text
-                                style={[
-                                    styles.responseText,
-                                    currentResponse === response.idReponse && styles.responseTextSelected,
-                                ]}
-                            >
+                            <Text style={[
+                                styles.responseText,
+                                currentSelectedResponseId === response.idReponse && styles.responseTextSelected,
+                            ]}>
                                 {response.texte}
                             </Text>
-                            {currentResponse === response.idReponse && (
-                                <View style={styles.checkmark}>
-                                    <Text style={styles.checkmarkText}>✓</Text>
-                                </View>
+                            {currentSelectedResponseId === response.idReponse && (
+                                <View style={styles.checkmark}><Text style={styles.checkmarkText}>✓</Text></View>
                             )}
                         </TouchableOpacity>
                     ))
-                ) : (
-                    <Text style={styles.emptyText}>Aucune réponse disponible pour cette question</Text>
                 )}
             </View>
 
-            {/* Boutons de navigation */}
             <View style={styles.navigationContainer}>
                 <TouchableOpacity
                     style={[styles.navButton, currentQuestionIndex === 0 && styles.navButtonDisabled]}
                     onPress={handlePrevious}
-                    disabled={currentQuestionIndex === 0}
+                    disabled={currentQuestionIndex === 0 || isSubmitting}
                 >
                     <Text style={styles.navButtonText}>Précédent</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.navButton, styles.nextButton, !currentResponse && styles.navButtonDisabled]}
+                    style={[styles.navButton, styles.nextButton, !currentSelectedResponseId && styles.navButtonDisabled]}
                     onPress={handleNext}
-                    disabled={!currentResponse}
+                    disabled={!currentSelectedResponseId || isSubmitting}
                 >
-                    <Text style={[styles.navButtonText, styles.nextButtonText]}>
-                        {currentQuestionIndex === questions.length - 1 ? 'Terminer' : 'Suivant'}
-                    </Text>
+                    {isSubmitting ? (
+                        <ActivityIndicator size="small" color="#FFF" />
+                    ) : (
+                        <Text style={[styles.navButtonText, styles.nextButtonText]}>
+                            {isLastQuestion ? 'Terminer' : 'Suivant'}
+                        </Text>
+                    )}
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -231,168 +313,37 @@ export default function QuestionsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR,
-    },
-    scrollContent: {
-        padding: 20,
-        paddingBottom: 40,
-    },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR,
-        padding: 20,
-    },
-    progressContainer: {
-        marginBottom: 30,
-    },
-    progressText: {
-        fontSize: 16,
-        color: colors.COULEUR_TEXT_DARK,
-        marginBottom: 10,
-        textAlign: 'center',
-        fontWeight: '600',
-    },
-    progressBar: {
-        height: 8,
-        backgroundColor: '#E0E0E0',
-        borderRadius: 4,
-        overflow: 'hidden',
-    },
-    progressFill: {
-        height: '100%',
-        backgroundColor: colors.COULEUR_HEADER_BLEU,
-        borderRadius: 4,
-    },
-    questionContainer: {
-        backgroundColor: colors.COULEUR_WHITE,
-        borderRadius: 16,
-        padding: 24,
-        marginBottom: 30,
-        shadowColor: colors.COULEUR_BLACK,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    questionText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: colors.COULEUR_TEXT_DARK,
-        lineHeight: 28,
-        textAlign: 'center',
-    },
-    likertContainer: {
-        marginBottom: 30,
-    },
-    responseOption: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: colors.COULEUR_WHITE,
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 12,
-        borderWidth: 2,
-        borderColor: '#E8E8E8',
-        shadowColor: colors.COULEUR_BLACK,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.08,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    responseOptionSelected: {
-        borderColor: colors.COULEUR_HEADER_BLEU,
-        backgroundColor: '#F0F7FF',
-        borderWidth: 2,
-    },
-    responseText: {
-        flex: 1,
-        fontSize: 16,
-        color: colors.COULEUR_TEXT_DARK,
-        lineHeight: 22,
-    },
-    responseTextSelected: {
-        fontWeight: '600',
-        color: colors.COULEUR_HEADER_BLEU,
-    },
-    checkmark: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: colors.COULEUR_HEADER_BLEU,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 12,
-    },
-    checkmarkText: {
-        color: colors.COULEUR_WHITE,
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    navigationContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 12,
-    },
-    navButton: {
-        flex: 1,
-        backgroundColor: '#E0E0E0',
-        borderRadius: 12,
-        paddingVertical: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    nextButton: {
-        backgroundColor: colors.COULEUR_HEADER_BLEU,
-    },
-    navButtonDisabled: {
-        opacity: 0.5,
-    },
-    navButtonText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: colors.COULEUR_TEXT_DARK,
-    },
-    nextButtonText: {
-        color: colors.COULEUR_WHITE,
-    },
-    loadingText: {
-        marginTop: 10,
-        fontSize: 16,
-        color: colors.COULEUR_TEXT_DARK,
-    },
-    errorText: {
-        fontSize: 16,
-        color: '#D32F2F',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    retryButton: {
-        backgroundColor: colors.COULEUR_HEADER_BLEU,
-        borderRadius: 8,
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-    },
-    retryButtonText: {
-        color: colors.COULEUR_WHITE,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    emptyText: {
-        fontSize: 16,
-        color: colors.COULEUR_TEXT_DARK,
-        textAlign: 'center',
-        marginTop: 20,
-        opacity: 0.6,
-    },
+    container: { flex: 1, backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR },
+    scrollContent: { padding: 20, paddingBottom: 40, flexGrow: 1 }, // flexGrow aide au centrage si peu de contenu
+    centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR, padding: 20 },
+    
+    // Nouveaux styles pour l'écran de succès
+    successIconContainer: { marginBottom: 20, backgroundColor: '#FFF', padding: 20, borderRadius: 50, elevation: 5 },
+    successTitle: { fontSize: 28, fontWeight: 'bold', color: colors.COULEUR_HEADER_BLEU, marginBottom: 10 },
+    successMessage: { fontSize: 18, color: colors.COULEUR_TEXT_DARK, textAlign: 'center', marginBottom: 10, fontWeight: '600' },
+    successSubMessage: { fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 30, lineHeight: 20 },
+
+    progressContainer: { marginBottom: 30 },
+    progressText: { fontSize: 16, color: colors.COULEUR_TEXT_DARK, marginBottom: 10, textAlign: 'center', fontWeight: '600' },
+    progressBar: { height: 8, backgroundColor: '#E0E0E0', borderRadius: 4, overflow: 'hidden' },
+    progressFill: { height: '100%', backgroundColor: colors.COULEUR_HEADER_BLEU, borderRadius: 4 },
+    questionContainer: { backgroundColor: colors.COULEUR_WHITE, borderRadius: 16, padding: 24, marginBottom: 30, shadowColor: colors.COULEUR_BLACK, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 },
+    questionText: { fontSize: 20, fontWeight: 'bold', color: colors.COULEUR_TEXT_DARK, lineHeight: 28, textAlign: 'center' },
+    likertContainer: { marginBottom: 30 },
+    responseOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.COULEUR_WHITE, borderRadius: 16, padding: 20, marginBottom: 12, borderWidth: 2, borderColor: '#E8E8E8', shadowColor: colors.COULEUR_BLACK, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 3 },
+    responseOptionSelected: { borderColor: colors.COULEUR_HEADER_BLEU, backgroundColor: '#F0F7FF', borderWidth: 2 },
+    responseText: { flex: 1, fontSize: 16, color: colors.COULEUR_TEXT_DARK, lineHeight: 22 },
+    responseTextSelected: { fontWeight: '600', color: colors.COULEUR_HEADER_BLEU },
+    checkmark: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.COULEUR_HEADER_BLEU, alignItems: 'center', justifyContent: 'center', marginLeft: 12 },
+    checkmarkText: { color: colors.COULEUR_WHITE, fontSize: 18, fontWeight: 'bold' },
+    navigationContainer: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
+    navButton: { flex: 1, backgroundColor: '#E0E0E0', borderRadius: 12, paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
+    nextButton: { backgroundColor: colors.COULEUR_HEADER_BLEU },
+    navButtonDisabled: { opacity: 0.5 },
+    navButtonText: { fontSize: 16, fontWeight: '600', color: colors.COULEUR_TEXT_DARK },
+    nextButtonText: { color: colors.COULEUR_WHITE },
+    loadingText: { marginTop: 10, fontSize: 16, color: colors.COULEUR_TEXT_DARK },
+    errorText: { fontSize: 16, color: '#D32F2F', textAlign: 'center', marginBottom: 20 },
+    retryButton: { backgroundColor: colors.COULEUR_HEADER_BLEU, borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    retryButtonText: { color: colors.COULEUR_WHITE, fontSize: 16, fontWeight: '600' },
 });

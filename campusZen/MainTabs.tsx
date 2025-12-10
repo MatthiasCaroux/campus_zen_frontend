@@ -2,11 +2,9 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
-import { Image } from "react-native";
 
 import HomeScreen from "./screens/HomeScreen";
 import MapsScreen from "./screens/MapsScreen";
-import CalendrierScreen from "./screens/CalendrierScreen";
 import StatsScreen from "./screens/StatsScreen";
 import CompteScreen from "./screens/CompteScreen";
 import ProDetailsScreen from "./screens/ProDetailsScreen";
