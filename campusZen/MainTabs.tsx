@@ -14,6 +14,7 @@ import QuestionsScreen from "./screens/QuestionsScreen";
 import RessourcesScreen from "./screens/RessourcesScreen";
 import RessourceFormScreen from "./screens/RessourceFormScreen";
 import ProFormScreen from "./screens/ProFormScreen";
+import QuestionnaireStack from "./screens/QuestionnaireStack";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -97,6 +98,8 @@ export default function MainTabs() {
           else if (route.name === "Stats") iconName = focused ? "stats-chart" : "stats-chart-outline";
           else if (route.name === "Compte") iconName = focused ? "person" : "person-outline";
           else if (route.name === "Ressources") iconName = focused ? "book" : "book-outline";
+          else if (route.name === "Questionnaire") iconName = focused ? "help-circle" : "help-circle-outline";
+
           else iconName = "help-outline";
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -112,6 +115,8 @@ export default function MainTabs() {
       <Tab.Screen name="Ressources" component={RessourcesStackNavigator} options={{ title: "Ressources", tabBarLabel: "Ressources" }} />
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
       <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
+      <Tab.Screen name="Questionnaire" component={QuestionnaireStack} options={{ title: "Questionnaire", tabBarLabel: "Questionnaire" }} />
+
     </Tab.Navigator>
   );
 } 
