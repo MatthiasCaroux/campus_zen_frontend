@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  campus-zen-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: campus-zen-frontend
+    ports:
+      - "8081:8081"     # Port Metro Bundler
+      - "19000:19000"   # Port Expo Dev Tools
+      - "19001:19001"   # Port Expo
+      - "19002:19002"   # Port Expo
+    volumes:
+      # Montage du code source pour le hot-reload
+      - .:/app
+      # Éviter de monter node_modules depuis l'hôte
+      - /app/node_modules
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+      - REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
+    stdin_open: true
+    tty: true
+    command: npx expo start --tunnel
