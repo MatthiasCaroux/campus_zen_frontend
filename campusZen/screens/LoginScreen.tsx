@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { View, TextInput, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useState, useContext, useRef } from "react";
+import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { login as apiLogin } from "../services/AuthService";
 import { AuthContext } from "../context/AuthContext";
 import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
@@ -11,8 +11,24 @@ export default function LoginScreen({ navigation }: any) {
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
+  const scrollViewRef = useRef<ScrollView>(null);
+  const emailInputRef = useRef<View>(null);
+  const passwordInputRef = useRef<View>(null);
+
   const { login, setUser } = useContext(AuthContext);
   const { t } = useTranslation();
+
+  const scrollToInput = (inputRef: React.RefObject<View>) => {
+    setTimeout(() => {
+      inputRef.current?.measureLayout(
+        scrollViewRef.current as any,
+        (x, y) => {
+          scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+        },
+        () => {}
+      );
+    }, 100);
+  };
 
   const handleLogin = async () => {
     try {
@@ -33,52 +49,66 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#ffffff" }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
     >
-      <View style={loginRegisterStyle.wrapper}>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={loginRegisterStyle.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={loginRegisterStyle.wrapper}>
 
-        {/* Card container */}
-        <View style={loginRegisterStyle.card}>
+          {/* Card container */}
+          <View style={loginRegisterStyle.card}>
 
-          <Image
-            source={require('../assets/logo.png')}
-            style={loginRegisterStyle.logo}
-            resizeMode="contain"
-          />
+            <Image
+              source={require('../assets/logo.png')}
+              style={loginRegisterStyle.logo}
+              resizeMode="contain"
+            />
 
-          <LanguageSelector />
-          <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
+            <LanguageSelector />
+            <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
 
-          <TextInput
-            placeholder={t('email_placeholder')}
-            value={emailPers}
-            onChangeText={setEmail}
-            style={loginRegisterStyle.input}
-          />
+            <View ref={emailInputRef}>
+              <TextInput
+                placeholder={t('email_placeholder')}
+                value={emailPers}
+                onChangeText={setEmail}
+                onFocus={() => scrollToInput(emailInputRef)}
+                style={loginRegisterStyle.input}
+              />
+            </View>
 
-          <TextInput
-            placeholder={t('password_placeholder')}
-            value={passwordPers}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={loginRegisterStyle.input}
-          />
+            <View ref={passwordInputRef}>
+              <TextInput
+                placeholder={t('password_placeholder')}
+                value={passwordPers}
+                onChangeText={setPassword}
+                secureTextEntry
+                onFocus={() => scrollToInput(passwordInputRef)}
+                style={loginRegisterStyle.input}
+              />
+            </View>
 
-          <TouchableOpacity style={loginRegisterStyle.button} onPress={handleLogin}>
-            <Text style={loginRegisterStyle.buttonText}>{t('login_button')}</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={loginRegisterStyle.button} onPress={handleLogin}>
+              <Text style={loginRegisterStyle.buttonText}>{t('login_button')}</Text>
+            </TouchableOpacity>
 
-          {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
+            {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
 
-          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text style={loginRegisterStyle.registerText}>
-              {t('no_account')} <Text style={loginRegisterStyle.registerLink}>{t('register_link')}</Text>
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+              <Text style={loginRegisterStyle.registerText}>
+                {t('no_account')} <Text style={loginRegisterStyle.registerLink}>{t('register_link')}</Text>
+              </Text>
+            </TouchableOpacity>
+
+          </View>
 
         </View>
-
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

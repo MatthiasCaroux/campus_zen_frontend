@@ -1,18 +1,23 @@
 import { StyleSheet, Platform } from 'react-native';
 
 export const loginRegisterStyle = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    minHeight: '100%',
+  },
   wrapper: {
     flex: 1,
     justifyContent: "center",
-    padding: 20, 
+    padding: 20,
     backgroundColor: "#ffffff",
+    minHeight: 600,
   },
   card: {
     backgroundColor: "#fff9e8",
     borderRadius: 15,
     padding: 25,
     width: "100%",
-    maxWidth: 400, 
+    maxWidth: 400,
     alignSelf: "center",
     shadowColor: "#000",
     shadowOpacity: 0.15,
