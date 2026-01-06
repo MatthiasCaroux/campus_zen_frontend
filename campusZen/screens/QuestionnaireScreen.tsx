@@ -37,24 +37,14 @@ export default function QuestionnaireScreen() {
   };
 
   const renderQuestionnaireItem = ({ item }: { item: Questionnaire }) => (
-    <View style={styles.questionnaireCard}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Questions', { idQuestionnaire: item.idQuestionnaire })}
-      >
-        <Text style={styles.questionnaireName}>{item.nomQuestionnaire}</Text>
-        <Text style={styles.questionnaireDescription}>{item.descriptionQuestionnaire}</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.questionsButton}
-        onPress={() => navigation.navigate('QuestionnaireQuestions', {
-          questionnaireId: item.idQuestionnaire,
-          questionnaire: item
-        })}
-      >
-        <Text style={styles.questionsButtonText}>📋 Voir les questions</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={styles.questionnaireCard}
+      onPress={() => navigation.navigate('Questions', { idQuestionnaire: item.idQuestionnaire })}
+    >
+      <Text style={styles.questionnaireName}>{item.nomQuestionnaire}</Text>
+      <Text style={styles.questionnaireDescription}>{item.descriptionQuestionnaire}</Text>
+      <Text style={styles.answerPrompt}>Appuyez pour répondre →</Text>
+    </TouchableOpacity>
   );
 
   if (loading) {
@@ -140,20 +130,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.COULEUR_TEXT_DARK,
     opacity: 0.7,
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  questionsButton: {
-    backgroundColor: colors.COULEUR_HEADER_BLEU,
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginTop: 12,
-    alignItems: 'center',
-  },
-  questionsButtonText: {
-    color: colors.COULEUR_WHITE,
-    fontSize: 15,
+  answerPrompt: {
+    fontSize: 14,
+    color: colors.COULEUR_HEADER_BLEU,
     fontWeight: '600',
+    marginTop: 8,
   },
   loadingText: {
     marginTop: 10,
