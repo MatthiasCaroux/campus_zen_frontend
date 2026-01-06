@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as colors from "../src/theme/colors.js";
+import apiClient from "../config/axiosConfig";
 
 type Questionnaire = {
   idQuestionnaire: number;
@@ -9,8 +10,6 @@ type Questionnaire = {
 };
 
 import { useNavigation } from '@react-navigation/native';
-
-// ...
 
 export default function QuestionnaireScreen() {
   const navigation = useNavigation<any>();
@@ -25,16 +24,11 @@ export default function QuestionnaireScreen() {
   const fetchQuestionnaires = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://campuszenbackend-prod.up.railway.app/api/questionnaires');
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des questionnaires');
-      }
-
-      const data = await response.json();
-      setQuestionnaires(data);
+      const response = await apiClient.get('/questionnaires/');
+      const data = response.data?.data ?? response.data ?? [];
+      setQuestionnaires(Array.isArray(data) ? data : []);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
       console.error('Erreur:', err);
     } finally {
