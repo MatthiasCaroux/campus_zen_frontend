@@ -12,9 +12,6 @@ import QuestionnaireScreen from "./screens/QuestionnaireScreen";
 import ConsultEtatScreen from "./screens/ConsultEtatScreen";
 import QuestionsScreen from "./screens/QuestionsScreen";
 import RessourcesScreen from "./screens/RessourcesScreen";
-import RessourceFormScreen from "./screens/RessourceFormScreen";
-import ProFormScreen from "./screens/ProFormScreen";
-import QuestionnaireStack from "./screens/QuestionnaireStack";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,11 +30,6 @@ function MapsStack() {
         component={ProDetailsScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen 
-        name="ProFormScreen" 
-        component={ProFormScreen} 
-        options={{ headerShown: false }}
-      />
     </Stack.Navigator>
   );
 }
@@ -53,36 +45,19 @@ function HomeStackNavigator() {
       <HomeStack.Screen
         name="Questionnaire"
         component={QuestionnaireScreen}
-        options={{ title: "Questionnaire" }}
+        options={{ title: "Questionnaire", headerShown: true }}
       />
       <HomeStack.Screen
         name="Questions"
         component={QuestionsScreen}
-        options={{ title: "Questions" }}
+        options={{ title: "Questions", headerShown: true }}
       />
       <HomeStack.Screen
         name="ConsultEtat"
         component={ConsultEtatScreen}
-        options={{ title: "Mon état" }}
+        options={{ title: "Mon état", headerShown: true }}
       />
     </HomeStack.Navigator>
-  );
-}
-
-function RessourcesStackNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="RessourcesMain"
-        component={RessourcesScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="RessourceForm"
-        component={RessourceFormScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
   );
 }
 
@@ -98,8 +73,6 @@ export default function MainTabs() {
           else if (route.name === "Stats") iconName = focused ? "stats-chart" : "stats-chart-outline";
           else if (route.name === "Compte") iconName = focused ? "person" : "person-outline";
           else if (route.name === "Ressources") iconName = focused ? "book" : "book-outline";
-          else if (route.name === "Questionnaire") iconName = focused ? "help-circle" : "help-circle-outline";
-
           else iconName = "help-outline";
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -112,11 +85,10 @@ export default function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeStackNavigator} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
       <Tab.Screen name="Maps" component={MapsStack} options={{ title: "Maps", tabBarLabel: "Maps" }} />
-      <Tab.Screen name="Ressources" component={RessourcesStackNavigator} options={{ title: "Ressources", tabBarLabel: "Ressources" }} />
+      <Tab.Screen name="Ressources" component={RessourcesScreen} options={{ title: "Ressources", tabBarLabel: "Ressources" }} />
       {/*
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
       */}
-      <Tab.Screen name="Questionnaire" component={QuestionnaireStack} options={{ title: "Questionnaire", tabBarLabel: "Questionnaire" }} />
       <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
 
     </Tab.Navigator>
