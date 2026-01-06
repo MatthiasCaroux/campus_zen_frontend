@@ -3,8 +3,10 @@ import { AuthContext } from "../context/AuthContext";
 import { getStoredUser } from "../services/AuthService";
 import { compteStyles } from "../src/screenStyles/CompteStyle";
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
-import { COULEUR_BOUTON } from '../src/theme/colors';
+import * as colors from '../src/theme/colors';
 import { useTranslation } from "../src/context/LanguageContext";
 
 import LanguageSelector from "../src/components/LanguageSelector";
@@ -34,47 +36,82 @@ export default function CompteScreen() {
 
   if (loading) {
     return (
-      <View style={compteStyles.loadingContainer}>
-        <ActivityIndicator size="large" color={COULEUR_BOUTON} />
+      <LinearGradient
+        colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
+        style={compteStyles.loadingContainer}
+      >
+        <ActivityIndicator size="large" color={colors.COULEUR_WHITE} />
         <Text style={compteStyles.loadingText}>Chargement des informations...</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   if (!user) {
     return (
-      <View style={compteStyles.loadingContainer}>
+      <LinearGradient
+        colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
+        style={compteStyles.loadingContainer}
+      >
         <Text style={compteStyles.noUser}>Utilisateur non connecté.</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={compteStyles.container}>
-      <View style={compteStyles.card}>
-        <Text style={compteStyles.title}>{t('hello')}, {user.emailPers} !</Text>
-
-        <View style={compteStyles.infoRow}>
-          <Text style={compteStyles.label}>ID :</Text>
-          <Text style={compteStyles.value}>{user.idPers}</Text>
+    <LinearGradient
+      colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
+      style={compteStyles.gradientContainer}
+    >
+      <ScrollView contentContainerStyle={compteStyles.container}>
+        {/* Section Profil */}
+        <View style={compteStyles.profileSection}>
+          <View style={compteStyles.avatarContainer}>
+            <Ionicons name="person-circle" size={80} color={colors.COULEUR_WHITE} />
+          </View>
+          <Text style={compteStyles.welcomeText}>{t('hello')} !</Text>
+          <Text style={compteStyles.emailText}>{user.emailPers}</Text>
         </View>
 
-        <View style={compteStyles.infoRow}>
-          <Text style={compteStyles.label}>Rôle :</Text>
-          <Text style={compteStyles.value}>{user.role}</Text>
+        {/* Carte Informations */}
+        <View style={compteStyles.card}>
+          <Text style={compteStyles.cardTitle}>Mes informations</Text>
+
+          <View style={compteStyles.infoRow}>
+            <View style={compteStyles.infoIconContainer}>
+              <Ionicons name="id-card-outline" size={24} color={colors.COULEUR_HEADER_BLEU} />
+            </View>
+            <View style={compteStyles.infoContent}>
+              <Text style={compteStyles.label}>ID</Text>
+              <Text style={compteStyles.value}>{user.idPers}</Text>
+            </View>
+          </View>
+
+          <View style={compteStyles.separator} />
+
+          <View style={compteStyles.infoRow}>
+            <View style={compteStyles.infoIconContainer}>
+              <Ionicons name="shield-checkmark-outline" size={24} color={colors.COULEUR_HEADER_BLEU} />
+            </View>
+            <View style={compteStyles.infoContent}>
+              <Text style={compteStyles.label}>Rôle</Text>
+              <Text style={compteStyles.value}>{user.role}</Text>
+            </View>
+          </View>
         </View>
 
-        {/* Ajouter d'autres infos ici si besoin */}
-      </View>
+        {/* Carte Langue */}
+        <View style={compteStyles.card}>
+          <Text style={compteStyles.cardTitle}>Langue</Text>
+          <LanguageSelector />
+        </View>
 
-      <View style={{ marginVertical: 20 }}>
-        <LanguageSelector />
-      </View>
-
-      <TouchableOpacity style={compteStyles.logoutButton} onPress={logout}>
-        <Text style={compteStyles.logoutButtonText}>Se déconnecter</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Bouton Déconnexion */}
+        <TouchableOpacity style={compteStyles.logoutButton} onPress={logout}>
+          <Ionicons name="log-out-outline" size={20} color={colors.COULEUR_WHITE} style={{ marginRight: 8 }} />
+          <Text style={compteStyles.logoutButtonText}>Se déconnecter</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
