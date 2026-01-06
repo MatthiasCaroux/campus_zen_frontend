@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { register as apiRegister } from "../services/AuthService";
 import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
 
@@ -8,6 +8,23 @@ export default function RegisterScreen({ navigation }: any) {
   const [passwordPers, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+
+  const scrollViewRef = useRef<ScrollView>(null);
+  const emailInputRef = useRef<View>(null);
+  const passwordInputRef = useRef<View>(null);
+  const confirmPasswordInputRef = useRef<View>(null);
+
+  const scrollToInput = (inputRef: React.RefObject<View>) => {
+    setTimeout(() => {
+      inputRef.current?.measureLayout(
+        scrollViewRef.current as any,
+        (x, y) => {
+          scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+        },
+        () => {}
+      );
+    }, 100);
+  };
 
   const handleRegister = async () => {
     if (passwordPers !== confirmPassword) {
@@ -31,59 +48,76 @@ export default function RegisterScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#ffffff" }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
     >
-      <View style={loginRegisterStyle.wrapper}>
-        
-        {/* CARD */}
-        <View style={loginRegisterStyle.card}>
-          
-          <Image 
-            source={require('../assets/logo.png')}
-            style={loginRegisterStyle.logo}
-            resizeMode="contain"
-          />
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={loginRegisterStyle.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={loginRegisterStyle.wrapper}>
 
-          <Text style={loginRegisterStyle.title}>Créer un compte</Text>
+          {/* CARD */}
+          <View style={loginRegisterStyle.card}>
 
-          <TextInput
-            placeholder="Email"
-            value={emailPers}
-            autoCapitalize="none"
-            onChangeText={setEmail}
-            style={loginRegisterStyle.input}
-          />
+            <Image
+              source={require('../assets/logo.png')}
+              style={loginRegisterStyle.logo}
+              resizeMode="contain"
+            />
 
-          <TextInput
-            placeholder="Mot de passe"
-            value={passwordPers}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={loginRegisterStyle.input}
-          />
+            <Text style={loginRegisterStyle.title}>Créer un compte</Text>
 
-          <TextInput
-            placeholder="Confirmer le mot de passe"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-            style={loginRegisterStyle.input}
-          />
+            <View ref={emailInputRef}>
+              <TextInput
+                placeholder="Email"
+                value={emailPers}
+                autoCapitalize="none"
+                onChangeText={setEmail}
+                onFocus={() => scrollToInput(emailInputRef)}
+                style={loginRegisterStyle.input}
+              />
+            </View>
 
-          <TouchableOpacity style={loginRegisterStyle.button} onPress={handleRegister}>
-            <Text style={loginRegisterStyle.buttonText}>S’inscrire</Text>
-          </TouchableOpacity>
+            <View ref={passwordInputRef}>
+              <TextInput
+                placeholder="Mot de passe"
+                value={passwordPers}
+                onChangeText={setPassword}
+                secureTextEntry
+                onFocus={() => scrollToInput(passwordInputRef)}
+                style={loginRegisterStyle.input}
+              />
+            </View>
 
-          {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
+            <View ref={confirmPasswordInputRef}>
+              <TextInput
+                placeholder="Confirmer le mot de passe"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                onFocus={() => scrollToInput(confirmPasswordInputRef)}
+                style={loginRegisterStyle.input}
+              />
+            </View>
 
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={loginRegisterStyle.registerText}>
-              Déjà un compte ? <Text style={loginRegisterStyle.registerLink}>Se connecter</Text>
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={loginRegisterStyle.button} onPress={handleRegister}>
+              <Text style={loginRegisterStyle.buttonText}>S'inscrire</Text>
+            </TouchableOpacity>
 
+            {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
+
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={loginRegisterStyle.registerText}>
+                Déjà un compte ? <Text style={loginRegisterStyle.registerLink}>Se connecter</Text>
+              </Text>
+            </TouchableOpacity>
+
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
