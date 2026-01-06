@@ -314,7 +314,7 @@ export default function MapsScreen() {
         {user && user.role == "admin" && (
           <TouchableOpacity
             style={mapStyles.addButton}
-            onPress={() => navigation.navigate('ProFormScreen')} // Remplace par le screen d'ajout pro
+            onPress={() => navigation.navigate('ProFormScreen')} 
           >
             <Text style={mapStyles.addButtonText}>+ Ajouter</Text>
           </TouchableOpacity>
@@ -351,7 +351,7 @@ export default function MapsScreen() {
           {user && user.role == "admin" && (
           <TouchableOpacity
             style={mapStyles.addButton}
-            onPress={() => navigation.navigate('RessourceFormScreen')} // Remplace par le screen d'ajout pro
+            onPress={() => navigation.navigate('ProFormScreen')} 
           >
             <Text style={mapStyles.addButtonText}>+ Ajouter</Text>
           </TouchableOpacity>
