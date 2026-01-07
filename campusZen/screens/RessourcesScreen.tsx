@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking, SafeAreaView, Platform, StatusBar } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRessources } from "../hooks/useRessources";
 import { ressourcesStyles } from "../src/screenStyles/RessourcesStyle";
@@ -50,14 +50,17 @@ export default function RessourcesScreen() {
 
     if (loading) {
         return (
-            <View style={ressourcesStyles.loadingContainer}>
-                <Text style={ressourcesStyles.loadingText}>Chargement des ressources...</Text>
-            </View>
+            <SafeAreaView style={ressourcesStyles.safeArea}>
+                <View style={ressourcesStyles.loadingContainer}>
+                    <Text style={ressourcesStyles.loadingText}>Chargement des ressources...</Text>
+                </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <ScrollView contentContainerStyle={ressourcesStyles.container}>
+        <SafeAreaView style={ressourcesStyles.safeArea}>
+            <ScrollView contentContainerStyle={ressourcesStyles.container}>
 
             {/* BARRE DE RECHERCHE */}
             <View style={ressourcesStyles.searchContainer}>
@@ -125,6 +128,7 @@ export default function RessourcesScreen() {
             {filteredData.length === 0 && ressources.length != 0 && (
                 <Text style={ressourcesStyles.emptyText}>Aucune ressource ne correspond à votre recherche.</Text>
             )}
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Animated, PanResponder, Platform } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Animated, PanResponder, Platform, SafeAreaView, StatusBar } from 'react-native';
 import { MapView, Marker } from '../components/Map';
 import { Region } from 'react-native-maps';
 import Professionnel from '../types/Professionnel';
@@ -194,12 +194,14 @@ export default function MapsScreen() {
 
   if (loading || locationLoading) {
     return (
-      <View style={mapStyles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={mapStyles.loadingText}>
-          {locationLoading ? 'Localisation en cours...' : 'Chargement des professionnels...'}
-        </Text>
-      </View>
+      <SafeAreaView style={mapStyles.safeArea}>
+        <View style={mapStyles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={mapStyles.loadingText}>
+            {locationLoading ? 'Localisation en cours...' : 'Chargement des professionnels...'}
+          </Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -233,9 +235,10 @@ export default function MapsScreen() {
   );
 
   return (
-  <View style={mapStyles.container}>
+  <SafeAreaView style={mapStyles.safeArea}>
+    <View style={mapStyles.container}>
 
-    <View style={mapStyles.mapContainer}>
+      <View style={mapStyles.mapContainer}>
       <MapView
         ref={mapRef}
         style={mapStyles.map}
@@ -351,7 +354,8 @@ export default function MapsScreen() {
       </View>
     )}
 
-  </View>
+    </View>
+  </SafeAreaView>
   );
 }
 

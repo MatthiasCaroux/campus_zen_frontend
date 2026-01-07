@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { getStoredUser } from "../services/AuthService";
 import { compteStyles } from "../src/screenStyles/CompteStyle";
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, Platform, StatusBar } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -40,8 +40,10 @@ export default function CompteScreen() {
         colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
         style={compteStyles.loadingContainer}
       >
-        <ActivityIndicator size="large" color={colors.COULEUR_WHITE} />
-        <Text style={compteStyles.loadingText}>Chargement des informations...</Text>
+        <SafeAreaView style={compteStyles.safeArea}>
+          <ActivityIndicator size="large" color={colors.COULEUR_WHITE} />
+          <Text style={compteStyles.loadingText}>Chargement des informations...</Text>
+        </SafeAreaView>
       </LinearGradient>
     );
   }
@@ -52,7 +54,9 @@ export default function CompteScreen() {
         colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
         style={compteStyles.loadingContainer}
       >
-        <Text style={compteStyles.noUser}>Utilisateur non connecté.</Text>
+        <SafeAreaView style={compteStyles.safeArea}>
+          <Text style={compteStyles.noUser}>Utilisateur non connecté.</Text>
+        </SafeAreaView>
       </LinearGradient>
     );
   }
@@ -62,7 +66,8 @@ export default function CompteScreen() {
       colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
       style={compteStyles.gradientContainer}
     >
-      <ScrollView contentContainerStyle={compteStyles.container}>
+      <SafeAreaView style={compteStyles.safeArea}>
+        <ScrollView contentContainerStyle={compteStyles.container}>
         {/* Section Profil */}
         <View style={compteStyles.profileSection}>
           <View style={compteStyles.avatarContainer}>
@@ -111,6 +116,7 @@ export default function CompteScreen() {
           <Text style={compteStyles.logoutButtonText}>Se déconnecter</Text>
         </TouchableOpacity>
       </ScrollView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }

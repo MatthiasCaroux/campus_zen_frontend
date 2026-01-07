@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as colors from "../src/theme/colors.js";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -36,7 +36,8 @@ export default function HomeScreen() {
       colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Section principale avec icône nuage et message */}
         <View style={styles.welcomeSection}>
           <View style={styles.cloudIcon}>
@@ -96,6 +97,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -103,6 +105,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   scrollContent: {
     flexGrow: 1,

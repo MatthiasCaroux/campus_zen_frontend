@@ -79,17 +79,17 @@ export default function MainTabs() {
         },
         tabBarActiveTintColor: "#007AFF",
         tabBarInactiveTintColor: "gray",
-        headerShown: true,
+        headerShown: false,
       })}
 
     >
-      <Tab.Screen name="Home" component={HomeStackNavigator} options={{ title: "Accueil", tabBarLabel: "Accueil" }} />
-      <Tab.Screen name="Maps" component={MapsStack} options={{ title: "Maps", tabBarLabel: "Maps" }} />
-      <Tab.Screen name="Ressources" component={RessourcesScreen} options={{ title: "Ressources", tabBarLabel: "Ressources" }} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} options={{ tabBarLabel: "Accueil" }} />
+      <Tab.Screen name="Maps" component={MapsStack} options={{ tabBarLabel: "Maps" }} />
+      <Tab.Screen name="Ressources" component={RessourcesScreen} options={{ tabBarLabel: "Ressources" }} />
       {/*
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: "Statistiques", tabBarLabel: "Stats" }} />
       */}
-      <Tab.Screen name="Compte" component={CompteScreen} options={{ title: "Mon Compte", tabBarLabel: "Compte" }} />
+      <Tab.Screen name="Compte" component={CompteScreen} options={{ tabBarLabel: "Compte" }} />
 
     </Tab.Navigator>
   );

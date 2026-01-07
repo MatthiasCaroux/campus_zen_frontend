@@ -1,7 +1,12 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, StatusBar } from 'react-native';
 import { COULEUR_FOND_BLEU } from '../theme/colors';
 
 export const mapStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    backgroundColor: '#f5f5f5',
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
