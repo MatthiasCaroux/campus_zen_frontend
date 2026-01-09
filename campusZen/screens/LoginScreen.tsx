@@ -11,8 +11,6 @@ export default function LoginScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [apiStatus, setApiStatus] = useState<"checking" | "connected" | "error">("checking");
-  const [apiDetails, setApiDetails] = useState<string>("");
 
   const scrollViewRef = useRef<ScrollView>(null);
   const emailInputRef = useRef<View>(null);
@@ -20,20 +18,6 @@ export default function LoginScreen({ navigation }: any) {
 
   const { login, setUser } = useContext(AuthContext);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const checkApiConnection = async () => {
-      const result = await testApiConnection();
-      if (result.success) {
-        setApiStatus("connected");
-        setApiDetails("Connexion réussie");
-      } else {
-        setApiStatus("error");
-        setApiDetails(result.details || result.error || "Erreur inconnue");
-      }
-    };
-    checkApiConnection();
-  }, []);
 
   const scrollToInput = (inputRef: React.RefObject<View>) => {
     setTimeout(() => {
@@ -85,26 +69,6 @@ export default function LoginScreen({ navigation }: any) {
               style={loginRegisterStyle.logo}
               resizeMode="contain"
             />
-
-            <View style={loginRegisterStyle.apiStatusContainer}>
-              <View style={[
-                loginRegisterStyle.apiStatusIndicator,
-                apiStatus === "connected" && loginRegisterStyle.apiStatusConnected,
-                apiStatus === "error" && loginRegisterStyle.apiStatusError,
-                apiStatus === "checking" && loginRegisterStyle.apiStatusChecking
-              ]} />
-              <View style={loginRegisterStyle.apiStatusTextContainer}>
-                <Text style={loginRegisterStyle.apiStatusText}>
-                  {apiStatus === "checking" && "Vérification de l'API..."}
-                  {apiStatus === "connected" && "API connectée"}
-                  {apiStatus === "error" && "API non accessible"}
-                </Text>
-                <Text style={loginRegisterStyle.apiUrlText}>{API_BASE_URL}</Text>
-                {apiDetails && apiStatus !== "checking" && (
-                  <Text style={loginRegisterStyle.apiDetailsText}>{apiDetails}</Text>
-                )}
-              </View>
-            </View>
 
             <LanguageSelector />
             <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
