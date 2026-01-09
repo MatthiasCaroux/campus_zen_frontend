@@ -1,10 +1,9 @@
 import axios from 'axios';
 
 // Configuration de l'URL de base de l'API
-const API_BASE_URL = __DEV__
-  // ? 'http://localhost:8000/api/' // URL pour le développement
-  ? 'http://54.38.35.105:8000/api/' // URL pour le développement
-  : 'http://54.38.35.105:8000/api'; // URL pour la production (même serveur)
+export const API_BASE_URL = __DEV__
+  ? 'https://incidents-bouake.com/api/' // URL pour le développement
+  : 'https://incidents-bouake.com/api/'; // URL pour la production (même serveur)
 
 // Création de l'instance axios
 const apiClient = axios.create({
@@ -54,12 +53,18 @@ apiClient.interceptors.response.use(
 // Fonction pour tester la connexion à l'API
 export const testApiConnection = async () => {
   try {
-    const response = await apiClient.get('/'); // Teste la racine de l'API
+    // Teste avec la route /statuts/ qui existe sur l'API
+    const response = await apiClient.get('/statuts/', { timeout: 5000 });
     console.log('✅ Connexion à l\'API réussie:', response.data);
     return { success: true, data: response.data };
   } catch (error) {
-    console.error('❌ Échec de la connexion à l\'API:', error.message);
-    return { success: false, error: error.message };
+    console.error('❌ Échec de la connexion à l\'API:', error);
+    // Retourne plus d'informations sur l'erreur
+    return {
+      success: false,
+      error: error.message,
+      details: error.response ? `Status: ${error.response.status}` : 'Aucune réponse du serveur'
+    };
   }
 };
 
