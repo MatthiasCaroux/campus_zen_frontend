@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { register as apiRegister } from "../services/AuthService";
 import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
-import { testApiConnection, API_BASE_URL } from "../config/axiosConfig";
 
 export default function RegisterScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");

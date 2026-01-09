@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAccessToken } from '../services/SecureStorage';
 
 // Configuration de l'URL de base de l'API
 export const API_BASE_URL = __DEV__
@@ -14,14 +15,13 @@ const apiClient = axios.create({
   },
 });
 
-// Intercepteur pour les requêtes
+// Intercepteur pour les requêtes - Ajoute automatiquement le token à chaque requête
 apiClient.interceptors.request.use(
-  (config) => {
-    // Vous pouvez ajouter un token d'authentification ici si nécessaire
-    // const token = await AsyncStorage.getItem('authToken');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+  async (config) => {
+    const token = await getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

@@ -5,7 +5,6 @@ import { AuthContext } from "../context/AuthContext";
 import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
 import { useTranslation } from "../src/context/LanguageContext";
 import LanguageSelector from "../src/components/LanguageSelector";
-import { testApiConnection, API_BASE_URL } from "../config/axiosConfig";
 
 export default function LoginScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
