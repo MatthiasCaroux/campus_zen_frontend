@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import apiClient from "../../config/axiosConfig";
 import { useNavigation } from "@react-navigation/native";
+import { getAccessToken } from "../../services/SecureStorage";
 
 export default function QuestionnaireScreen({ route }: any) {
     const [nomQuestionnaire, setNomQuestionnaire] = useState("");
@@ -42,19 +43,20 @@ export default function QuestionnaireScreen({ route }: any) {
             console.log("Sending questionnaire payload:", payload);
 
             let response;
+            const token = await getAccessToken();
             if (isEdit && editId) {
                 try {
-                    response = await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json" } });
+                    response = await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } });
                 } catch (e1: any) {
                     const st = e1?.response?.status;
                     if (st === 404 || st === 405) {
-                        response = await apiClient.put(`/questionnaire/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json" } });
+                        response = await apiClient.put(`/questionnaire/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } });
                     } else {
                         throw e1;
                     }
                 }
             } else {
-                response = await apiClient.post("/questionnaires/", payload, { headers: { Accept: "application/json" } });
+                response = await apiClient.post("/questionnaires/", payload, { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } });
             }
 
             setLoading(false);

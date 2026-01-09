@@ -1,7 +1,10 @@
 // Récupère le climat par son id
 export async function getClimatById(id: number) {
   try {
-    const response = await axios.get(`${API_URL}climats/${id}/`);
+    const token = await getAccessToken();
+    const response = await axios.get(`${API_URL}climats/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return response.data;
   } catch (error: any) {
     console.error("Erreur récupération climat:", error.response?.data || error.message);
@@ -24,10 +27,14 @@ export async function getStoredUser() {
 import axios from "axios";
 import { API_URL } from "../config/endpoints";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAccessToken } from "./SecureStorage";
 
 export async function getRandomMessageByClimatId(idclimat: number) {
   try {
-    const response = await axios.get(`${API_URL}messages/?idClimat=${idclimat}`);
+    const token = await getAccessToken();
+    const response = await axios.get(`${API_URL}messages/?idClimat=${idclimat}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const messages = response.data;
     if (Array.isArray(messages) && messages.length > 0) {
       // Sélectionne un message aléatoire
@@ -43,9 +50,12 @@ export async function getRandomMessageByClimatId(idclimat: number) {
 
 export const register = async (emailPers: string, passwordPers: string) => {
   try {
+    const token = await getAccessToken();
     const response = await axios.post(`${API_URL}register/`, {
       emailPers,
       passwordPers,
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   } catch (error: any) {
@@ -56,9 +66,12 @@ export const register = async (emailPers: string, passwordPers: string) => {
 
 export const login = async (emailPers: string, password: string) => {
   try {
+    const token = await getAccessToken();
     const response = await axios.post(`${API_URL}token/`, {
       emailPers,
       password,
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   } catch (error: any) {
@@ -81,7 +94,10 @@ export async function getAPICurrentUser (token: string) {
 
 export async function getStatuts() {
   try {
-    const response = await axios.get(`${API_URL}statuts/`);
+    const token = await getAccessToken();
+    const response = await axios.get(`${API_URL}statuts/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return response.data;
   } catch (error: any) {
     console.error("Erreur récupération statuts:", error.response?.data || error.message);

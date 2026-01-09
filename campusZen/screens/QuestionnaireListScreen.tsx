@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Button, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import apiClient from "../config/axiosConfig";
+import { getAccessToken } from "../services/SecureStorage";
 
 type Questionnaire = {
   id: number | string;
@@ -19,7 +20,10 @@ export default function QuestionnaireListScreen() {
   const fetchList = async () => {
     setLoading(true);
     try {
-      const res = await apiClient.get("/questionnaires/");
+      const token = await getAccessToken();
+      const res = await apiClient.get("/questionnaires/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = res.data?.data ?? res.data ?? [];
       setItems(Array.isArray(data) ? data : []);
       setLoading(false);
@@ -90,10 +94,13 @@ export default function QuestionnaireListScreen() {
                       try {
                         setLoading(true);
                         let success = false;
+                        const token = await getAccessToken();
                         try {
                           const url = `/questionnaires/${questionnaireId}/`;
                           console.log("[DELETE] Full URL:", url);
-                          await apiClient.delete(url);
+                          await apiClient.delete(url, {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
                           console.log("[DELETE] Succès /questionnaires/{id}/");
                           success = true;
                         } catch (e1: any) {
@@ -102,7 +109,9 @@ export default function QuestionnaireListScreen() {
                           if (st === 404 || st === 405) {
                             try {
                               console.log("[DELETE] Essai /questionnaire/{id}/");
-                              await apiClient.delete(`/questionnaire/${questionnaireId}/`);
+                              await apiClient.delete(`/questionnaire/${questionnaireId}/`, {
+                                headers: { Authorization: `Bearer ${token}` },
+                              });
                               console.log("[DELETE] Succès /questionnaire/{id}/");
                               success = true;
                             } catch (e2: any) {

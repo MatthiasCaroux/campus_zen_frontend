@@ -6,15 +6,15 @@ function getClimatImage(nom: string) {
   switch (nom.toLowerCase()) {
     case 'nuageux':
       return require('../assets/nuageux.png');
-    case 'soleil':
+    case 'ensoleillé':
       return require('../assets/soleil.png');
     case 'pluvieux':
       return require('../assets/pluvieux.png');
-    case 'neigeux':
-      return require('../assets/nuageux.png');
-    case 'orageux':
+    case 'vent frais':
+      return require('../assets/vent_frais.png');
+    case 'tempête':
       return require('../assets/orageux.png');
-    case 'venteux':
+    case 'quand le vent souffle':
       return require('../assets/venteux.png');
     default:
       return require('../assets/nuageux.png');

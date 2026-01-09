@@ -2,34 +2,17 @@ import React, { useState, useRef, useEffect } from "react";
 import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { register as apiRegister } from "../services/AuthService";
 import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
-import { testApiConnection, API_BASE_URL } from "../config/axiosConfig";
 
 export default function RegisterScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [apiStatus, setApiStatus] = useState<"checking" | "connected" | "error">("checking");
-  const [apiDetails, setApiDetails] = useState<string>("");
 
   const scrollViewRef = useRef<ScrollView>(null);
   const emailInputRef = useRef<View>(null);
   const passwordInputRef = useRef<View>(null);
   const confirmPasswordInputRef = useRef<View>(null);
-
-  useEffect(() => {
-    const checkApiConnection = async () => {
-      const result = await testApiConnection();
-      if (result.success) {
-        setApiStatus("connected");
-        setApiDetails("Connexion réussie");
-      } else {
-        setApiStatus("error");
-        setApiDetails(result.details || result.error || "Erreur inconnue");
-      }
-    };
-    checkApiConnection();
-  }, []);
 
   const scrollToInput = (inputRef: React.RefObject<View>) => {
     setTimeout(() => {
@@ -84,26 +67,6 @@ export default function RegisterScreen({ navigation }: any) {
               style={loginRegisterStyle.logo}
               resizeMode="contain"
             />
-
-            <View style={loginRegisterStyle.apiStatusContainer}>
-              <View style={[
-                loginRegisterStyle.apiStatusIndicator,
-                apiStatus === "connected" && loginRegisterStyle.apiStatusConnected,
-                apiStatus === "error" && loginRegisterStyle.apiStatusError,
-                apiStatus === "checking" && loginRegisterStyle.apiStatusChecking
-              ]} />
-              <View style={loginRegisterStyle.apiStatusTextContainer}>
-                <Text style={loginRegisterStyle.apiStatusText}>
-                  {apiStatus === "checking" && "Vérification de l'API..."}
-                  {apiStatus === "connected" && "API connectée"}
-                  {apiStatus === "error" && "API non accessible"}
-                </Text>
-                <Text style={loginRegisterStyle.apiUrlText}>{API_BASE_URL}</Text>
-                {apiDetails && apiStatus !== "checking" && (
-                  <Text style={loginRegisterStyle.apiDetailsText}>{apiDetails}</Text>
-                )}
-              </View>
-            </View>
 
             <Text style={loginRegisterStyle.title}>Créer un compte</Text>
 
