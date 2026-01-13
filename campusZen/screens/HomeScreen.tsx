@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import * as colors from "../src/theme/colors.js";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +12,13 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [showConsultEtat, setShowConsultEtat] = useState(false);
+
+  const todayLabel = useMemo(() => {
+    const now = new Date();
+    const day = now.toLocaleDateString(undefined, { weekday: 'long' });
+    const date = now.toLocaleDateString(undefined, { day: '2-digit', month: 'long' });
+    return `${day} · ${date}`;
+  }, []);
 
   useEffect(() => {
     const checkStatut = async () => {
@@ -38,65 +45,103 @@ export default function HomeScreen() {
     >
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Section principale avec icône nuage et message */}
-        <View style={styles.welcomeSection}>
-          <View style={styles.cloudIcon}>
-            <Ionicons name="cloud" size={80} color={colors.COULEUR_WHITE} />
-            <Ionicons name="sunny" size={30} color={colors.COULEUR_SOLEIL} style={styles.sunIcon} />
+          <View style={styles.headerRow}>
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.logoHeader}
+              resizeMode="contain"
+            />
           </View>
 
-          <Text style={styles.appTitle}>CampusZen</Text>
-          <Text style={styles.motivationalMessage}>
-            {t('motivational_message')}
-          </Text>
-        </View>
-        {/* Bouton Consulter mon état (affiché seulement si statut trouvé) */}
-        {showConsultEtat && (
-          <TouchableOpacity
-            style={styles.consultButton}
-            onPress={() => {
-              navigation.navigate('ConsultEtat');
-            }}
-          >
-            <Text style={styles.consultButtonText}>Consulter mon état</Text>
-          </TouchableOpacity>
-        )}
-        {/* Section Ce soir */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>{t('tonight')}</Text>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('Questionnaire')}>
+          <View style={styles.datePill}>
+            <Ionicons name="calendar-outline" size={16} color={colors.COULEUR_WHITE} />
+            <Text style={styles.datePillText}>{todayLabel}</Text>
+          </View>
 
-            <Text style={styles.actionButtonText}>{t('evaluate_wellbeing')}</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Section Aujourd'hui */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>{t('today')}</Text>
-
-          <TouchableOpacity style={styles.videoButton}>
-            <View style={styles.buttonContent}>
-              <View style={styles.youtubeIcon}>
-                <Ionicons name="logo-youtube" size={20} color={colors.COULEUR_WHITE} />
-              </View>
-              <Text style={styles.videoButtonText}>
-                {t('watch_video')}
-              </Text>
+          <View style={styles.heroCard}>
+            <View style={styles.heroIconWrap}>
+              <Ionicons name="cloud" size={40} color={colors.COULEUR_WHITE} />
+              <Ionicons name="sunny" size={18} color={colors.COULEUR_SOLEIL} style={styles.sunIcon} />
             </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.podcastButton}>
-            <View style={styles.buttonContent}>
-              <View style={styles.youtubeIcon}>
-                <Ionicons name="logo-youtube" size={20} color={colors.COULEUR_WHITE} />
-              </View>
-              <Text style={styles.podcastButtonText}>{t('listen_podcast')}</Text>
+            <View style={styles.heroTextWrap}>
+              <Text style={styles.heroTitle}>{t('home_hero_title')}</Text>
+              <Text style={styles.heroSubtitle}>{t('motivational_message')}</Text>
             </View>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>{t('home_checkin_title')}</Text>
+
+            <View style={styles.gridRow}>
+              <TouchableOpacity
+                style={[styles.actionCard, styles.actionCardPrimary]}
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate('Questionnaire')}
+              >
+                <View style={styles.actionCardTopRow}>
+                  <View style={[styles.actionIcon, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+                    <Ionicons name="heart-outline" size={20} color={colors.COULEUR_WHITE} />
+                  </View>
+                  <Ionicons name="arrow-forward" size={18} color={colors.COULEUR_WHITE} style={{ opacity: 0.9 }} />
+                </View>
+                <Text style={styles.actionCardTitle}>{t('home_checkin_cta')}</Text>
+                <Text style={styles.actionCardSubtitle}>{t('home_checkin_hint')}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.actionCard,
+                  styles.actionCardSecondary,
+                  !showConsultEtat && styles.actionCardDisabled,
+                ]}
+                activeOpacity={0.9}
+                disabled={!showConsultEtat}
+                onPress={() => navigation.navigate('ConsultEtat')}
+              >
+                <View style={styles.actionCardTopRow}>
+                  <View style={[styles.actionIcon, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+                    <Ionicons name="pulse-outline" size={20} color={colors.COULEUR_WHITE} />
+                  </View>
+                  <Ionicons name="arrow-forward" size={18} color={colors.COULEUR_WHITE} style={{ opacity: 0.9 }} />
+                </View>
+                <Text style={styles.actionCardTitle}>{t('consult_status')}</Text>
+                <Text style={styles.actionCardSubtitle}>
+                  {showConsultEtat ? t('home_status_hint') : t('home_status_hint_empty')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>{t('home_inspiration_title')}</Text>
+
+            <TouchableOpacity style={[styles.miniButton, styles.miniButtonVideo]} activeOpacity={0.9}>
+              <View style={styles.miniButtonRow}>
+                <View style={[styles.youtubeIcon, styles.youtubeIconVideo]}>
+                  <Ionicons name="play" size={16} color={colors.COULEUR_WHITE} />
+                </View>
+                <Text style={styles.miniButtonText}>{t('watch_video')}</Text>
+                <View style={[styles.miniBadge, styles.miniBadgeVideo]}>
+                  <Text style={styles.miniBadgeText}>{t('home_video_badge')}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={colors.COULEUR_TEXT_DARK} />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.miniButton, styles.miniButtonPodcast]} activeOpacity={0.9}>
+              <View style={styles.miniButtonRow}>
+                <View style={[styles.youtubeIcon, styles.youtubeIconPodcast]}>
+                  <Ionicons name="mic" size={16} color={colors.COULEUR_WHITE} />
+                </View>
+                <Text style={styles.miniButtonText}>{t('listen_podcast')}</Text>
+                <View style={[styles.miniBadge, styles.miniBadgePodcast]}>
+                  <Text style={styles.miniBadgeText}>{t('home_podcast_badge')}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={colors.COULEUR_TEXT_DARK} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -112,140 +157,234 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: 18,
+    paddingTop: 16,
     paddingBottom: 40,
   },
-  welcomeSection: {
+  headerRow: {
     alignItems: 'center',
-    marginBottom: 30,
-    paddingTop: 20,
-  },
-  cloudIcon: {
-    position: 'relative',
-    alignItems: 'center',
-    backgroundColor: colors.COULEUR_FOND_BLEU,
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
+    marginTop: 6,
+  },
+  logoHeader: {
+    width: 120,
+    height: 120,
+  },
+  datePill: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    marginBottom: 14,
+  },
+  datePillText: {
+    color: 'rgba(255,255,255,0.92)',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  heroCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    marginBottom: 18,
+  },
+  heroIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    marginRight: 14,
   },
   sunIcon: {
     position: 'absolute',
-    top: -10,
-    right: -10,
+    top: -6,
+    right: -6,
   },
-  appTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
+  heroTextWrap: {
+    flex: 1,
+  },
+  heroTitle: {
     color: colors.COULEUR_WHITE,
-    marginBottom: 15,
-  },
-  motivationalMessage: {
     fontSize: 16,
-    color: colors.COULEUR_WHITE,
-    textAlign: 'center',
-    lineHeight: 22,
-    opacity: 0.9,
+    fontWeight: '800',
+    marginBottom: 6,
   },
-  consultButton: {
-    backgroundColor: colors.COULEUR_WHITE,
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    marginBottom: 30,
-    shadowColor: colors.COULEUR_BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  consultButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.COULEUR_TEXT_DARK,
-    textAlign: 'center',
+  heroSubtitle: {
+    color: 'rgba(255,255,255,0.92)',
+    fontSize: 14,
+    lineHeight: 20,
   },
   sectionContainer: {
     marginBottom: 25,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '800',
     color: colors.COULEUR_WHITE,
     marginBottom: 15,
   },
-  actionButton: {
-    backgroundColor: colors.COULEUR_WHITE,
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    marginBottom: 10,
+  gridRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionCard: {
+    flex: 1,
+    borderRadius: 18,
+    padding: 16,
+    minHeight: 130,
     shadowColor: colors.COULEUR_BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.14,
+    shadowRadius: 18,
+    elevation: 6,
   },
-  actionButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.COULEUR_TEXT_DARK,
-    textAlign: 'center',
+  actionCardPrimary: {
+    backgroundColor: '#2E7CF6',
   },
-  videoButton: {
-    backgroundColor: colors.COULEUR_WHITE,
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    marginBottom: 10,
-    shadowColor: colors.COULEUR_BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  actionCardSecondary: {
+    backgroundColor: '#6B4EFF',
   },
-  podcastButton: {
-    backgroundColor: colors.COULEUR_WHITE,
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    shadowColor: colors.COULEUR_BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  buttonContent: {
+  actionCardTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  actionIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionCardTitle: {
+    color: colors.COULEUR_WHITE,
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  actionCardSubtitle: {
+    color: 'rgba(255,255,255,0.92)',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  actionCardDisabled: {
+    opacity: 0.6,
+  },
+  whiteCardButton: {
+    backgroundColor: colors.COULEUR_WHITE,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+    shadowColor: colors.COULEUR_BLACK,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  whiteCardButtonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  whiteCardIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  whiteCardTitle: {
+    fontSize: 15,
+    color: colors.COULEUR_TEXT_DARK,
+    fontWeight: '800',
+  },
+  whiteCardSubtitle: {
+    marginTop: 2,
+    fontSize: 12,
+    color: 'rgba(0,0,0,0.6)',
+  },
+  miniButton: {
+    backgroundColor: colors.COULEUR_WHITE,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)',
+    shadowColor: colors.COULEUR_BLACK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  miniButtonVideo: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.COULEUR_YOUTUBE,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+  },
+  miniButtonPodcast: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#6B4EFF',
+    backgroundColor: 'rgba(255,255,255,0.96)',
+  },
+  miniButtonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   youtubeIcon: {
     backgroundColor: colors.COULEUR_YOUTUBE,
-    borderRadius: 4,
-    padding: 4,
-    marginRight: 15,
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  videoButtonText: {
-    fontSize: 15,
-    color: colors.COULEUR_TEXT_DARK,
-    fontWeight: '500',
-    flex: 1,
+  youtubeIconVideo: {
+    backgroundColor: colors.COULEUR_YOUTUBE,
   },
-  podcastButtonText: {
-    fontSize: 15,
-    color: colors.COULEUR_TEXT_DARK,
-    fontWeight: '500',
+  youtubeIconPodcast: {
+    backgroundColor: '#6B4EFF',
+  },
+  miniButtonText: {
     flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.COULEUR_TEXT_DARK,
+    lineHeight: 18,
+  },
+  miniBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+  },
+  miniBadgeVideo: {
+    backgroundColor: 'rgba(255, 59, 48, 0.12)',
+  },
+  miniBadgePodcast: {
+    backgroundColor: 'rgba(107, 78, 255, 0.14)',
+  },
+  miniBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: 'rgba(0,0,0,0.72)',
+    letterSpacing: 0.3,
   },
 });
