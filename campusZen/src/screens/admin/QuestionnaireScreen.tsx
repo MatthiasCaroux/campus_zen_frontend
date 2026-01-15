@@ -44,12 +44,12 @@ export default function QuestionnaireScreen({ route }: any) {
             if (isEdit && editId) {
                 try {
                     await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload);
-                } catch (e1: any) {
-                    const st = e1?.response?.status;
+                } catch (error_: any) {
+                    const st = error_?.response?.status;
                     if (st === 404 || st === 405) {
                         await apiClient.put(`/questionnaire/${encodeURIComponent(String(editId))}/`, payload);
                     } else {
-                        throw e1;
+                        throw error_;
                     }
                 }
             } else {
@@ -162,8 +162,8 @@ export default function QuestionnaireScreen({ route }: any) {
                                                     await apiClient.delete(`/questionnaires/${editId}/`);
                                                     console.log("[DELETE] Succès /questionnaires/{id}/");
                                                     success = true;
-                                                } catch (e1: any) {
-                                                    const st = e1?.response?.status;
+                                                } catch (error_: any) {
+                                                    const st = error_?.response?.status;
                                                     console.log("[DELETE] Erreur /questionnaires/{id}/", { status: st });
                                                     if (st === 404 || st === 405) {
                                                         try {
@@ -171,12 +171,12 @@ export default function QuestionnaireScreen({ route }: any) {
                                                             await apiClient.delete(`/questionnaire/${editId}/`);
                                                             console.log("[DELETE] Succès /questionnaire/{id}/");
                                                             success = true;
-                                                        } catch (e2: any) {
-                                                            console.log("[DELETE] Erreur /questionnaire/{id}/", { status: e2?.response?.status });
-                                                            throw e2;
+                                                        } catch (error__: any) {
+                                                            console.log("[DELETE] Erreur /questionnaire/{id}/", { status: error__?.response?.status });
+                                                            throw error__;
                                                         }
                                                     } else {
-                                                        throw e1;
+                                                        throw error_;
                                                     }
                                                 }
                                                 setLoading(false);

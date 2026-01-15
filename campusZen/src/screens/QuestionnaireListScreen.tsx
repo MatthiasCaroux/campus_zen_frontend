@@ -95,21 +95,21 @@ export default function QuestionnaireListScreen() {
                           await apiClient.delete(url);
                           console.log("[DELETE] Succès /questionnaires/{id}/");
                           success = true;
-                        } catch (e1: any) {
-                          const st = e1?.response?.status;
-                          console.log("[DELETE] Erreur /questionnaires/{id}/", { status: st, message: e1?.message });
+                        } catch (error_: any) {
+                          const st = error_?.response?.status;
+                          console.log("[DELETE] Erreur /questionnaires/{id}/", { status: st, message: error_?.message });
                           if (st === 404 || st === 405) {
                             try {
                               console.log("[DELETE] Essai /questionnaire/{id}/");
                               await apiClient.delete(`/questionnaire/${questionnaireId}/`);
                               console.log("[DELETE] Succès /questionnaire/{id}/");
                               success = true;
-                            } catch (e2: any) {
-                              console.log("[DELETE] Erreur /questionnaire/{id}/", { status: e2?.response?.status });
-                              throw e2;
+                            } catch (error__: any) {
+                              console.log("[DELETE] Erreur /questionnaire/{id}/", { status: error__?.response?.status });
+                              throw error__;
                             }
                           } else {
-                            throw e1;
+                            throw error_;
                           }
                         }
                         setLoading(false);

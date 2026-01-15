@@ -3,7 +3,6 @@ import {
     View,
     Text,
     StyleSheet,
-    TextInput,
     Button,
     Alert,
     ActivityIndicator,
@@ -25,7 +24,7 @@ export default function QuestionnaireQuestions({ route }: any) {
 
     const [loading, setLoading] = useState(false);
     const navigation = useNavigation<any>();
-    const getQuestionId = (q: Partial<Questions> | any): string | number | undefined =>
+    const getQuestionId = (q: any): string | number | undefined =>
         q?.idQuestion ?? q?.id ?? q?.question?.id ?? q?.questionId;
     const questionnaireId =
         route?.params?.questionnaireId ||
@@ -60,8 +59,8 @@ export default function QuestionnaireQuestions({ route }: any) {
                                 );
                                 console.log("[DELETE] Succès /questions/{id}/");
                                 success = true;
-                            } catch (e1: any) {
-                                const st = e1?.response?.status;
+                            } catch (error_: any) {
+                                const st = error_?.response?.status;
                                 console.log("[DELETE] Erreur /questions/{id}/", { status: st });
                                 if (st === 404 || st === 405) {
                                     try {
@@ -71,12 +70,12 @@ export default function QuestionnaireQuestions({ route }: any) {
                                         );
                                         console.log("[DELETE] Succès /question/{id}/");
                                         success = true;
-                                    } catch (e2: any) {
-                                        console.log("[DELETE] Erreur /question/{id}/", { status: e2?.response?.status });
-                                        throw e2;
+                                    } catch (error__: any) {
+                                        console.log("[DELETE] Erreur /question/{id}/", { status: error__?.response?.status });
+                                        throw error__;
                                     }
                                 } else {
-                                    throw e1;
+                                    throw error_;
                                 }
                             }
                             setLoading(false);

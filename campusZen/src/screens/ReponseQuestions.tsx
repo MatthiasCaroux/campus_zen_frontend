@@ -68,8 +68,8 @@ export default function ReponseQuestions({ route }: any) {
                             await apiClient.delete(`/reponses/${idReponse}/`);
                             console.log("[DELETE] Succès /reponses/{id}/");
                             success = true;
-                        } catch (e1: any) {
-                            const st = e1?.response?.status;
+                        } catch (error_: any) {
+                            const st = error_?.response?.status;
                             console.log("[DELETE] Erreur /reponses/{id}/", { status: st });
                             if (st === 404 || st === 405) {
                                 try {
@@ -77,12 +77,12 @@ export default function ReponseQuestions({ route }: any) {
                                     await apiClient.delete(`/reponse/${idReponse}/`);
                                     console.log("[DELETE] Succès /reponse/{id}/");
                                     success = true;
-                                } catch (e2: any) {
-                                    console.log("[DELETE] Erreur /reponse/{id}/", { status: e2?.response?.status });
-                                    throw e2;
+                                } catch (error__: any) {
+                                    console.log("[DELETE] Erreur /reponse/{id}/", { status: error__?.response?.status });
+                                    throw error__;
                                 }
                             } else {
-                                throw e1;
+                                throw error_;
                             }
                         }
                         setLoading(false);

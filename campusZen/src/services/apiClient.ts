@@ -6,7 +6,7 @@ import { API_BASE_URL } from '../config/apiConfig';
  * Client API centralisé avec gestion automatique des tokens
  */
 class ApiClient {
-  private axiosInstance: AxiosInstance;
+  private readonly axiosInstance: AxiosInstance;
 
   constructor() {
     this.axiosInstance = axios.create({
