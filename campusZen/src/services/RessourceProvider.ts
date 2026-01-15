@@ -1,87 +1,75 @@
-import axios from "axios";
-import { API_URL } from "../config/endpoints";
-import { getAccessToken } from "./SecureStorage";
+import { apiClient } from "./apiClient";
+import { ENDPOINTS } from "../config/apiConfig";
 
-export async function getRessources () {
+/**
+ * Service de gestion des ressources
+ * Fournit les opérations CRUD pour les ressources
+ */
+
+/**
+ * Récupère toutes les ressources
+ */
+export async function getRessources() {
   try {
-    const token = await getAccessToken();
-    if (token === null) {
-      throw new Error("Token d'accès manquant");
-    }
-    const response = await axios.get(`${API_URL}ressources/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const data = await apiClient.get(ENDPOINTS.RESSOURCES.LIST);
+    return data;
   } catch (error: any) {
-    console.error("Erreur récupération des ressources :", error.response?.data || error.message);
+    console.error("Erreur récupération des ressources:", error.message);
     throw error;
   }
-};
+}
 
-
-export async function getRessourceById (id: number) {
+/**
+ * Récupère une ressource par son ID
+ */
+export async function getRessourceById(id: number) {
   try {
-    const token = await getAccessToken();
-    if (token === null) {
-      throw new Error("Token d'accès manquant");
-    }
-    const response = await axios.get(`${API_URL}ressources/${id}/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const data = await apiClient.get(ENDPOINTS.RESSOURCES.DETAIL(id));
+    return data;
   } catch (error: any) {
-    console.error("Erreur récupération des ressources :", error.response?.data || error.message);
+    console.error("Erreur récupération de la ressource:", error.message);
     throw error;
   }
-};
+}
 
-export async function createRessource (data: any) {
+/**
+ * Crée une nouvelle ressource
+ */
+export async function createRessource(data: any) {
   try {
-    const token = await getAccessToken();
-    if (token === null) {
-      throw new Error("Token d'accès manquant");
-    }
-    const response = await axios.post(`${API_URL}ressources/`, data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const result = await apiClient.post(ENDPOINTS.RESSOURCES.LIST, data);
+    return result;
   } catch (error: any) {
-    console.error("Erreur création de la ressource :", error.response?.data || error.message);
+    console.error("Erreur création de la ressource:", error.message);
     throw error;
   }
-};
+}
 
-export async function updateRessource (id: number, data: any) {
+/**
+ * Met à jour une ressource existante
+ */
+export async function updateRessource(id: number, data: any) {
   try {
-    const token = await getAccessToken();
-    if (token === null) {
-      throw new Error("Token d'accès manquant");
-    }
-    const response = await axios.put(`${API_URL}ressources/${id}/`, data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const result = await apiClient.put(ENDPOINTS.RESSOURCES.DETAIL(id), data);
+    return result;
   } catch (error: any) {
-    console.error("Erreur mise à jour de la ressource :", error.response?.data || error.message);
+    console.error("Erreur mise à jour de la ressource:", error.message);
     throw error;
   }
-};
+}
 
-export async function deleteRessource (id: number) {
+/**
+ * Supprime une ressource
+ */
+export async function deleteRessource(id: number) {
   try {
-    const token = await getAccessToken();
-    if (token === null) {
-      throw new Error("Token d'accès manquant");
-    }
-    const response = await axios.delete(`${API_URL}ressources/${id}/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const result = await apiClient.delete(ENDPOINTS.RESSOURCES.DETAIL(id));
+    return result;
   } catch (error: any) {
-    console.error("Erreur suppression de la ressource :", error.response?.data || error.message);
+    console.error("Erreur suppression de la ressource:", error.message);
     throw error;
   }
-};
+}
 
 
 

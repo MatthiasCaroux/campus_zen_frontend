@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as colors from "../theme/colors.js";
-import apiClient from '../config/axiosConfig.js';
+import { apiClient } from '../services/apiClient';
 import { getStoredUser } from '../services/AuthService';
 
 // --- TYPAGES ---
@@ -70,8 +70,8 @@ export default function QuestionsScreen() {
     const fetchQuestions = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await apiClient.get(`/questions/?questionnaireId=${idQuestionnaire}`);
-            setQuestions(response.data);
+            const data = await apiClient.get(`/questions/?questionnaireId=${idQuestionnaire}`);
+            setQuestions(Array.isArray(data) ? data : []);
             setError(null);
         } catch (err) {
             const errorMessage = (err as any)?.message || 'Erreur lors du chargement des questions.';
@@ -84,8 +84,8 @@ export default function QuestionsScreen() {
     const fetchResponses = useCallback(async (questionId: number) => {
         try {
             setLoadingResponses(true);
-            const response = await apiClient.get(`/reponses/?question=${questionId}`);
-            const data: ResponseOption[] = Array.isArray(response.data) ? response.data : [];
+            const result = await apiClient.get(`/reponses/?question=${questionId}`);
+            const data: ResponseOption[] = Array.isArray(result) ? result : [];
             // Tri des réponses par score croissant
             data.sort((a, b) => a.score - b.score);
             setAvailableResponses(data);
@@ -172,13 +172,11 @@ export default function QuestionsScreen() {
             const endpoint = `/questionnaire/${idQuestionnaire}/submit`;
             
             console.log("Envoi...", submissionPayload);
-            const response = await apiClient.post(endpoint, submissionPayload);
-            console.log("Réponse...", response.status);
+            await apiClient.post(endpoint, submissionPayload);
+            console.log("Réponse: Succès");
 
-            if (response.status === 200 || response.status === 201) {
-                // C'EST ICI QUE TOUT CHANGE : On affiche l'écran de succès
-                setIsSuccess(true);
-            }
+            // Si pas d'exception, c'est un succès
+            setIsSuccess(true);
 
         } catch (error: any) {
             console.error(error);

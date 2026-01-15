@@ -8,9 +8,8 @@ import {
     Alert,
     ActivityIndicator,
 } from "react-native";
-import apiClient from "../../config/axiosConfig";
+import { apiClient } from "../../services/apiClient";
 import { useNavigation } from "@react-navigation/native";
-import { getAccessToken } from "../../services/SecureStorage";
 
 export default function QuestionnaireScreen({ route }: any) {
     const [nomQuestionnaire, setNomQuestionnaire] = useState("");
@@ -42,35 +41,31 @@ export default function QuestionnaireScreen({ route }: any) {
             const payload = { nomQuestionnaire: nomQuestionnaire.trim(), descriptionQuestionnaire: descriptionQuestionnaire.trim() };
             console.log("Sending questionnaire payload:", payload);
 
-            let response;
-            const token = await getAccessToken();
             if (isEdit && editId) {
                 try {
-                    response = await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } });
+                    await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload);
                 } catch (e1: any) {
                     const st = e1?.response?.status;
                     if (st === 404 || st === 405) {
-                        response = await apiClient.put(`/questionnaire/${encodeURIComponent(String(editId))}/`, payload, { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } });
+                        await apiClient.put(`/questionnaire/${encodeURIComponent(String(editId))}/`, payload);
                     } else {
                         throw e1;
                     }
                 }
             } else {
-                response = await apiClient.post("/questionnaires/", payload, { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } });
+                await apiClient.post("/questionnaires/", payload);
             }
 
             setLoading(false);
-                            console.log("Delete questionnaire button pressed", { editId });
+            console.log("Questionnaire saved successfully", { editId });
             Alert.alert("Succès", isEdit ? "Questionnaire modifié avec succès." : "Questionnaire créé avec succès.");
             // Reset form
             if (!isEdit) {
                 setNomQuestionnaire("");
                 setDescriptionQuestionnaire("");
             }
-            console.log("API response status:", response.status);
-            console.log("API response data:", response.data);
         } catch (error: any) {
-                                            console.log("Delete confirmation accepted", { editId });
+            console.log("Error saving questionnaire", { editId });
             setLoading(false);
             console.error("Erreur lors de l'envoi du questionnaire:", error);
 

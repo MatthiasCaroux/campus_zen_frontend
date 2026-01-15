@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Button, Text, StyleSheet, ActivityIndicator, FlatList, Alert } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import apiClient from "../config/axiosConfig";
+import { apiClient } from "../services/apiClient";
 
 type Reponse = {
     idReponse?: number | string;
@@ -24,10 +24,8 @@ export default function ReponseQuestions({ route }: any) {
         }
         setLoading(true);
         try {
-            const res = await apiClient.get(`/reponses/?question=${encodeURIComponent(String(questionId))}`);
-            const raw = res?.data?.data ?? res?.data?.results ?? res?.data;
-            const data = Array.isArray(raw) ? raw : Array.isArray(res?.data?.reponses) ? res.data.reponses : [];
-            setItems(data as Reponse[]);
+            const data = await apiClient.get(`/reponses/?question=${encodeURIComponent(String(questionId))}`);
+            setItems(Array.isArray(data) ? data : []);
         } catch (err: any) {
             const status = err?.response?.status;
             Alert.alert("Erreur", status ? `Erreur serveur ${status}` : "Impossible de récupérer les réponses");

@@ -1,7 +1,7 @@
 import React from "react";
 import { AuthProvider } from "./src/context/AuthContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
-import { AppNavigator } from "./src/navigation";
+import AppNavigator from "./src/navigation/AppNavigator";
 
 /**
  * Composant racine de l'application

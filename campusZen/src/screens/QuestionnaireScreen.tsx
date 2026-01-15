@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as colors from "../theme/colors.js";
-import apiClient from "../config/axiosConfig.js";
+import { apiClient } from "../services/apiClient";
 import { useNavigation } from '@react-navigation/native';
 
 type Questionnaire = {
@@ -23,8 +23,7 @@ export default function QuestionnaireScreen() {
   const fetchQuestionnaires = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/questionnaires/');
-      const data = response.data?.data ?? response.data ?? [];
+      const data = await apiClient.get('/questionnaires/');
       setQuestionnaires(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: any) {

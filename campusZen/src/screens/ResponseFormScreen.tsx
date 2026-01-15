@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import apiClient from "../config/axiosConfig";
+import { apiClient } from "../services/apiClient";
 
 export default function ResponseFormScreen({ route }: any) {
   const navigation = useNavigation<any>();

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Dimensions, Image } from 'react-native';
-import { testApiConnection } from '../config/axiosConfig';
+import { testApiConnection } from '../services/apiClient';
 import { BarChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get("window").width - 130;

@@ -9,7 +9,7 @@ import {
     ActivityIndicator,
     FlatList,
 } from "react-native";
-import apiClient from "../config/axiosConfig";
+import { apiClient } from "../services/apiClient";
 import { useNavigation } from "@react-navigation/native";
 
 type Questions = {
@@ -119,18 +119,11 @@ export default function QuestionnaireQuestions({ route }: any) {
         setLoading(true);
         try {
             console.log("Fetching questions for questionnaireId:", questionnaireId);
-            const res = await apiClient.get(
+            const data = await apiClient.get(
                 `/questions/?questionnaireId=${questionnaireId}`
             );
 
-            const raw = res?.data?.data ?? res?.data;
-            const data = Array.isArray(raw)
-                ? raw
-                : Array.isArray(res?.data?.questions)
-                ? res.data.questions
-                : [];
-
-            setItems(data as Questions[]);
+            setItems(Array.isArray(data) ? data : []);
         } catch (err: any) {
             console.error("Erreur fetching questions:", err);
             const status = err?.response?.status;
