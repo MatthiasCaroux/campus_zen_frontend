@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { getStoredUser, getStatuts, getClimatById, getRandomMessageByClimatId } from '../services/AuthService';
+import { useNavigation } from '@react-navigation/native';
 
 function getClimatImage(nom: string) {
   switch (nom.toLowerCase()) {
@@ -23,6 +24,7 @@ function getClimatImage(nom: string) {
 
 const ConsultEtatScreen: React.FC = () => {
   const [user, setUser] = useState<any>(null);
+  const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [filteredStatuts, setFilteredStatuts] = useState<any[]>([]);
   const [climatNom, setClimatNom] = useState<string | null>(null);
@@ -109,9 +111,12 @@ const ConsultEtatScreen: React.FC = () => {
             {randomMessage ? randomMessage : ""}
           </Text>
           <View style={styles.buttonContainer}>
-            <View style={styles.buttonWrapper}>
+            <Pressable style={styles.buttonWrapper} onPress={() => {
+              navigation.goBack();
+              navigation.navigate("Maps");
+              }}>
               <Text style={styles.buttonText}>Consulter la carte des professionnels</Text>
-            </View>
+            </Pressable>
             <View style={styles.buttonWrapper}>
               <Text style={styles.buttonText}>Voir mes progrès</Text>
             </View>

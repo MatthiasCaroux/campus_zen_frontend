@@ -29,6 +29,7 @@ export default function MapsScreen() {
   const [currentRegion, setCurrentRegion] = useState<Region>(DEFAULT_REGION);
   
   const mapRef = useRef<any>(null);
+  const isAnimatingRef = useRef(false);
 
   const sheetHeightCollapsed = SCREEN_HEIGHT * COLLAPSED_PERCENT;
   const sheetHeightExpanded = SCREEN_HEIGHT * EXPANDED_PERCENT;
@@ -133,6 +134,9 @@ export default function MapsScreen() {
   // Filtrer les professionnels en fonction de la région visible
   const filterProfessionnelsByRegion = (region: Region) => {
     if (!professionnels || professionnels.length === 0) return;
+    
+    // Ne pas refiltrer pendant une animation programmée
+    if (isAnimatingRef.current) return;
 
     const visible = professionnels.filter((pro) => {
       if (!pro.lat || !pro.long) return false;
@@ -162,6 +166,7 @@ export default function MapsScreen() {
     setSelectedPro(pro.idPro);
     // Centrer la carte sur le professionnel
     if (pro.lat && pro.long && mapRef.current) {
+      isAnimatingRef.current = true;
       const newRegion = {
         latitude: pro.lat,
         longitude: pro.long,
@@ -175,6 +180,11 @@ export default function MapsScreen() {
       }
       // TODO
       // Il faudra peut être implémenter une fonction flyTo dans le composant Map pour le web
+      
+      // Réactiver le filtrage après l'animation
+      setTimeout(() => {
+        isAnimatingRef.current = false;
+      }, 700);
     }
   };
  

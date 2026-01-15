@@ -15,9 +15,12 @@ export default function HomeScreen() {
 
   const todayLabel = useMemo(() => {
     const now = new Date();
-    const day = now.toLocaleDateString(undefined, { weekday: 'long' });
-    const date = now.toLocaleDateString(undefined, { day: '2-digit', month: 'long' });
-    return `${day} · ${date}`;
+    let day = now.toLocaleDateString(undefined, { weekday: 'long' });
+    day = day.charAt(0).toUpperCase()+ day.slice(1);
+    const date = now.toLocaleDateString(undefined, { day: '2-digit' });
+    let month = now.toLocaleDateString(undefined, { month: 'long' });
+    month = month.charAt(0).toUpperCase() + month.slice(1);
+    return `${day} ${date} ${month}`;
   }, []);
 
   useEffect(() => {

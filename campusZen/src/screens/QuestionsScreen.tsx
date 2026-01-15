@@ -217,9 +217,13 @@ export default function QuestionsScreen() {
 
                 <TouchableOpacity 
                     style={styles.retryButton} 
-                    onPress={() => navigation.goBack()} // Retour simple à la page précédente
+                    onPress={() => {
+                        navigation.goBack();
+                        navigation.goBack();
+                        navigation.navigate('ConsultEtat');
+                    }} // On va à l'écran d'état (Climat)
                 >
-                    <Text style={styles.retryButtonText}>Retour</Text>
+                    <Text style={styles.retryButtonText}>Consulter mon état</Text>
                 </TouchableOpacity>
             </View>
         );
