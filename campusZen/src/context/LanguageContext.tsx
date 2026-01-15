@@ -3,12 +3,13 @@ import translationsData from '../constants/translations.json';
 
 // Define the structure of our translations
 type TranslationKey = keyof typeof translationsData;
+type AnyTranslationKey = TranslationKey | (string & {});
 type Language = 'fr' | 'en';
 
 interface LanguageContextType {
     language: Language;
     setLanguage: (lang: Language) => void;
-    t: (key: TranslationKey) => string;
+    t: (key: AnyTranslationKey) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -16,8 +17,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     const [language, setLanguage] = useState<Language>('fr');
 
-    const t = (key: TranslationKey): string => {
-        const translationEntry = translationsData[key];
+    const t = (key: AnyTranslationKey): string => {
+        const translationEntry = (translationsData as Record<string, any>)[key];
         if (!translationEntry) {
             console.warn(`Translation key "${key}" not found.`);
             return String(key);

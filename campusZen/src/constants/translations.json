@@ -62,5 +62,61 @@
     "listen_podcast": {
         "fr": "écouter un podcast",
         "en": "listen to a podcast"
+    },
+    "home_hero_title": {
+        "fr": "Ton espace calme, ici.",
+        "en": "Your calm space, here."
+    },
+    "home_explore_title": {
+        "fr": "Explorer",
+        "en": "Explore"
+    },
+    "home_maps_title": {
+        "fr": "Carte",
+        "en": "Map"
+    },
+    "home_maps_subtitle": {
+        "fr": "Trouver un pro et des lieux utiles autour de toi.",
+        "en": "Find professionals and useful places near you."
+    },
+    "home_resources_title": {
+        "fr": "Ressources",
+        "en": "Resources"
+    },
+    "home_resources_subtitle": {
+        "fr": "Vidéos, podcasts, articles… un petit boost.",
+        "en": "Videos, podcasts, articles… a quick boost."
+    },
+    "home_checkin_title": {
+        "fr": "Faire le point",
+        "en": "Check-in"
+    },
+    "home_checkin_cta": {
+        "fr": "Évaluer mon bien-être",
+        "en": "Start my check-in"
+    },
+    "home_checkin_hint": {
+        "fr": "2 minutes pour évaluer ton bien-être.",
+        "en": "2 minutes to rate your well-being."
+    },
+    "home_status_hint": {
+        "fr": "Vois ta dernière évaluation.",
+        "en": "See your last saved status."
+    },
+    "home_status_hint_empty": {
+        "fr": "Fais une évaluation pour commencer ton suivi.",
+        "en": "Do a check-in to start tracking."
+    },
+    "home_inspiration_title": {
+        "fr": "Inspiration",
+        "en": "Inspiration"
+    },
+    "home_video_badge": {
+        "fr": "VIDÉO",
+        "en": "VIDEO"
+    },
+    "home_podcast_badge": {
+        "fr": "PODCAST",
+        "en": "PODCAST"
     }
 }
