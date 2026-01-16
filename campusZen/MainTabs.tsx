@@ -3,15 +3,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 
-import HomeScreen from "./screens/HomeScreen";
-import MapsScreen from "./screens/MapsScreen";
-import StatsScreen from "./screens/StatsScreen";
-import CompteScreen from "./screens/CompteScreen";
-import ProDetailsScreen from "./screens/ProDetailsScreen";
-import QuestionnaireScreen from "./screens/QuestionnaireScreen";
-import ConsultEtatScreen from "./screens/ConsultEtatScreen";
-import QuestionsScreen from "./screens/QuestionsScreen";
-import RessourcesScreen from "./screens/RessourcesScreen";
+import HomeScreen from "./src/screens/HomeScreen";
+import MapsScreen from "./src/screens/MapsScreen";
+import StatsScreen from "./src/screens/StatsScreen";
+import CompteScreen from "./src/screens/CompteScreen";
+import ProDetailsScreen from "./src/screens/ProDetailsScreen";
+import QuestionnaireScreen from "./src/screens/QuestionnaireScreen";
+import ConsultEtatScreen from "./src/screens/ConsultEtatScreen";
+import QuestionsScreen from "./src/screens/QuestionsScreen";
+import RessourcesScreen from "./src/screens/RessourcesScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
