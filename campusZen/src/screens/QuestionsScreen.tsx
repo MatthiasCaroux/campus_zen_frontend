@@ -6,7 +6,7 @@ import * as colors from "../theme/colors.js";
 import { apiClient } from '../services/apiClient';
 import { getStoredUser } from '../services/AuthService';
 
-// --- TYPAGES ---
+// typages
 
 type Question = {
     idQuestion: number;
@@ -27,7 +27,7 @@ export type UserAnswer = {
     idReponse: number;
 };
 
-// On garde le typage simple
+// typage simple pour la route
 type RootStackParamList = {
     Questions: { idQuestionnaire: number };
 };
@@ -35,14 +35,15 @@ type RootStackParamList = {
 type QuestionsScreenRouteProp = RouteProp<RootStackParamList, 'Questions'>;
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, keyof RootStackParamList>;
 
-// --- COMPOSANT PRINCIPAL ---
+// composant principal
 
 export default function QuestionsScreen() {
+    // ecran qui affiche les questions une par une puis envoie les reponses
     const route = useRoute<QuestionsScreenRouteProp>();
     const navigation = useNavigation<NavigationProps>();
     const { idQuestionnaire } = route.params;
 
-    // État principal
+    // etat principal
     const [questions, setQuestions] = useState<Question[]>([]);
     const [userId, setUserId] = useState<number | null>(null);
     
@@ -55,7 +56,7 @@ export default function QuestionsScreen() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // NOUVEL ÉTAT : Pour gérer l'écran de succès
+    // etat pour afficher l ecran de succes
     const [isSuccess, setIsSuccess] = useState(false);
 
     const currentQuestion = useMemo(() => questions[currentQuestionIndex], [questions, currentQuestionIndex]);
@@ -64,11 +65,12 @@ export default function QuestionsScreen() {
         return userAnswers.find(answer => answer.idQuestion === currentQuestion?.idQuestion)?.idReponse;
     }, [userAnswers, currentQuestion]);
 
-    // --- FONCTIONS API ---
+    // fonctions api
 
     const fetchQuestions = useCallback(async () => {
         try {
             setLoading(true);
+            // questions filtrees par id questionnaire
             const data = await apiClient.get(`/questions/?questionnaireId=${idQuestionnaire}`);
             setQuestions(Array.isArray(data) ? data : []);
             setError(null);
@@ -85,7 +87,7 @@ export default function QuestionsScreen() {
             setLoadingResponses(true);
             const result = await apiClient.get(`/reponses/?question=${questionId}`);
             const data: ResponseOption[] = Array.isArray(result) ? result : [];
-            // Tri des réponses par score croissant
+            // tri par score pour avoir un ordre stable
             data.sort((a, b) => a.score - b.score);
             setAvailableResponses(data);
         } catch {
@@ -95,11 +97,12 @@ export default function QuestionsScreen() {
         }
     }, []);
 
-    // --- EFFETS ---
+    // effets
 
     useEffect(() => {
         const initializeUser = async () => {
             try {
+                // on recupere l id user pour l envoi final
                 const userData = await getStoredUser();
                 if (userData && typeof userData === 'object' && 'idPers' in userData) {
                     setUserId(userData.idPers);
@@ -123,7 +126,7 @@ export default function QuestionsScreen() {
         }
     }, [currentQuestion?.idQuestion, fetchResponses]);
 
-    // --- ACTIONS ---
+    // actions
 
     const handleResponseSelect = (responseId: number) => {
         if (!currentQuestion) return;
@@ -167,6 +170,7 @@ export default function QuestionsScreen() {
 
         try {
             setIsSubmitting(true);
+            // payload attendu par l api
             const submissionPayload = { idPers: userId, reponses: userAnswers };
             const endpoint = `/questionnaire/${idQuestionnaire}/submit`;
             
@@ -174,7 +178,7 @@ export default function QuestionsScreen() {
             await apiClient.post(endpoint, submissionPayload);
             console.log("Réponse: Succès");
 
-            // Si pas d'exception, c'est un succès
+            // si pas d exception c est ok
             setIsSuccess(true);
 
         } catch (error: any) {
@@ -185,9 +189,9 @@ export default function QuestionsScreen() {
         }
     };
 
-    // --- RENDU (VIEWS) ---
+    // rendu
 
-    // 1. Écran de chargement
+    // ecran de chargement
     if (loading) {
         return (
             <View style={styles.centerContainer}>
@@ -197,7 +201,7 @@ export default function QuestionsScreen() {
         );
     }
 
-    // 2. Écran de Succès (Le nouveau "Message Sympa")
+    // ecran de succes
     if (isSuccess) {
         return (
             <View style={[styles.centerContainer, { paddingHorizontal: 40 }]}>
@@ -221,7 +225,7 @@ export default function QuestionsScreen() {
                         navigation.goBack();
                         navigation.goBack();
                         navigation.navigate('ConsultEtat');
-                    }} // On va à l'écran d'état (Climat)
+                    }} // retour puis navigation vers consult etat
                 >
                     <Text style={styles.retryButtonText}>Consulter mon état</Text>
                 </TouchableOpacity>
@@ -229,7 +233,7 @@ export default function QuestionsScreen() {
         );
     }
 
-    // 3. Gestion des erreurs de chargement
+    // gestion des erreurs de chargement
     if (error) {
         return (
             <View style={styles.centerContainer}>
@@ -241,10 +245,10 @@ export default function QuestionsScreen() {
         );
     }
 
-    // 4. Cas vide
+    // cas vide
     if (!currentQuestion) return null;
 
-    // 5. Écran du Questionnaire (Normal)
+    // ecran du questionnaire
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
@@ -317,10 +321,10 @@ export default function QuestionsScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR },
-    scrollContent: { padding: 20, paddingBottom: 40, flexGrow: 1 }, // flexGrow aide au centrage si peu de contenu
+    scrollContent: { padding: 20, paddingBottom: 40, flexGrow: 1 }, // flex grow aide au centrage si peu de contenu
     centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.COULEUR_FOND_BLEU_CLAIR, padding: 20 },
     
-    // Nouveaux styles pour l'écran de succès
+    // styles pour l ecran de succes
     successIconContainer: { marginBottom: 20, backgroundColor: '#FFF', padding: 20, borderRadius: 50, elevation: 5 },
     successTitle: { fontSize: 28, fontWeight: 'bold', color: colors.COULEUR_HEADER_BLEU, marginBottom: 10 },
     successMessage: { fontSize: 18, color: colors.COULEUR_TEXT_DARK, textAlign: 'center', marginBottom: 10, fontWeight: '600' },

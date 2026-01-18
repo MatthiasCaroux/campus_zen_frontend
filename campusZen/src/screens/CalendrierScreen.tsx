@@ -4,6 +4,7 @@ import * as Colors from '../theme/colors';
 const { COULEUR_FOND_BLEU, COULEUR_SOUS_TITRE } = Colors;
 
 export default function CalendrierScreen() {
+  // ecran calendrier placeholder
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Calendrier</Text>

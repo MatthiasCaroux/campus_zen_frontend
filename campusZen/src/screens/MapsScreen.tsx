@@ -12,13 +12,15 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 const COLLAPSED_PERCENT = 0.40; 
 const EXPANDED_PERCENT = 0.85;  
 const DEFAULT_REGION: Region = {
-    latitude: -0.4814965375088253, // Centre par défaut
-    longitude: 15.89751099904558, // Owando, République du Congo
+    // region par defaut si la localisation est refusee ou indisponible
+    latitude: -0.4814965375088253,
+    longitude: 15.89751099904558,
     latitudeDelta: 0.5, 
     longitudeDelta: 0.5,
   }
 
 export default function MapsScreen() {
+  // ecran carte + liste des pros avec bottom sheet
   const { professionnels, loading } = useProfessionnels();
   const navigation = useNavigation();
 
@@ -42,7 +44,7 @@ export default function MapsScreen() {
 
   const getUserLocation = async () => {
     try {
-      // Demander la permission
+      // demande la permission puis recupere la position
       const { status } = await Location.requestForegroundPermissionsAsync();
       
       if (status !== 'granted') {
@@ -52,7 +54,7 @@ export default function MapsScreen() {
         return;
       }
 
-      // Obtenir la position actuelle
+      // obtenir la position actuelle
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       });
@@ -79,6 +81,7 @@ export default function MapsScreen() {
   };
 
   useEffect(() => {
+    // on reset le sheet et on tente de se centrer sur l user
     sheetY.setValue(minY);
     getUserLocation();
   }, []);
@@ -89,34 +92,34 @@ export default function MapsScreen() {
       PanResponder.create({
         onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dy) > 5,
         onPanResponderGrant: () => {
-          // Enregistre la position actuelle au début du geste
+          // enregistre la position actuelle au debut du geste
           sheetY.stopAnimation((value) => {
             lastY.current = value;
           });
         },
         onPanResponderMove: (_, gesture) => {
-          // Calcule la nouvelle position basée sur le delta du geste
+          // calcule la nouvelle position avec le delta du geste
           const newPos = lastY.current + gesture.dy;
           
-          // Limite le déplacement entre maxY (haut) et minY (bas)
-          // Ne peut pas descendre en dessous de la position minimale 
+          // limite le deplacement entre maxy et miny
+          // ne peut pas descendre en dessous de la position minimale
           if (newPos >= maxY && newPos <= minY) {
             sheetY.setValue(newPos);
           } else if (newPos < maxY) {
-            // Bloque en haut
+            // bloque en haut
             sheetY.setValue(maxY);
           } else if (newPos > minY) {
-            // Bloque en bas (50%)
+            // bloque en bas
             sheetY.setValue(minY);
           }
         },
         onPanResponderRelease: (_, gesture) => {
-          // Calcule la position finale
+          // calcule la position finale
           const finalY = lastY.current + gesture.dy;
           const midPoint = (maxY + minY) / 2;
           
-          // Si on est au-dessus du milieu, on ouvre complètement
-          // Sinon on revient à la position minimale 
+          // si on est au dessus du milieu on ouvre
+          // sinon on revient a la position minimale
           const shouldExpand = finalY < midPoint;
   
           Animated.spring(sheetY, {
@@ -131,11 +134,11 @@ export default function MapsScreen() {
       })
     ).current;
 
-  // Filtrer les professionnels en fonction de la région visible
+  // filtre les pros en fonction de la region visible sur la carte
   const filterProfessionnelsByRegion = (region: Region) => {
     if (!professionnels || professionnels.length === 0) return;
     
-    // Ne pas refiltrer pendant une animation programmée
+    // evite de refiltrer pendant un recentrage automatique
     if (isAnimatingRef.current) return;
 
     const visible = professionnels.filter((pro) => {
@@ -164,7 +167,7 @@ export default function MapsScreen() {
 
   const handleProCardPress = (pro: Professionnel) => {
     setSelectedPro(pro.idPro);
-    // Centrer la carte sur le professionnel
+    // centre la carte sur le pro clique
     if (pro.lat && pro.long && mapRef.current) {
       isAnimatingRef.current = true;
       const newRegion = {
@@ -174,14 +177,13 @@ export default function MapsScreen() {
         longitudeDelta: 0.05,
       };
       
-      // Pour react-native-maps (mobile)
+      // react native maps mobile
       if (mapRef.current.animateToRegion) {
         mapRef.current.animateToRegion(newRegion, 500);
       }
-      // TODO
-      // Il faudra peut être implémenter une fonction flyTo dans le composant Map pour le web
+      // sur web il faudra peut etre implementer un flyto dans le composant map
       
-      // Réactiver le filtrage après l'animation
+      // reactive le filtrage apres l animation
       setTimeout(() => {
         isAnimatingRef.current = false;
       }, 700);

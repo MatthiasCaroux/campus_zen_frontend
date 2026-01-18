@@ -12,6 +12,7 @@ type Questionnaire = {
   idQuestionnaire?: number | string;
 };
 export default function QuestionnaireListScreen() {
+  // ecran admin liste questionnaires avec actions
   const [items, setItems] = useState<Questionnaire[]>([]);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
@@ -19,6 +20,7 @@ export default function QuestionnaireListScreen() {
   const fetchList = async () => {
     setLoading(true);
     try {
+      // recupere la liste complete
       const data = await apiClient.get("/questionnaires/");
       setItems(Array.isArray(data) ? data : []);
       setLoading(false);
@@ -35,6 +37,7 @@ export default function QuestionnaireListScreen() {
   }, []);
 
   const renderItem = ({ item }: { item: Questionnaire }) => {
+    // gestion de plusieurs formats possibles renvoyes par l api
     const title =
       item.nomQuestionnaire?.trim() ||
       item.name?.trim() ||
@@ -42,6 +45,7 @@ export default function QuestionnaireListScreen() {
       "(Sans nom)";
     const desc = item.descriptionQuestionnaire || "(Pas de description)";
     const ListActions = () => {
+      // actions navigate edit delete
       const questionnaireId = item?.id ?? (item as any)?.idQuestionnaire;
       return (
         <View style={{ marginTop: 12, gap: 8 }}>
@@ -69,6 +73,7 @@ export default function QuestionnaireListScreen() {
           <Button
             title="Supprimer"
             onPress={() => {
+              // delete avec fallback sur deux endpoints
               const questionnaireId = item?.id ?? (item as any)?.idQuestionnaire;
               console.log("Delete questionnaire (list) button pressed", { item, questionnaireId, itemId: item?.id, itemIdQuestionnaire: (item as any)?.idQuestionnaire });
               if (!questionnaireId) {

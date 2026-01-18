@@ -1,14 +1,10 @@
 import { apiClient } from "./apiClient";
 import { ENDPOINTS } from "../config/apiConfig";
 
-/**
- * Service de gestion des professionnels
- * Fournit les opérations CRUD pour les professionnels de santé
- */
+// service professionnels
+// appels api crud pour les pros
 
-/**
- * Récupère tous les professionnels
- */
+// liste des pros
 export async function getProfessionnels() {
   try {
     const data = await apiClient.get(ENDPOINTS.PROFESSIONNELS.LIST);
@@ -19,9 +15,7 @@ export async function getProfessionnels() {
   }
 }
 
-/**
- * Récupère un professionnel par son ID
- */
+// detail pro
 export async function getProfessionnelsById(id: number) {
   try {
     const data = await apiClient.get(ENDPOINTS.PROFESSIONNELS.DETAIL(id));
@@ -32,9 +26,7 @@ export async function getProfessionnelsById(id: number) {
   }
 }
 
-/**
- * Crée un nouveau professionnel
- */
+// creation pro
 export async function createProfessionnel(professionnel: any) {
   try {
     const data = await apiClient.post(ENDPOINTS.PROFESSIONNELS.LIST, professionnel);
@@ -45,9 +37,7 @@ export async function createProfessionnel(professionnel: any) {
   }
 }
 
-/**
- * Met à jour un professionnel existant
- */
+// maj pro
 export async function updateProfessionnel(id: number, professionnel: any) {
   try {
     const data = await apiClient.put(ENDPOINTS.PROFESSIONNELS.DETAIL(id), professionnel);
@@ -58,9 +48,7 @@ export async function updateProfessionnel(id: number, professionnel: any) {
   }
 }
 
-/**
- * Supprime un professionnel
- */
+// suppression pro
 export async function deleteProfessionnel(id: number) {
   try {
     await apiClient.delete(ENDPOINTS.PROFESSIONNELS.DETAIL(id));

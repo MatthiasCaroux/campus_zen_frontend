@@ -3,15 +3,9 @@ import { refreshToken } from "../services/AuthService";
 import { getRefreshToken, setAccessToken } from "../services/SecureStorage";
 import { TOKEN_CONFIG } from "../constants/tokenConfig";
 
-/**
- * Hook pour gérer le rafraîchissement des tokens d'authentification
- */
+// hook pour refresh le access token
 export const useTokenRefresh = () => {
-  /**
-   * Rafraîchit le token d'accès en utilisant le token de rafraîchissement
-   * @param userData - Données utilisateur stockées
-   * @returns true si le rafraîchissement a réussi, false sinon
-   */
+  // renvoie true si on a pu regenerer un access token
   const handleTokenRefresh = async (userData: any): Promise<boolean> => {
     const tokenRefresh = await getRefreshToken();
     
@@ -24,6 +18,7 @@ export const useTokenRefresh = () => {
       const newAccessToken = await refreshToken(tokenRefresh);
       
       if (newAccessToken.access) {
+        // on met a jour le token et la nouvelle date de fin access
         await setAccessToken(newAccessToken.access);
         await AsyncStorage.setItem("user", JSON.stringify({
           ...userData,

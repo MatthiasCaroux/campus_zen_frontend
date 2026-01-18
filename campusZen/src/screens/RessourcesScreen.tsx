@@ -17,6 +17,7 @@ const FILTERS = [
 ];
 
 export default function RessourcesScreen() {
+    // ecran liste de ressources avec recherche et filtres
     const { ressources, loading } = useRessources();
     const [search, setSearch] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
@@ -36,6 +37,7 @@ export default function RessourcesScreen() {
     };
 
     const filteredData = useMemo(() => {
+        // filtre local cote ui pour eviter de refaire des appels api
         return ressources.filter(r => {
             const matchSearch =
                 r.titreR.toLowerCase().includes(search.toLowerCase()) ||

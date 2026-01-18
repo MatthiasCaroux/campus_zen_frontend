@@ -7,16 +7,15 @@ interface UseAuthInitProps {
   logout: () => void;
 }
 
-/**
- * Hook pour gérer l'initialisation de l'authentification au démarrage de l'application
- * Vérifie la validité des tokens et rafraîchit si nécessaire
- */
+// hook lance au demarrage
+// verifie les dates endAccess endRefresh et refresh si besoin
 export const useAuthInit = ({ setIsAuthenticated, logout }: UseAuthInitProps) => {
   const [user, setUser] = useState<any>(null);
   const { handleTokenRefresh } = useTokenRefresh();
 
   useEffect(() => {
     const initializeAuth = async () => {
+      // on recupere le user du storage
       const userData = await getStoredUser();
       
       if (!userData) {
@@ -35,14 +34,14 @@ export const useAuthInit = ({ setIsAuthenticated, logout }: UseAuthInitProps) =>
       const endAccess = new Date(userData.endAccess);
       const endRefresh = new Date(userData.endRefresh);
 
-      // Vérification de l'expiration du token de rafraîchissement
+      // si refresh expire on force une reconnexion
       if (now >= endRefresh) {
         console.log("Le token de rafraîchissement a expiré. Veuillez vous reconnecter.");
         logout();
         return;
       }
 
-      // Vérification de l'expiration du token d'accès
+      // si access expire on tente un refresh
       if (now >= endAccess) {
         const refreshSuccess = await handleTokenRefresh(userData);
         setIsAuthenticated(refreshSuccess);

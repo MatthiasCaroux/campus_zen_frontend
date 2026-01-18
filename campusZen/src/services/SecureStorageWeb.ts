@@ -1,10 +1,5 @@
-/**
- * Enregistre un cookie sécurisé (client-side)
- *
- * sameSite=strict → empêche attaques CSRF
- * secure → nécessite HTTPS
- * path=/ → accessible partout
- */
+// helper cookies pour la version web
+// en theorie sameSite strict limite les risques csrf
 export function saveCookie(key: string, value: string) {
   if (typeof document === "undefined") return;
 

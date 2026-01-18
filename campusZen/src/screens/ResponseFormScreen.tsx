@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { apiClient } from "../services/apiClient";
 
 export default function ResponseFormScreen({ route }: any) {
+  // formulaire creation edition d une reponse
   const navigation = useNavigation<any>();
   const mode: "create" | "edit" = route?.params?.mode || "create";
   const questionId = route?.params?.questionId ?? route?.params?.response?.question;
@@ -21,6 +22,7 @@ export default function ResponseFormScreen({ route }: any) {
   }, [mode]);
 
   const handleSubmit = async () => {
+    // validations simples
     if (!texte.trim()) {
       Alert.alert("Erreur", "Le texte de la réponse est requis.");
       return;
@@ -38,14 +40,17 @@ export default function ResponseFormScreen({ route }: any) {
 
     setLoading(true);
     try {
+      // payload attendu par l api
       const payload: any = { texte: texte.trim() };
       if (scoreValue !== undefined) payload.score = scoreValue;
 
       if (mode === "edit" && (route?.params?.response?.idReponse != null || route?.params?.response?.id != null)) {
+        // put si edition
         const idReponse = route.params.response.idReponse ?? route.params.response.id;
         await apiClient.put(`/reponses/${idReponse}/`, { ...payload, question: questionId }, { headers: { Accept: "application/json" } });
         Alert.alert("Succès", "Réponse modifiée.");
       } else {
+        // post si creation
         await apiClient.post(`/reponses/`, { ...payload, question: questionId }, { headers: { Accept: "application/json" } });
         Alert.alert("Succès", "Réponse créée.");
       }

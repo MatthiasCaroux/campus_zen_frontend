@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      // au lancement on regarde si on a un access token valide en stockage
       const token = await getAccessToken();
       setIsAuthenticated(!!token);
     };
@@ -30,11 +31,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (access: string, refresh: string) => {
+    // on stocke les tokens puis on passe l etat auth a true
     await saveTokens(access, refresh);
     setIsAuthenticated(true);
   };
 
   const logout = async () => {
+    // on nettoie tokens et user local puis on repasse en non connecte
     console.log("Déconnexion de l'utilisateur");
     await deleteTokens();
     console.log("Suppression des informations utilisateur stockées");
@@ -43,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const setUser = async (user: any) => {
+    // petit cache local du user pour eviter de le redemander tout le temps
     await AsyncStorage.setItem("user", JSON.stringify(user));
   }
 
