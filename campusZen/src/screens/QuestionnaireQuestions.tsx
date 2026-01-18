@@ -19,12 +19,14 @@ type Questions = {
 };
 
 export default function QuestionnaireQuestions({ route }: any) {
+    // ecran admin liste des questions d un questionnaire
     const [items, setItems] = useState<Questions[]>([]);
     
 
     const [loading, setLoading] = useState(false);
     const navigation = useNavigation<any>();
     const getQuestionId = (q: any): string | number | undefined =>
+        // plusieurs formats possibles selon l api
         q?.idQuestion ?? q?.id ?? q?.question?.id ?? q?.questionId;
     const questionnaireId =
         route?.params?.questionnaireId ||
@@ -34,6 +36,7 @@ export default function QuestionnaireQuestions({ route }: any) {
         route?.params?.questionnaire?.id;
 
     const onDeleteQuestion = async (idQuestion: number | string) => {
+        // delete avec fallback /questions et /question
         if (!questionnaireId) {
             Alert.alert("Erreur", "ID du questionnaire introuvable.");
             return;
@@ -93,7 +96,7 @@ export default function QuestionnaireQuestions({ route }: any) {
         );
     };
 
-    // Navigation vers le formulaire d'ajout
+    // navigation vers le formulaire d ajout
     const goToAddQuestion = () => {
         if (!questionnaireId) {
             Alert.alert("Erreur", "ID du questionnaire introuvable.");
@@ -107,7 +110,7 @@ export default function QuestionnaireQuestions({ route }: any) {
     };
 
     const fetchQuestions = async () => {
-        
+        // recupere toutes les questions du questionnaire
 
         if (questionnaireId === undefined || questionnaireId === null) {
             console.warn("Missing questionnaireId, route.params:", route?.params);
@@ -146,6 +149,7 @@ export default function QuestionnaireQuestions({ route }: any) {
     }, [route?.params?.questionnaireId, route?.params?.idQuestionnaire, route?.params?.id]);
 
     const renderItem = ({ item }: { item: Questions }) => {
+        // carte question + actions
         const title = item.intituleQuestion ?? "(Sans nom)";
         const desc = item.poids ?? "(Pas de poids)";
             const goToAddQuestion = () => {

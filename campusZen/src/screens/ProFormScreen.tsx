@@ -8,6 +8,7 @@ import { createProfessionnel, deleteProfessionnel, getProfessionnelsById, update
 type ProFormRouteProp = RouteProp<{ ProFormScreen: { proId?: number } }, "ProFormScreen">;
 
 export default function ProFormScreen() {
+  // formulaire creation ou edition d un pro
   const navigation = useNavigation();
   const route = useRoute<ProFormRouteProp>();
   const proId = route.params?.proId ?? null;
@@ -33,6 +34,7 @@ export default function ProFormScreen() {
         return;
       }
       try {
+        // si edition on precharge les champs
         const data = await getProfessionnelsById(proId!);
         setForm({
           nomPro: data.nomPro || "",
@@ -57,6 +59,7 @@ export default function ProFormScreen() {
   };
 
   const handleSave = async () => {
+    // petites validations avant envoi
     if (!form.nomPro.trim() || !form.prenomPro.trim() || !form.fonctionPro.trim() || 
         !form.telephonePro.trim() || !form.emailPro.trim() || !form.adressePro.trim() ||
         !form.lat.trim() || !form.long.trim()) {
@@ -70,6 +73,7 @@ export default function ProFormScreen() {
     }
 
     const dataToSend: any = {
+      // conversion lat long en nombres
       nomPro: form.nomPro.trim(),
       prenomPro: form.prenomPro.trim(),
       fonctionPro: form.fonctionPro.trim(),
@@ -100,6 +104,7 @@ export default function ProFormScreen() {
   };
 
   const handleDelete = () => {
+    // confirmation avant suppression
     Alert.alert(
       "Supprimer",
       "Voulez-vous vraiment supprimer ce professionnel ?",

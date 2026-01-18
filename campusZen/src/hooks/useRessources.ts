@@ -5,6 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
 
 export function useRessources(): { ressources: Ressource[]; loading: boolean; refresh: () => void } {
+  // hook qui charge les ressources et propose un refresh
   const [ressources, setRessources] = useState<Ressource[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -22,6 +23,7 @@ export function useRessources(): { ressources: Ressource[]; loading: boolean; re
 
   useFocusEffect(
     React.useCallback(() => {
+      // recharge quand l ecran est focus
       loadRessources();
     }, [])
   );

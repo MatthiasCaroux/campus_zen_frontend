@@ -12,6 +12,7 @@ import { apiClient } from "../../services/apiClient";
 import { useNavigation } from "@react-navigation/native";
 
 export default function QuestionnaireScreen({ route }: any) {
+    // ecran admin creation ou edition questionnaire
     const [nomQuestionnaire, setNomQuestionnaire] = useState("");
     const [descriptionQuestionnaire, setDescriptionQuestionnaire] = useState("");
     const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ export default function QuestionnaireScreen({ route }: any) {
 
     useEffect(() => {
         if (isEdit && route?.params?.questionnaire) {
+            // prefill si on arrive en mode edit
             const q = route.params.questionnaire;
             setNomQuestionnaire(q?.nomQuestionnaire ?? "");
             setDescriptionQuestionnaire(q?.descriptionQuestionnaire ?? "");
@@ -31,6 +33,7 @@ export default function QuestionnaireScreen({ route }: any) {
     }, [isEdit]);
 
     const handleSubmit = async () => {
+        // on envoie post ou put selon le mode
         if (!nomQuestionnaire.trim()) {
             Alert.alert("Erreur", "Le nom du questionnaire est requis.");
             return;
@@ -42,6 +45,7 @@ export default function QuestionnaireScreen({ route }: any) {
             console.log("Sending questionnaire payload:", payload);
 
             if (isEdit && editId) {
+                // certains backends ont /questionnaire au singulier
                 try {
                     await apiClient.put(`/questionnaires/${encodeURIComponent(String(editId))}/`, payload);
                 } catch (error_: any) {
@@ -59,7 +63,7 @@ export default function QuestionnaireScreen({ route }: any) {
             setLoading(false);
             console.log("Questionnaire saved successfully", { editId });
             Alert.alert("Succès", isEdit ? "Questionnaire modifié avec succès." : "Questionnaire créé avec succès.");
-            // Reset form
+            // reset form
             if (!isEdit) {
                 setNomQuestionnaire("");
                 setDescriptionQuestionnaire("");
@@ -69,11 +73,11 @@ export default function QuestionnaireScreen({ route }: any) {
             setLoading(false);
             console.error("Erreur lors de l'envoi du questionnaire:", error);
 
-            // Extra logging for debugging 500
+            // logs en plus pour debug 500
             if (error?.response) {
                 console.error("Response status:", error.response.status);
                 console.error("Response headers:", error.response.headers);
-                // If server returned HTML (stack trace page) or JSON, log a short preview
+                // si le serveur renvoie du html ou du json on log un extrait
                 const body = typeof error.response.data === "string"
                     ? error.response.data.substring(0, 2000)
                     : JSON.stringify(error.response.data);

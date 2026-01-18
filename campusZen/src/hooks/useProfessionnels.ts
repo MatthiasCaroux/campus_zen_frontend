@@ -5,6 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
 
 export function useProfessionnels(): { professionnels: Professionnel[]; loading: boolean; refresh: () => void } {
+  // hook qui recharge les pros a chaque focus d ecran
   const [professionnels, setProfessionnels] = useState<Professionnel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -22,6 +23,7 @@ export function useProfessionnels(): { professionnels: Professionnel[]; loading:
 
   useFocusEffect(
     React.useCallback(() => {
+      // recharge quand on revient sur l ecran
       loadRessources();
     }, [])
   );

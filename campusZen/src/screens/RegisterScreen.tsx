@@ -4,6 +4,7 @@ import { register as apiRegister } from "../services/AuthService";
 import { loginRegisterStyle } from "../screenStyles/LoginRegisterStyle";
 
 export default function RegisterScreen({ navigation }: any) {
+  // ecran d inscription
   const [emailPers, setEmail] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,6 +16,7 @@ export default function RegisterScreen({ navigation }: any) {
   const confirmPasswordInputRef = useRef<View>(null);
 
   const scrollToInput = (inputRef: React.RefObject<View>) => {
+    // meme idee que login on scroll sur le champ focus
     setTimeout(() => {
       inputRef.current?.measureLayout(
         scrollViewRef.current as any,
@@ -27,6 +29,7 @@ export default function RegisterScreen({ navigation }: any) {
   };
 
   const handleRegister = async () => {
+    // verif simple avant appel api
     if (passwordPers !== confirmPassword) {
       setMessage("❌ Les mots de passe ne correspondent pas");
       return;
@@ -35,7 +38,8 @@ export default function RegisterScreen({ navigation }: any) {
     try {
       await apiRegister(emailPers, passwordPers);
       setMessage("✅ Inscription réussie !");
-      setTimeout(() => navigation.navigate("Login"), 1500); // Redirection auto après 1,5s
+      // redirection auto apres un court delai
+      setTimeout(() => navigation.navigate("Login"), 1500);
     } catch (error) {
       if (typeof error === "object" && error !== null && "status" in error && (error as any).status === 400) {
         setMessage("❌ Email déjà utilisé");

@@ -26,11 +26,13 @@ const chartConfig = {
 };  
 
 export default function StatsScreen() {
+  // ecran stats + petit indicateur de connexion api
   const [apiStatus, setApiStatus] = useState<'loading' | 'connected' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const checkConnection = async () => {
+      // test simple pour savoir si l api repond
       const result = await testApiConnection();
       if (result.success) {
         setApiStatus('connected');

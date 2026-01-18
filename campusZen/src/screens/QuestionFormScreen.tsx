@@ -3,11 +3,8 @@ import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator } f
 import { useNavigation } from "@react-navigation/native";
 import { apiClient } from "../services/apiClient";
 
-// Le formulaire de création/édition d'une question
-// Attendu dans route.params:
-// - questionnaireId: number|string (obligatoire)
-// - mode: 'create' | 'edit'
-// - question: { idQuestion, intituleQuestion, poids } (en mode edit)
+// formulaire creation edition d une question
+// route params attendus questionnaireId mode et question en edit
 export default function QuestionFormScreen({ route }: any) {
   const navigation = useNavigation<any>();
   const mode: "create" | "edit" = route?.params?.mode || "create";
@@ -30,6 +27,7 @@ export default function QuestionFormScreen({ route }: any) {
   }, [mode]);
 
   const handleSubmit = async () => {
+    // validations simples avant appel api
     if (!intituleQuestion.trim()) {
       Alert.alert("Erreur", "L'intitulé de la question est requis.");
       return;
@@ -39,7 +37,7 @@ export default function QuestionFormScreen({ route }: any) {
       return;
     }
 
-    // Convertir le poids en nombre si renseigné
+    // conversion du poids en nombre si rempli
     const poidsValue = poids.trim() === "" ? undefined : Number(poids);
     if (poidsValue !== undefined && Number.isNaN(poidsValue)) {
       Alert.alert("Erreur", "Le poids doit être un nombre valide.");
@@ -48,11 +46,13 @@ export default function QuestionFormScreen({ route }: any) {
 
     setLoading(true);
     try {
+      // payload minimal attendu par l api
       const payload: any = {
         intituleQuestion: intituleQuestion.trim(),
       };
       if (poidsValue !== undefined) payload.poids = poidsValue;
 
+    // put en edit sinon post
     if (mode === "edit" && route?.params?.question?.idQuestion) {
       const idQuestion = route.params.question.idQuestion;
       try {

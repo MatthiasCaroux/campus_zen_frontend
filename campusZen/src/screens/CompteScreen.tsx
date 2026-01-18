@@ -12,6 +12,7 @@ import { useTranslation } from "../context/LanguageContext";
 import LanguageSelector from "../components/LanguageSelector";
 
 export default function CompteScreen() {
+  // ecran compte infos user + langue + logout
   const { logout } = useContext(AuthContext);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ export default function CompteScreen() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        // on recupere le user stocke localement
         const data = await getStoredUser();
         if (data) {
           setUser(data);
@@ -68,7 +70,7 @@ export default function CompteScreen() {
     >
       <SafeAreaView style={compteStyles.safeArea}>
         <ScrollView contentContainerStyle={compteStyles.container}>
-        {/* Section Profil */}
+        {/* section profil */}
         <View style={compteStyles.profileSection}>
           <View style={compteStyles.avatarContainer}>
             <Ionicons name="person-circle" size={80} color={colors.COULEUR_WHITE} />
@@ -77,7 +79,7 @@ export default function CompteScreen() {
           <Text style={compteStyles.emailText}>{user.emailPers}</Text>
         </View>
 
-        {/* Carte Informations */}
+        {/* carte infos */}
         <View style={compteStyles.card}>
           <Text style={compteStyles.cardTitle}>Mes informations</Text>
 
@@ -104,13 +106,13 @@ export default function CompteScreen() {
           </View>
         </View>
 
-        {/* Carte Langue */}
+        {/* carte langue */}
         <View style={compteStyles.card}>
           <Text style={compteStyles.cardTitle}>Langue</Text>
           <LanguageSelector />
         </View>
 
-        {/* Bouton Déconnexion */}
+        {/* bouton deconnexion */}
         <TouchableOpacity style={compteStyles.logoutButton} onPress={logout}>
           <Ionicons name="log-out-outline" size={20} color={colors.COULEUR_WHITE} style={{ marginRight: 8 }} />
           <Text style={compteStyles.logoutButtonText}>Se déconnecter</Text>
