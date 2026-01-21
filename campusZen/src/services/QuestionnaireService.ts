@@ -1,14 +1,10 @@
 import { apiClient } from "./apiClient";
 import { ENDPOINTS } from "../config/apiConfig";
 
-/**
- * Service de gestion des questionnaires et questions
- * Fournit les opérations CRUD pour les questionnaires et leurs questions
- */
+// service questionnaires questions reponses
+// centralise les appels api et renvoie des listes propres
 
-/**
- * Récupère tous les questionnaires
- */
+// liste des questionnaires
 export async function getQuestionnaires() {
   try {
     const data = await apiClient.get(ENDPOINTS.QUESTIONNAIRES.LIST);
@@ -19,9 +15,7 @@ export async function getQuestionnaires() {
   }
 }
 
-/**
- * Récupère un questionnaire par son ID
- */
+// detail questionnaire
 export async function getQuestionnaireById(id: number) {
   try {
     const data = await apiClient.get(ENDPOINTS.QUESTIONNAIRES.DETAIL(id));
@@ -32,9 +26,7 @@ export async function getQuestionnaireById(id: number) {
   }
 }
 
-/**
- * Crée un nouveau questionnaire
- */
+// creation questionnaire
 export async function createQuestionnaire(data: any) {
   try {
     const result = await apiClient.post(ENDPOINTS.QUESTIONNAIRES.LIST, data);
@@ -45,9 +37,7 @@ export async function createQuestionnaire(data: any) {
   }
 }
 
-/**
- * Met à jour un questionnaire existant
- */
+// maj questionnaire
 export async function updateQuestionnaire(id: number, data: any) {
   try {
     const result = await apiClient.put(ENDPOINTS.QUESTIONNAIRES.DETAIL(id), data);
@@ -58,9 +48,7 @@ export async function updateQuestionnaire(id: number, data: any) {
   }
 }
 
-/**
- * Supprime un questionnaire
- */
+// suppression questionnaire
 export async function deleteQuestionnaire(id: number) {
   try {
     const result = await apiClient.delete(ENDPOINTS.QUESTIONNAIRES.DETAIL(id));
@@ -71,11 +59,9 @@ export async function deleteQuestionnaire(id: number) {
   }
 }
 
-// ===== QUESTIONS =====
+// questions
 
-/**
- * Récupère toutes les questions
- */
+// liste des questions
 export async function getQuestions() {
   try {
     const data = await apiClient.get(ENDPOINTS.QUESTIONS.LIST);
@@ -86,9 +72,7 @@ export async function getQuestions() {
   }
 }
 
-/**
- * Récupère les questions d'un questionnaire spécifique
- */
+// questions pour un questionnaire
 export async function getQuestionsByQuestionnaireId(questionnaireId: number) {
   try {
     const data = await apiClient.get(ENDPOINTS.QUESTIONS.BY_QUESTIONNAIRE(questionnaireId));
@@ -99,11 +83,9 @@ export async function getQuestionsByQuestionnaireId(questionnaireId: number) {
   }
 }
 
-// ===== RÉPONSES =====
+// reponses
 
-/**
- * Récupère toutes les réponses
- */
+// liste des reponses
 export async function getReponses() {
   try {
     const data = await apiClient.get(ENDPOINTS.REPONSES.LIST);
@@ -114,9 +96,7 @@ export async function getReponses() {
   }
 }
 
-/**
- * Récupère les réponses d'une question spécifique
- */
+// reponses pour une question
 export async function getReponsesByQuestionId(questionId: number) {
   try {
     const data = await apiClient.get(ENDPOINTS.REPONSES.BY_QUESTION(questionId));
@@ -127,9 +107,7 @@ export async function getReponsesByQuestionId(questionId: number) {
   }
 }
 
-/**
- * Récupère une réponse par son ID
- */
+// detail reponse
 export async function getReponseById(id: number) {
   try {
     const data = await apiClient.get(ENDPOINTS.REPONSES.DETAIL(id));
@@ -140,9 +118,7 @@ export async function getReponseById(id: number) {
   }
 }
 
-/**
- * Crée une nouvelle réponse
- */
+// creation reponse
 export async function createReponse(data: any) {
   try {
     const result = await apiClient.post(ENDPOINTS.REPONSES.LIST, data);
@@ -153,9 +129,7 @@ export async function createReponse(data: any) {
   }
 }
 
-/**
- * Met à jour une réponse existante
- */
+// maj reponse
 export async function updateReponse(id: number, data: any) {
   try {
     const result = await apiClient.put(ENDPOINTS.REPONSES.DETAIL(id), data);
@@ -166,9 +140,7 @@ export async function updateReponse(id: number, data: any) {
   }
 }
 
-/**
- * Supprime une réponse
- */
+// suppression reponse
 export async function deleteReponse(id: number) {
   try {
     const result = await apiClient.delete(ENDPOINTS.REPONSES.DETAIL(id));

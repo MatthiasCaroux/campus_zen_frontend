@@ -12,12 +12,14 @@ type Reponse = {
 };
 
 export default function ReponseQuestions({ route }: any) {
+    // ecran admin liste des reponses d une question
     const navigation = useNavigation<any>();
     const questionId = route?.params?.questionId ?? route?.params?.question?.idQuestion ?? route?.params?.question;
     const [items, setItems] = useState<Reponse[]>([]);
     const [loading, setLoading] = useState(false);
 
     const fetchResponses = async () => {
+        // recupere les reponses associees a questionId
         if (!questionId) {
             Alert.alert("Erreur", "Identifiant de la question introuvable.");
             return;
@@ -46,12 +48,14 @@ export default function ReponseQuestions({ route }: any) {
     );
 
     const normalizeResponseId = (r: Reponse) => {
+        // normalise les ids selon les formats possibles
         const id = r.idReponse ?? r.id;
         console.log("[ID] normalizeResponseId input:", r, "output:", id);
         return id;
     };
 
     const onDeleteResponse = async (idReponse: number | string) => {
+        // delete avec fallback /reponses et /reponse
         console.log("Delete response confirm dialog", { idReponse });
         Alert.alert("Confirmation", "Supprimer cette réponse ?", [
             { text: "Annuler", style: "cancel" },
@@ -100,6 +104,7 @@ export default function ReponseQuestions({ route }: any) {
     };
 
     const goToAddResponse = () => {
+        // navigation vers le form
         if (!questionId) {
             Alert.alert("Erreur", "Identifiant de la question introuvable.");
             return;

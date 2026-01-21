@@ -1,15 +1,13 @@
-/**
- * Configuration centralisée de l'API
- */
+// config centralisee de l api
 
-// URL de base de l'API
+// url de base de l api
 export const API_BASE_URL = __DEV__
   ? 'https://incidents-bouake.com/api/' 
   : 'https://incidents-bouake.com/api/';
 
-// Endpoints de l'API
+// endpoints de l api
 export const ENDPOINTS = {
-  // Authentification
+  // authentification
   AUTH: {
     LOGIN: 'token/',
     REGISTER: 'register/',
@@ -17,48 +15,48 @@ export const ENDPOINTS = {
     ME: 'me/',
   },
   
-  // Ressources
+  // ressources
   RESSOURCES: {
     LIST: 'ressources/',
     DETAIL: (id: number) => `ressources/${id}/`,
   },
   
-  // Professionnels
+  // professionnels
   PROFESSIONNELS: {
     LIST: 'professionnels/',
     DETAIL: (id: number) => `professionnels/${id}/`,
   },
   
-  // Climats
+  // climats
   CLIMATS: {
     LIST: 'climats/',
     DETAIL: (id: number) => `climats/${id}/`,
   },
   
-  // Messages
+  // messages
   MESSAGES: {
     LIST: 'messages/',
     BY_CLIMAT: (climatId: number) => `messages/?idClimat=${climatId}`,
   },
   
-  // Statuts
+  // statuts
   STATUTS: {
     LIST: 'statuts/',
   },
   
-  // Questionnaires
+  // questionnaires
   QUESTIONNAIRES: {
     LIST: 'questionnaires/',
     DETAIL: (id: number) => `questionnaires/${id}/`,
   },
   
-  // Questions
+  // questions
   QUESTIONS: {
     LIST: 'questions/',
     BY_QUESTIONNAIRE: (questionnaireId: number) => `questions/?questionnaireId=${questionnaireId}`,
   },
   
-  // Réponses
+  // reponses
   REPONSES: {
     LIST: 'reponses/',
     DETAIL: (id: number) => `reponses/${id}/`,

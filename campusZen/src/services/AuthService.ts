@@ -2,14 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiClient } from "./apiClient";
 import { ENDPOINTS } from "../config/apiConfig";
 
-/**
- * Service d'authentification
- * Gère les opérations de connexion, inscription et récupération des données utilisateur
- */
+// service auth
+// centralise les appels api pour login register refresh et recuperation user
 
-/**
- * Récupère un message aléatoire par ID de climat
- */
+// recupere un message aleatoire lie a un climat
 export async function getRandomMessageByClimatId(idclimat: number): Promise<string | null> {
   try {
     const messages = await apiClient.get<any[]>(ENDPOINTS.MESSAGES.BY_CLIMAT(idclimat));
@@ -25,9 +21,7 @@ export async function getRandomMessageByClimatId(idclimat: number): Promise<stri
   }
 }
 
-/**
- * Inscription d'un nouvel utilisateur
- */
+// inscription
 export const register = async (emailPers: string, passwordPers: string) => {
   try {
     const data = await apiClient.post(ENDPOINTS.AUTH.REGISTER, {
@@ -41,9 +35,7 @@ export const register = async (emailPers: string, passwordPers: string) => {
   }
 };
 
-/**
- * Connexion d'un utilisateur
- */
+// connexion
 export const login = async (emailPers: string, password: string) => {
   try {
     const data = await apiClient.post(ENDPOINTS.AUTH.LOGIN, {
@@ -57,9 +49,7 @@ export const login = async (emailPers: string, password: string) => {
   }
 };
 
-/**
- * Récupère les informations de l'utilisateur actuel
- */
+// infos du user courant cote api
 export async function getAPICurrentUser(token: string) {
   try {
     const data = await apiClient.get(ENDPOINTS.AUTH.ME);
@@ -70,9 +60,7 @@ export async function getAPICurrentUser(token: string) {
   }
 }
 
-/**
- * Récupère la liste des statuts
- */
+// liste des statuts
 export async function getStatuts() {
   try {
     const data = await apiClient.get(ENDPOINTS.STATUTS.LIST);
@@ -83,9 +71,7 @@ export async function getStatuts() {
   }
 }
 
-/**
- * Rafraîchit le token d'accès
- */
+// refresh access token avec le refresh token
 export const refreshToken = async (refresh: string) => {
   try {
     const data = await apiClient.post(ENDPOINTS.AUTH.REFRESH, { refresh });
@@ -96,9 +82,7 @@ export const refreshToken = async (refresh: string) => {
   }
 };
 
-/**
- * Récupère le climat par son ID
- */
+// recupere un climat par id
 export async function getClimatById(id: number) {
   try {
     const data = await apiClient.get(ENDPOINTS.CLIMATS.DETAIL(id));
@@ -109,9 +93,7 @@ export async function getClimatById(id: number) {
   }
 }
 
-/**
- * Récupère l'utilisateur stocké localement
- */
+// recupere le user stocke en local
 export async function getStoredUser() {
   try {
     const data = await AsyncStorage.getItem("user");

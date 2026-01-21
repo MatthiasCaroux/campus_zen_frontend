@@ -47,6 +47,7 @@ Thumbs.db
 # Docker
 .docker/
 launchProject.sh
-notes.txt
+notes.*
 collapseV*
 TokenManagement/
+token.txt

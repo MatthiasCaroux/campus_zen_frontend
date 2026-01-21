@@ -11,6 +11,7 @@ type Questionnaire = {
 };
 
 export default function QuestionnaireScreen() {
+  // ecran liste des questionnaires
   const navigation = useNavigation<any>();
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +24,7 @@ export default function QuestionnaireScreen() {
   const fetchQuestionnaires = async () => {
     try {
       setLoading(true);
+      // appel direct sur la route questionnaires
       const data = await apiClient.get('/questionnaires/');
       setQuestionnaires(Array.isArray(data) ? data : []);
       setError(null);

@@ -7,6 +7,7 @@ import { useTranslation } from "../context/LanguageContext";
 import LanguageSelector from "../components/LanguageSelector";
 
 export default function LoginScreen({ navigation }: any) {
+  // ecran de connexion
   const [emailPers, setEmail] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -19,6 +20,7 @@ export default function LoginScreen({ navigation }: any) {
   const { t } = useTranslation();
 
   const scrollToInput = (inputRef: React.RefObject<View>) => {
+    // petit scroll auto pour que le champ reste visible quand le clavier s ouvre
     setTimeout(() => {
       inputRef.current?.measureLayout(
         scrollViewRef.current as any,
@@ -32,12 +34,14 @@ export default function LoginScreen({ navigation }: any) {
 
   const handleLogin = async () => {
     try {
+      // appel api puis stockage du user et des tokens
       const data = await apiLogin(emailPers, passwordPers);
       const user = { idPers: data.idPers, emailPers, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.endRefresh };
       await setUser(user);
       await login(data.access, data.refresh);
       setMessage("Connexion réussie ✅");
     } catch (error: any) {
+      // on essaye d afficher un message propre si l api renvoie un detail
       if (error?.response?.data?.detail?.[0]) {
         setMessage(error.response.data.detail[0] + " ❌");
       } else {

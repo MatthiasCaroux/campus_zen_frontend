@@ -2,9 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getAccessToken } from '../services/SecureStorage';
 import { API_BASE_URL } from '../config/apiConfig';
 
-/**
- * Client API centralisé avec gestion automatique des tokens
- */
+// client api centralise
+// ajoute le bearer token automatiquement quand il existe
 class ApiClient {
   private readonly axiosInstance: AxiosInstance;
 
@@ -15,18 +14,20 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      // envoyer les cookies HttpOnly automatiquement sur web
+      withCredentials: true,
     });
 
     this.setupInterceptors();
   }
 
-  /**
-   * Configure les intercepteurs pour ajouter automatiquement le token
-   */
+  // intercepteurs axios pour injecter le token et gerer les erreurs
   private setupInterceptors(): void {
-    // Intercepteur de requêtes - Ajoute le token d'authentification
+    // requetes sortantes
     this.axiosInstance.interceptors.request.use(
       async (config) => {
+        // sur mobile natif uniquement : injecter le Bearer token
+        // sur web : les HttpOnly cookies sont envoyés automatiquement
         const token = await getAccessToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -38,7 +39,7 @@ class ApiClient {
       }
     );
 
-    // Intercepteur de réponses - Gestion globale des erreurs
+    // reponses entrantes
     this.axiosInstance.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -48,9 +49,7 @@ class ApiClient {
     );
   }
 
-  /**
-   * Gestion centralisée des erreurs
-   */
+  // logs simples pour aider au debug
   private handleError(error: any): void {
     if (error.response) {
       console.error('Erreur API:', error.response.status, error.response.data);
@@ -61,55 +60,44 @@ class ApiClient {
     }
   }
 
-  /**
-   * Requête GET
-   */
+  // get
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response: AxiosResponse<T> = await this.axiosInstance.get(url, config);
     return response.data;
   }
 
-  /**
-   * Requête POST
-   */
+  // post
   async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     const response: AxiosResponse<T> = await this.axiosInstance.post(url, data, config);
     return response.data;
   }
 
-  /**
-   * Requête PUT
-   */
+  // put
   async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     const response: AxiosResponse<T> = await this.axiosInstance.put(url, data, config);
     return response.data;
   }
 
-  /**
-   * Requête DELETE
-   */
+  // delete
   async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response: AxiosResponse<T> = await this.axiosInstance.delete(url, config);
     return response.data;
   }
 }
 
-// Instance unique du client API
+// instance unique
 export const apiClient = new ApiClient();
 
-/**
- * Fonction pour tester la connexion à l'API
- * Utilisée principalement pour les diagnostics et les écrans de statut
- */
+// petit test de connexion utilise par l ecran de status
 export const testApiConnection = async () => {
   try {
-    // Teste avec la route /statuts/ qui existe sur l'API
+    // route simple cote api
     const data = await apiClient.get('/statuts/', { timeout: 5000 });
     console.log('✅ Connexion à l\'API réussie:', data);
     return { success: true, data };
   } catch (error: any) {
     console.error('❌ Échec de la connexion à l\'API:', error);
-    // Retourne plus d'informations sur l'erreur
+    // on renvoie un objet exploitable par l ui
     return {
       success: false,
       error: error.message,

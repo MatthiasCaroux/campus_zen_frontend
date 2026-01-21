@@ -6,6 +6,7 @@ import QuestionsScreen from "./QuestionsScreen";
 const Stack = createNativeStackNavigator();
 
 export default function QuestionnaireStack() {
+  // stack simple questionnaire -> questions
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="QuestionnaireMain" component={QuestionnaireScreen} />

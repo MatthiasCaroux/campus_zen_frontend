@@ -20,6 +20,7 @@ const choices_typeR = [
 ];
 
 export default function RessourceFormScreen() {
+  // formulaire creation edition d une ressource
   const navigation = useNavigation();
   const route = useRoute<RessourceFormRouteProp>();
   const ressourceId = route.params?.ressourceId ?? null;
@@ -41,6 +42,7 @@ export default function RessourceFormScreen() {
         return;
       }
       try {
+        // prefill si edition
         const data = await getRessourceById(ressourceId!);
         setForm({
           titreR: data.titreR,
@@ -61,6 +63,7 @@ export default function RessourceFormScreen() {
   };
 
   const handleSave = async () => {
+    // validations simples avant envoi
     if (!form.titreR.trim() || !form.descriptionR.trim() || !form.typeR || !form.lienR.trim()) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs obligatoires.");
       return;
@@ -87,6 +90,7 @@ export default function RessourceFormScreen() {
   };
 
   const handleDelete = () => {
+    // confirmation avant suppression
     Alert.alert(
       "Supprimer",
       "Voulez-vous vraiment supprimer cette ressource ?",
@@ -116,7 +120,7 @@ export default function RessourceFormScreen() {
   return (
     <View style={ressourcesFormStyles.container}>
       
-      {/* HEADER */}
+      {/* header */}
       <View style={ressourcesFormStyles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color="#333" />
@@ -128,7 +132,7 @@ export default function RessourceFormScreen() {
 
       <ScrollView style={ressourcesFormStyles.scrollView} contentContainerStyle={ressourcesFormStyles.scrollContent}>
 
-        {/* Titre */}
+        {/* titre */}
         <View style={ressourcesFormStyles.section}>
           <Text style={ressourcesFormStyles.label}>Titre *</Text>
           <TextInput
@@ -139,7 +143,7 @@ export default function RessourceFormScreen() {
           />
         </View>
 
-        {/* Description */}
+        {/* description */}
         <View style={ressourcesFormStyles.section}>
           <Text style={ressourcesFormStyles.label}>Description *</Text>
           <TextInput
@@ -151,7 +155,7 @@ export default function RessourceFormScreen() {
           />
         </View>
 
-        {/* Type avec Chips */}
+        {/* type avec chips */}
         <View style={ressourcesFormStyles.section}>
           <Text style={ressourcesFormStyles.label}>Type *</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
@@ -181,7 +185,7 @@ export default function RessourceFormScreen() {
           </ScrollView>
         </View>
 
-        {/* Lien */}
+        {/* lien */}
         <View style={ressourcesFormStyles.section}>
           <Text style={ressourcesFormStyles.label}>Lien *</Text>
           <TextInput
@@ -192,7 +196,7 @@ export default function RessourceFormScreen() {
           />
         </View>
 
-        {/* BOUTONS */}
+        {/* boutons */}
         <View style={ressourcesFormStyles.buttonsRow}>
           <TouchableOpacity style={ressourcesFormStyles.saveButton} onPress={handleSave}>
             <Text style={ressourcesFormStyles.saveText}>

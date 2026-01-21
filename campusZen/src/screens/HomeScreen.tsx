@@ -9,11 +9,13 @@ import { getStoredUser, getStatuts } from '../services/AuthService';
 
 
 export default function HomeScreen() {
+  // accueil avec raccourcis et message motivation
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [showConsultEtat, setShowConsultEtat] = useState(false);
 
   const todayLabel = useMemo(() => {
+    // formatage de la date pour l entete
     const now = new Date();
     let day = now.toLocaleDateString(undefined, { weekday: 'long' });
     day = day.charAt(0).toUpperCase()+ day.slice(1);
@@ -26,6 +28,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const checkStatut = async () => {
       try {
+        // si l user a deja un statut on active le bouton consult etat
         const user = await getStoredUser();
         if (user && user.idPers) {
           const statuts = await getStatuts();

@@ -1,14 +1,10 @@
 import { apiClient } from "./apiClient";
 import { ENDPOINTS } from "../config/apiConfig";
 
-/**
- * Service de gestion des ressources
- * Fournit les opérations CRUD pour les ressources
- */
+// service ressources
+// appels api crud pour les ressources
 
-/**
- * Récupère toutes les ressources
- */
+// liste ressources
 export async function getRessources() {
   try {
     const data = await apiClient.get(ENDPOINTS.RESSOURCES.LIST);
@@ -19,9 +15,7 @@ export async function getRessources() {
   }
 }
 
-/**
- * Récupère une ressource par son ID
- */
+// detail ressource
 export async function getRessourceById(id: number) {
   try {
     const data = await apiClient.get(ENDPOINTS.RESSOURCES.DETAIL(id));
@@ -32,9 +26,7 @@ export async function getRessourceById(id: number) {
   }
 }
 
-/**
- * Crée une nouvelle ressource
- */
+// creation ressource
 export async function createRessource(data: any) {
   try {
     const result = await apiClient.post(ENDPOINTS.RESSOURCES.LIST, data);
@@ -45,9 +37,7 @@ export async function createRessource(data: any) {
   }
 }
 
-/**
- * Met à jour une ressource existante
- */
+// maj ressource
 export async function updateRessource(id: number, data: any) {
   try {
     const result = await apiClient.put(ENDPOINTS.RESSOURCES.DETAIL(id), data);
@@ -58,9 +48,7 @@ export async function updateRessource(id: number, data: any) {
   }
 }
 
-/**
- * Supprime une ressource
- */
+// suppression ressource
 export async function deleteRessource(id: number) {
   try {
     const result = await apiClient.delete(ENDPOINTS.RESSOURCES.DETAIL(id));

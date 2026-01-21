@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 type ProDetailsRouteProp = RouteProp<{ ProDetails: { proId: number } }, 'ProDetails'>;
 
 export default function ProDetailsScreen() {
+  // details d un professionnel
   const route = useRoute<ProDetailsRouteProp>();
   const navigation = useNavigation();
   const proId = route.params.proId;
@@ -18,6 +19,7 @@ export default function ProDetailsScreen() {
   useEffect(() => {
     async function fetchProfessionnel() {
       try {
+        // recupere le pro par id depuis l api
         const data = await getProfessionnelsById(proId);
         setProfessionnel(data);
       } catch (error) {
@@ -36,15 +38,18 @@ export default function ProDetailsScreen() {
   }
 
   const handleCall = (phone: string) => {
+    // ouvre l appli telephone
     const phoneNumber = Platform.OS === 'ios' ? `telprompt:${phone}` : `tel:${phone}`;
     Linking.openURL(phoneNumber);
   };
 
   const handleEmail = (email: string) => {
+    // ouvre le client mail
     Linking.openURL(`mailto:${email}`);
   };
 
   const handleOpenMap = () => {
+    // ouvre maps selon la plateforme
     if (professionnel.lat && professionnel.long) {
       const scheme = Platform.select({
         ios: 'maps:0,0?q=',
@@ -66,7 +71,7 @@ export default function ProDetailsScreen() {
 
   return (
     <View style={proDetailsStyles.container}>
-      {/* Header */}
+      {/* header */}
       <View style={proDetailsStyles.header}>
         <TouchableOpacity 
           onPress={() => navigation.goBack()}
@@ -76,12 +81,12 @@ export default function ProDetailsScreen() {
       </View>
 
       <ScrollView style={proDetailsStyles.scrollView} contentContainerStyle={proDetailsStyles.scrollContent}>
-        {/* Section principale */}
+        {/* section principale */}
         <View style={proDetailsStyles.mainCard}>
           <Text style={proDetailsStyles.fonction}>{professionnel.fonctionPro}</Text>
         </View>
 
-        {/* Section Coordonnées */}
+        {/* section infos */}
         <View style={proDetailsStyles.section}>
           <Text style={proDetailsStyles.sectionTitle}>😊 Informations </Text>
           <View style={proDetailsStyles.infoCard}>
@@ -100,7 +105,7 @@ export default function ProDetailsScreen() {
           </View>
         </View>
 
-        {/* Section Contact */}
+        {/* section contact */}
         {(professionnel.telephonePro || professionnel.emailPro) && (
           <View style={proDetailsStyles.section}>
             <Text style={proDetailsStyles.sectionTitle}>📞 Contact</Text>
@@ -135,7 +140,7 @@ export default function ProDetailsScreen() {
           </View>
         )}
 
-        {/* Section Coordonnées */}
+        {/* section localisation */}
         <View style={proDetailsStyles.section}>
           <Text style={proDetailsStyles.sectionTitle}>📍 Localisation</Text>
           <View style={proDetailsStyles.infoCard}>
