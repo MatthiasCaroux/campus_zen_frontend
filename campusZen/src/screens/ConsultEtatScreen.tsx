@@ -1,5 +1,8 @@
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, Linking, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { ressourcesStyles } from '../screenStyles/RessourcesStyle';
 import React, { useEffect, useState } from 'react';
+import { getRessources } from '../services/RessourceProvider';
 import { getStoredUser, getStatuts, getClimatById, getRandomMessageByClimatId } from '../services/AuthService';
 import { useNavigation } from '@react-navigation/native';
 
@@ -32,6 +35,34 @@ const ConsultEtatScreen: React.FC = () => {
   const [climatNom, setClimatNom] = useState<string | null>(null);
   const [climatId, setClimatId] = useState<number | null>(null);
   const [randomMessage, setRandomMessage] = useState<string | null>(null);
+  const [ressourcesClimat, setRessourcesClimat] = useState<any[]>([]);
+  const [randomRessource, setRandomRessource] = useState<any | null>(null);
+
+  // Charger les ressources associées au climat
+  useEffect(() => {
+    const fetchRessourcesClimat = async () => {
+      if (climatId) {
+        try {
+          const ressourcesData = await getRessources();
+          const filtered = ressourcesData.filter((r: any) => r.climat === climatId);
+          setRessourcesClimat(filtered);
+          if (filtered.length > 0) {
+            const randomIndex = Math.floor(Math.random() * filtered.length);
+            setRandomRessource(filtered[randomIndex]);
+          } else {
+            setRandomRessource(null);
+          }
+        } catch (err) {
+          setRessourcesClimat([]);
+          setRandomRessource(null);
+        }
+      } else {
+        setRessourcesClimat([]);
+        setRandomRessource(null);
+      }
+    };
+    fetchRessourcesClimat();
+  }, [climatId]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -105,35 +136,74 @@ const ConsultEtatScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.pageContainer}>
-      {climatNom && (
-        <>
-          <Image
-            source={getClimatImage(climatNom)}
-            style={styles.climatImage}
-            resizeMode="contain"
-          />
-          <Text style={styles.encouragementText}>
-            {randomMessage ? randomMessage : ""}
-          </Text>
-          <View style={styles.buttonContainer}>
-            <Pressable style={styles.buttonWrapper} onPress={() => {
-              navigation.goBack();
-              navigation.navigate("Maps");
+    <ScrollView contentContainerStyle={styles.scrollContainer} style={{ flex: 1, backgroundColor: '#5DB2F7' }}>
+      <View style={styles.pageContainer}>
+        {climatNom && (
+          <>
+            <Image
+              source={getClimatImage(climatNom)}
+              style={styles.climatImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.encouragementText}>
+              {randomMessage ? randomMessage : ""}
+            </Text>
+            <View style={styles.buttonContainer}>
+              <Pressable style={styles.buttonWrapper} onPress={() => {
+                navigation.navigate("Maps");
               }}>
-              <Text style={styles.buttonText}>Consulter la carte des professionnels</Text>
-            </Pressable>
-            <View style={styles.buttonWrapper}>
-              <Text style={styles.buttonText}>Voir mes progrès</Text>
+                <Text style={styles.buttonText}>Consulter la carte des professionnels</Text>
+              </Pressable>
+              <View style={styles.buttonWrapper}>
+                <Text style={styles.buttonText}>Voir mes progrès</Text>
+              </View>
             </View>
-          </View>
-        </>
-      )}
-    </View>
+            {/* Affichage des ressources associées au climat */}
+            {randomRessource && (
+              <View style={{marginTop: 24, width: '100%', alignItems: 'center', justifyContent: 'center'}}>
+                <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 8, textAlign: 'center'}}>Ressource associée au climat :</Text>
+                <View style={[ressourcesStyles.card, {alignSelf: 'center', width: '90%'}]}>
+                  <View style={[ressourcesStyles.headerRow, {justifyContent: 'center'}]}>
+                    <Ionicons
+                      name={
+                        randomRessource.typeR === 'article' ? 'document-text-outline'
+                        : randomRessource.typeR === 'video' ? 'play-circle-outline'
+                        : randomRessource.typeR === 'podcast' ? 'mic-outline'
+                        : randomRessource.typeR === 'livre' ? 'book-outline'
+                        : randomRessource.typeR === 'site_web' ? 'globe-outline'
+                        : randomRessource.typeR === 'documentaire' ? 'film-outline'
+                        : randomRessource.typeR === 'film' ? 'videocam-outline'
+                        : randomRessource.typeR === 'formation' ? 'school-outline'
+                        : 'cube-outline'
+                      }
+                      size={28}
+                      color="#3366FF"
+                    />
+                    <Text style={ressourcesStyles.type}>{randomRessource.typeR.toUpperCase()}</Text>
+                  </View>
+                  <Text style={ressourcesStyles.title}>{randomRessource.titreR}</Text>
+                  <Text style={ressourcesStyles.description}>{randomRessource.descriptionR}</Text>
+                  <TouchableOpacity onPress={() => Linking.openURL(randomRessource.lienR)}>
+                    <Text style={ressourcesStyles.link}>Voir la ressource →</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </>
+        )}
+      </View>
+    </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#5DB2F7',
+    padding: 24,
+  },
   pageContainer: {
     flex: 1,
     justifyContent: 'center',

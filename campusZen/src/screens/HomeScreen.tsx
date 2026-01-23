@@ -6,6 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../context/LanguageContext';
 import { getStoredUser, getStatuts } from '../services/AuthService';
+import { getRessources } from '../services/RessourceProvider';
+import Ressource from '../types/Ressource';
 
 
 export default function HomeScreen() {
@@ -13,6 +15,57 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [showConsultEtat, setShowConsultEtat] = useState(false);
+  const [videoRessource, setVideoRessource] = useState<Ressource | null>(null);
+  const [podcastRessource, setPodcastRessource] = useState<Ressource | null>(null);
+  useEffect(() => {
+    // Charger une ressource vidéo et une podcast pour l'inspiration
+    const fetchInspiration = async () => {
+      try {
+        const user = await getStoredUser();
+        const statuts = await getStatuts();
+        let climatId: number | null = null;
+        if (user && user.idPers && Array.isArray(statuts)) {
+          // On cherche le dernier statut de l'utilisateur
+          const userStatuts = statuts.filter((s) => s.personne === user.idPers);
+          if (userStatuts.length > 0) {
+            const lastStatut = userStatuts.reduce((latest, current) => {
+              return new Date(current.dateStatut) > new Date(latest.dateStatut) ? current : latest;
+            }, userStatuts[0]);
+            climatId = lastStatut.climat;
+          }
+        }
+        const ressources = await getRessources();
+        console.log('climatId:', climatId);
+        console.log('ressources:', ressources.map(r => ({ id: r.idR, climat: r.climat, typeR: r.typeR, titreR: r.titreR })));
+        let filtered = ressources;
+        if (climatId !== null) {
+          filtered = ressources.filter((r: Ressource) => String(r.climat) === String(climatId));
+        }
+        console.log('filtered:', filtered);
+
+        const randomFrom = (arr: Ressource[]) => arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null;
+
+        // Vidéo
+        let videos = filtered.filter((r: Ressource) => r.typeR === 'video');
+        if (videos.length === 0) {
+          videos = ressources.filter((r: Ressource) => r.typeR === 'video');
+        }
+        setVideoRessource(randomFrom(videos));
+
+        // Podcast
+        let podcasts = filtered.filter((r: Ressource) => r.typeR === 'podcast');
+        if (podcasts.length === 0) {
+          podcasts = ressources.filter((r: Ressource) => r.typeR === 'podcast');
+        }
+        setPodcastRessource(randomFrom(podcasts));
+      } catch (e) {
+        setVideoRessource(null);
+        setPodcastRessource(null);
+        console.error('Erreur fetchInspiration:', e);
+      }
+    };
+    fetchInspiration();
+  }, []);
 
   const todayLabel = useMemo(() => {
     // formatage de la date pour l entete
@@ -121,12 +174,25 @@ export default function HomeScreen() {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>{t('home_inspiration_title')}</Text>
 
-            <TouchableOpacity style={[styles.miniButton, styles.miniButtonVideo]} activeOpacity={0.9}>
+            <TouchableOpacity
+              style={[styles.miniButton, styles.miniButtonVideo]}
+              activeOpacity={0.9}
+              disabled={!videoRessource}
+              onPress={() => {
+                if (videoRessource) {
+                  // Ouvre le lien de la ressource vidéo
+                  // @ts-ignore
+                  if (window && window.open) window.open(videoRessource.lienR, '_blank');
+                }
+              }}
+            >
               <View style={styles.miniButtonRow}>
                 <View style={[styles.youtubeIcon, styles.youtubeIconVideo]}>
                   <Ionicons name="play" size={16} color={colors.COULEUR_WHITE} />
                 </View>
-                <Text style={styles.miniButtonText}>{t('watch_video')}</Text>
+                <Text style={styles.miniButtonText}>
+                  {videoRessource ? videoRessource.titreR : t('watch_video')}
+                </Text>
                 <View style={[styles.miniBadge, styles.miniBadgeVideo]}>
                   <Text style={styles.miniBadgeText}>{t('home_video_badge')}</Text>
                 </View>
@@ -134,12 +200,25 @@ export default function HomeScreen() {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.miniButton, styles.miniButtonPodcast]} activeOpacity={0.9}>
+            <TouchableOpacity
+              style={[styles.miniButton, styles.miniButtonPodcast]}
+              activeOpacity={0.9}
+              disabled={!podcastRessource}
+              onPress={() => {
+                if (podcastRessource) {
+                  // Ouvre le lien de la ressource podcast
+                  // @ts-ignore
+                  if (window && window.open) window.open(podcastRessource.lienR, '_blank');
+                }
+              }}
+            >
               <View style={styles.miniButtonRow}>
                 <View style={[styles.youtubeIcon, styles.youtubeIconPodcast]}>
                   <Ionicons name="mic" size={16} color={colors.COULEUR_WHITE} />
                 </View>
-                <Text style={styles.miniButtonText}>{t('listen_podcast')}</Text>
+                <Text style={styles.miniButtonText}>
+                  {podcastRessource ? podcastRessource.titreR : t('listen_podcast')}
+                </Text>
                 <View style={[styles.miniBadge, styles.miniBadgePodcast]}>
                   <Text style={styles.miniBadgeText}>{t('home_podcast_badge')}</Text>
                 </View>

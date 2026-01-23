@@ -4,6 +4,7 @@ interface Ressource {
   titreR: string;
   descriptionR: string;
   lienR: string;
+  climat: number;
 }
 
 export default Ressource;
