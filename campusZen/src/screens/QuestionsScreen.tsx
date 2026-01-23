@@ -1,3 +1,4 @@
+// Réinitialise isSuccess au montage pour éviter écran vide
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -30,6 +31,7 @@ export type UserAnswer = {
 // typage simple pour la route
 type RootStackParamList = {
     Questions: { idQuestionnaire: number };
+    ConsultEtat: {}; // Ajout de la route ConsultEtat
 };
 
 type QuestionsScreenRouteProp = RouteProp<RootStackParamList, 'Questions'>;
@@ -66,12 +68,15 @@ export default function QuestionsScreen() {
     }, [userAnswers, currentQuestion]);
 
     // fonctions api
-
+    useEffect(() => {
+        setIsSuccess(false);
+    }, []);
     const fetchQuestions = useCallback(async () => {
         try {
             setLoading(true);
-            // questions filtrees par id questionnaire
+            console.log("Chargement des questions pour le questionnaire:", idQuestionnaire); // DEBUG
             const data = await apiClient.get(`/questions/?questionnaireId=${idQuestionnaire}`);
+            console.log("Questions reçues:", data); // DEBUG
             setQuestions(Array.isArray(data) ? data : []);
             setError(null);
         } catch (err) {
@@ -189,6 +194,19 @@ export default function QuestionsScreen() {
         }
     };
 
+    // Redirection automatique vers la page "ConsultEtat" après succès
+    React.useEffect(() => {
+        if (isSuccess) {
+            navigation.reset({
+                index: 1,
+                routes: [
+                    { name: "HomeMain" },
+                    { name: "ConsultEtat", params: {} }
+                ],
+            });
+        }
+    }, [isSuccess, idQuestionnaire]);
+
     // rendu
 
     // ecran de chargement
@@ -201,36 +219,9 @@ export default function QuestionsScreen() {
         );
     }
 
-    // ecran de succes
+    // On peut afficher un écran de chargement ou rien pendant la redirection
     if (isSuccess) {
-        return (
-            <View style={[styles.centerContainer, { paddingHorizontal: 40 }]}>
-                <View style={styles.successIconContainer}>
-                    <Text style={{ fontSize: 50 }}>🎉</Text>
-                </View>
-                
-                <Text style={styles.successTitle}>Merci !</Text>
-                
-                <Text style={styles.successMessage}>
-                    Vos réponses ont bien été enregistrées.
-                </Text>
-                
-                <Text style={styles.successSubMessage}>
-                    Vous pouvez consulter l'évolution de votre état directement depuis la page d'accueil.
-                </Text>
-
-                <TouchableOpacity 
-                    style={styles.retryButton} 
-                    onPress={() => {
-                        navigation.goBack();
-                        navigation.goBack();
-                        navigation.navigate('ConsultEtat');
-                    }} // retour puis navigation vers consult etat
-                >
-                    <Text style={styles.retryButtonText}>Consulter mon état</Text>
-                </TouchableOpacity>
-            </View>
-        );
+        return null;
     }
 
     // gestion des erreurs de chargement
@@ -245,8 +236,19 @@ export default function QuestionsScreen() {
         );
     }
 
-    // cas vide
-    if (!currentQuestion) return null;
+    // cas vide : aucune question chargée
+    if (!currentQuestion && questions.length === 0 && !loading) {
+        return (
+            <View style={styles.centerContainer}>
+                <Text style={styles.errorText}>
+                    Aucun questionnaire ou aucune question trouvée. Vérifiez votre sélection ou la connexion réseau.
+                </Text>
+                <TouchableOpacity style={styles.retryButton} onPress={fetchQuestions}>
+                    <Text style={styles.retryButtonText}>Réessayer</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     // ecran du questionnaire
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
