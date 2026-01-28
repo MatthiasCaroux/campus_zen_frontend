@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, Dispatch, SetStateAction } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 import { saveTokens, getTokens, deleteTokens, getAccessToken } from "../services/SecureStorage";
 
 type AuthContextType = {
@@ -20,27 +21,47 @@ export const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isWeb = Platform.OS === "web";
 
   useEffect(() => {
     const checkAuth = async () => {
-      // au lancement on regarde si on a un access token valide en stockage
-      const token = await getAccessToken();
-      setIsAuthenticated(!!token);
+      // sur web: on suppose auth si on peut accéder à l'API (cookies HttpOnly envoyés auto)
+      // sur mobile: on vérifie le token en SecureStore
+      if (isWeb) {
+        // sur web, on part du principe qu'on est auth si les cookies existent
+        // (impossible de les lire car HttpOnly)
+        setIsAuthenticated(true);
+      } else {
+        const token = await getAccessToken();
+        setIsAuthenticated(!!token);
+      }
     };
     checkAuth();
-  }, []);
+  }, [isWeb]);
 
   const login = async (access: string, refresh: string) => {
-    // on stocke les tokens puis on passe l etat auth a true
-    await saveTokens(access, refresh);
+    // sur web: les tokens sont déjà dans les HttpOnly cookies (backend)
+    // sur mobile: on stocke dans SecureStore
+    if (!isWeb) {
+      await saveTokens(access, refresh);
+    }
     setIsAuthenticated(true);
   };
 
   const logout = async () => {
-    // on nettoie tokens et user local puis on repasse en non connecte
-    console.log("Déconnexion de l'utilisateur");
-    await deleteTokens();
-    console.log("Suppression des informations utilisateur stockées");
+    // sur web: appeler /logout pour supprimer les HttpOnly cookies côté serveur
+    // sur mobile: nettoyer le SecureStore local
+    if (isWeb) {
+      try {
+        // appeler l'endpoint de déconnexion (supprime les cookies HttpOnly)
+        const { apiClient } = await import("../services/apiClient");
+        await apiClient.post("/logout/");
+      } catch (error) {
+        console.error("Erreur lors de la déconnexion:", error);
+      }
+    } else {
+      await deleteTokens();
+    }
     await AsyncStorage.removeItem("user");
     setIsAuthenticated(false);
   };
