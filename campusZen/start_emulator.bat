@@ -1,0 +1,3 @@
+@echo off
+echo Lancement de l'emulateur Android Pixel 7 API 34...
+C:\Android\emulator\emulator.exe -avd Pixel_7_API_34
