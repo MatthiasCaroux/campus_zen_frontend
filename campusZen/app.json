@@ -32,9 +32,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-maps"
-    ],
+    "plugins": [],
     "extra": {
       "eas": {
         "projectId": "6ad0ac61-9f59-4316-b0b5-d53260b2ea3d"

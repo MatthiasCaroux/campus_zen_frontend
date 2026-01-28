@@ -1,8 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Animated, PanResponder, Platform, SafeAreaView, StatusBar } from 'react-native';
 import { MapView, Marker } from '../components/Map';
-import { Region } from 'react-native-maps';
 import Professionnel from '../types/Professionnel';
+
+interface Region {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+}
 import { useProfessionnels } from '../hooks/useProfessionnels';
 import { mapStyles } from '../src/screenStyles/MapsStyle';
 import { useNavigation } from '@react-navigation/native';
