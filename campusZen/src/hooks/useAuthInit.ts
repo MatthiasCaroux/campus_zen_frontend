@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { getStoredUser } from "../services/AuthService";
 import { useTokenRefresh } from "./useTokenRefresh";
 
@@ -12,9 +13,16 @@ interface UseAuthInitProps {
 export const useAuthInit = ({ setIsAuthenticated, logout }: UseAuthInitProps) => {
   const [user, setUser] = useState<any>(null);
   const { handleTokenRefresh } = useTokenRefresh();
+  const isWeb = Platform.OS === "web";
 
   useEffect(() => {
     const initializeAuth = async () => {
+      // sur web: la vérification d'auth est gérée par AuthContext via appel API
+      // on ne fait rien ici pour éviter les conflits
+      if (isWeb) {
+        return;
+      }
+
       // on recupere le user du storage
       const userData = await getStoredUser();
       
