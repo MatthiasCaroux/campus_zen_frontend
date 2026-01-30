@@ -1,5 +1,6 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { login as apiLogin } from "../services/AuthService";
 import { AuthContext } from "../context/AuthContext";
 import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
@@ -10,6 +11,7 @@ export default function LoginScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const emailInputRef = useRef<View>(null);
@@ -36,12 +38,12 @@ export default function LoginScreen({ navigation }: any) {
       const user = { idPers: data.idPers, emailPers, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.endRefresh };
       await setUser(user);
       await login(data.access, data.refresh);
-      setMessage("Connexion réussie ✅");
+      setMessage("Connexion réussie");
     } catch (error: any) {
       if (error?.response?.data?.detail?.[0]) {
-        setMessage(error.response.data.detail[0] + " ❌");
+        setMessage(error.response.data.detail[0]);
       } else {
-        setMessage("Erreur de connexion ❌");
+        setMessage("Erreur de connexion");
       }
     }
   };
@@ -59,57 +61,92 @@ export default function LoginScreen({ navigation }: any) {
         showsVerticalScrollIndicator={false}
       >
         <View style={loginRegisterStyle.wrapper}>
+          {/* Header */}
+          <View style={loginRegisterStyle.header}>
+            <View style={loginRegisterStyle.headerLogoContainer}>
+              <Image
+                source={require('../assets/logo.png')}
+                style={loginRegisterStyle.headerLogo}
+                resizeMode="contain"
+              />
+              <Text style={loginRegisterStyle.headerTitle}>CampusZen</Text>
+            </View>
+            <LanguageSelector compact />
+          </View>
 
           {/* Card container */}
           <View style={loginRegisterStyle.card}>
+            {/* Mascot with sparkles */}
+            <View style={loginRegisterStyle.mascotContainer}>
+              <Text style={[loginRegisterStyle.sparkle, loginRegisterStyle.sparkleTop]}>✦</Text>
+              <Image
+                source={require('../assets/logo.png')}
+                style={loginRegisterStyle.mascotImage}
+                resizeMode="contain"
+              />
+              <Text style={[loginRegisterStyle.sparkle, loginRegisterStyle.sparkleLeft]}>☁</Text>
+            </View>
 
-            <Image
-              source={require('../assets/logo.png')}
-              style={loginRegisterStyle.logo}
-              resizeMode="contain"
-            />
-
-            <LanguageSelector />
+            {/* Title & Subtitle */}
             <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
+            <Text style={loginRegisterStyle.subtitle}>{t('login_subtitle')}</Text>
 
-            <View ref={emailInputRef}>
+            {/* Email field */}
+            <Text style={loginRegisterStyle.label}>{t('email_label')}</Text>
+            <View ref={emailInputRef} style={loginRegisterStyle.inputContainer}>
+              <Ionicons name="mail-outline" size={20} color="#999" style={loginRegisterStyle.inputIcon} />
               <TextInput
                 placeholder={t('email_placeholder')}
+                placeholderTextColor="#999"
                 value={emailPers}
                 onChangeText={setEmail}
                 onFocus={() => scrollToInput(emailInputRef)}
                 style={loginRegisterStyle.input}
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
             </View>
 
-            <View ref={passwordInputRef}>
+            {/* Password field */}
+            <View style={loginRegisterStyle.passwordHeader}>
+              <Text style={loginRegisterStyle.label}>{t('password_label')}</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+                <Text style={loginRegisterStyle.forgotPassword}>{t('forgot_password')}</Text>
+              </TouchableOpacity>
+            </View>
+            <View ref={passwordInputRef} style={loginRegisterStyle.inputContainer}>
+              <Ionicons name="lock-closed-outline" size={20} color="#999" style={loginRegisterStyle.inputIcon} />
               <TextInput
                 placeholder={t('password_placeholder')}
+                placeholderTextColor="#999"
                 value={passwordPers}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 onFocus={() => scrollToInput(passwordInputRef)}
                 style={loginRegisterStyle.input}
               />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={loginRegisterStyle.eyeIcon}>
+                <Ionicons name={showPassword ? "eye-outline" : "eye-off-outline"} size={20} color="#999" />
+              </TouchableOpacity>
             </View>
 
+            {/* Login button */}
             <TouchableOpacity style={loginRegisterStyle.button} onPress={handleLogin}>
               <Text style={loginRegisterStyle.buttonText}>{t('login_button')}</Text>
+              <Ionicons name="arrow-forward" size={18} color="#fff" />
             </TouchableOpacity>
 
             {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
 
+            {/* Register link */}
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
               <Text style={loginRegisterStyle.registerText}>
                 {t('no_account')} <Text style={loginRegisterStyle.registerLink}>{t('register_link')}</Text>
               </Text>
             </TouchableOpacity>
-
           </View>
-
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
