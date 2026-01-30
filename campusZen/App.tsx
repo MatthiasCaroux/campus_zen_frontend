@@ -1,10 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StatusBar } from "expo-status-bar";
-
-import { AuthProvider, AuthContext } from "./context/AuthContext";
+import React from "react";
+import { AuthProvider } from "./src/context/AuthContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
+<<<<<<< HEAD
 import MainTabs from "./MainTabs";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
@@ -84,7 +81,12 @@ function AppNavigator() {
     </NavigationContainer>
   );
 }
+=======
+import AppNavigator from "./src/navigation/AppNavigator";
+>>>>>>> 52ae23e41c04ff897017e98d47ad1487547f8434
 
+// composant racine de l app
+// on pose les providers ici pour que toute l app y ait acces
 export default function App() {
   return (
     <AuthProvider>

@@ -47,7 +47,7 @@ export const proDetailsStyles = StyleSheet.create({
     flex: 1,
   },
 
-  // Scroll
+  // scroll
   scrollView: {
     flex: 1,
   },
@@ -56,7 +56,7 @@ export const proDetailsStyles = StyleSheet.create({
     paddingBottom: 40,
   },
 
-  // Carte principale
+  // carte principale
   mainCard: {
     backgroundColor: '#007AFF',
     borderRadius: 12,
@@ -80,7 +80,7 @@ export const proDetailsStyles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  // Sections
+  // sections
   section: {
     marginBottom: 20,
   },
@@ -91,7 +91,7 @@ export const proDetailsStyles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  // Carte d'information
+  // carte d information
   infoCard: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -122,7 +122,7 @@ export const proDetailsStyles = StyleSheet.create({
     marginVertical: 12,
   },
 
-  // Boutons d'action
+  // boutons d action
   actionButton: {
     backgroundColor: '#007AFF',
     borderRadius: 8,
