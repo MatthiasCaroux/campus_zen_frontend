@@ -25,12 +25,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // sur web: on suppose auth si on peut accéder à l'API (cookies HttpOnly envoyés auto)
+      // sur web: on vérifie la session en appelant l'API (cookies HttpOnly envoyés auto)
       // sur mobile: on vérifie le token en SecureStore
       if (isWeb) {
-        // sur web, on part du principe qu'on est auth si les cookies existent
-        // (impossible de les lire car HttpOnly)
-        setIsAuthenticated(true);
+        // Vérifier d'abord si l'utilisateur s'est explicitement déconnecté
+        const loggedOut = await AsyncStorage.getItem("loggedOut");
+        if (loggedOut === "true") {
+          setIsAuthenticated(false);
+          return;
+        }
+        
+        try {
+          // Vérifier si la session est valide en appelant l'endpoint /me/
+          const { apiClient } = await import("../services/apiClient");
+          const userData = await apiClient.get("/me/");
+          console.log("[WEB AUTH] Session valide:", userData);
+          setIsAuthenticated(true);
+        } catch (error: any) {
+          // Si l'appel échoue, l'utilisateur n'est pas authentifié
+          console.log("[WEB AUTH] Session invalide:", error.response?.status);
+          setIsAuthenticated(false);
+          await AsyncStorage.removeItem("user");
+        }
       } else {
         const token = await getAccessToken();
         setIsAuthenticated(!!token);
@@ -44,6 +60,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // sur mobile: on stocke dans SecureStore
     if (!isWeb) {
       await saveTokens(access, refresh);
+    } else {
+      // Réinitialiser le flag de déconnexion lors du login
+      await AsyncStorage.removeItem("loggedOut");
     }
     setIsAuthenticated(true);
   };
@@ -51,19 +70,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     // sur web: appeler /logout pour supprimer les HttpOnly cookies côté serveur
     // sur mobile: nettoyer le SecureStore local
+    console.log("[LOGOUT] Déconnexion en cours...");
+    
     if (isWeb) {
+      // Marquer explicitement la déconnexion
+      await AsyncStorage.setItem("loggedOut", "true");
+      
       try {
         // appeler l'endpoint de déconnexion (supprime les cookies HttpOnly)
         const { apiClient } = await import("../services/apiClient");
         await apiClient.post("/logout/");
+        console.log("[WEB LOGOUT] Cookies supprimés côté serveur");
       } catch (error) {
-        console.error("Erreur lors de la déconnexion:", error);
+        console.error("[WEB LOGOUT] Erreur lors de la déconnexion:", error);
+      }
+      
+      // Supprimer manuellement les cookies côté client (au cas où le backend ne le fait pas)
+      if (typeof document !== "undefined") {
+        // Supprimer tous les cookies possibles liés à l'authentification
+        const cookies = ["access_token", "refresh_token", "sessionid", "csrftoken"];
+        cookies.forEach(cookieName => {
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.incidents-bouake.com;`;
+        });
+        console.log("[WEB LOGOUT] Cookies supprimés côté client");
+      }
+      
+      // Nettoyer le cache local
+      await AsyncStorage.removeItem("user");
+      setIsAuthenticated(false);
+      
+      // Forcer le rechargement complet de la page pour supprimer tous les états
+      console.log("[WEB LOGOUT] Rechargement de la page...");
+      if (typeof window !== "undefined") {
+        window.location.reload();
       }
     } else {
       await deleteTokens();
+      await AsyncStorage.removeItem("user");
+      setIsAuthenticated(false);
     }
-    await AsyncStorage.removeItem("user");
-    setIsAuthenticated(false);
   };
 
   const setUser = async (user: any) => {
