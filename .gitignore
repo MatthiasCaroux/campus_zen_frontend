@@ -47,7 +47,10 @@ Thumbs.db
 # Docker
 .docker/
 launchProject.sh
-notes.*
+notes.txt
 collapseV*
 TokenManagement/
-token.txt
+
+# Build des application mobiles
+*.ipa
+*.apk
