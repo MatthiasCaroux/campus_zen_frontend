@@ -36,8 +36,8 @@
         "en": "Sign Up"
     },
     "motivational_message": {
-        "fr": "chaque jour est une nouvelle\nchance de prendre soin de toi.",
-        "en": "every day is a new\nchance to take care of yourself."
+        "fr": "Chaque jour est une nouvelle\nChance de prendre soin de toi.",
+        "en": "Every day is a new\nChance to take care of yourself."
     },
     "consult_status": {
         "fr": "Consulter mon état",
@@ -100,7 +100,7 @@
         "en": "2 minutes to rate your well-being."
     },
     "home_status_hint": {
-        "fr": "Vois ta dernière évaluation.",
+        "fr": "Regarde ta dernière évaluation.",
         "en": "See your last saved status."
     },
     "home_status_hint_empty": {
