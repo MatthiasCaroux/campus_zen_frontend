@@ -1,7 +1,89 @@
 import React from "react";
 import { AuthProvider } from "./src/context/AuthContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
+<<<<<<< HEAD
+import MainTabs from "./MainTabs";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import { getStoredUser, refreshToken } from "./services/AuthService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRefreshToken, setAccessToken } from "./services/SecureStorage";
+
+const Stack = createNativeStackNavigator();
+const accessTokenDuration = 60 * 60 * 1000;
+
+function AppNavigator() {
+  const { isAuthenticated, setIsAuthenticated, logout } = useContext(AuthContext);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      const data = await getStoredUser();
+      if (!data) {
+        return;
+      }
+      setUser(data);
+
+      console.log("Vérification des tokens pour l'utilisateur");
+
+      if (!data.endRefresh) {
+        setIsAuthenticated(false);
+        return;
+      }
+
+      const now = new Date();
+      const endAccess = new Date(data.endAccess);
+      const endRefresh = new Date(data.endRefresh);
+
+      if (now >= endRefresh) {
+        console.log("Le token de rafraîchissement a expiré. Veuillez vous reconnecter.");
+        logout();
+      } else if (now >= endAccess) {
+        const tokenRefresh = await getRefreshToken();
+        if (!tokenRefresh) {
+          console.log("Aucun token de rafraîchissement trouvé. Veuillez vous reconnecter.");
+          setIsAuthenticated(false);
+          return;
+        }
+
+        const newAccessToken = await refreshToken(tokenRefresh);
+        if (newAccessToken.access) {
+          await setAccessToken(newAccessToken.access);
+          await AsyncStorage.setItem("user", JSON.stringify({
+            ...data,
+            endAccess: new Date(Date.now() + accessTokenDuration),
+          }));
+          setIsAuthenticated(true);
+          console.log("Token d'accès rafraîchi avec succès.");
+        } else {
+          console.log("Échec du rafraîchissement du token d'accès. Veuillez vous reconnecter.");
+          setIsAuthenticated(false);
+        }
+      } else {
+        console.log("Les tokens sont valides. L'utilisateur est authentifié.");
+        setIsAuthenticated(true);
+      }
+    };
+    init();
+  }, []);
+
+  return (
+    <NavigationContainer>
+      <StatusBar style="light" />
+      {isAuthenticated ? (
+        <MainTabs />
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+  );
+}
+=======
 import AppNavigator from "./src/navigation/AppNavigator";
+>>>>>>> 52ae23e41c04ff897017e98d47ad1487547f8434
 
 // composant racine de l app
 // on pose les providers ici pour que toute l app y ait acces
