@@ -1,31 +1,68 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import * as colors from "../theme/colors.js";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar, Image } from 'react-native';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { COULEUR_BLEU_FONCE, COULEUR_WHITE, COULEUR_SOLEIL, COULEUR_TEXT_DARK, COULEUR_YOUTUBE } from "../theme/colors";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar, Image, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../context/LanguageContext';
 import { getStoredUser, getStatuts } from '../services/AuthService';
 import { getRessources } from '../services/RessourceProvider';
 import Ressource from '../types/Ressource';
-
+import AnimatedSparkle from '../components/AnimatedSparkle';
+import AnimatedButton from '../components/AnimatedButton';
 
 export default function HomeScreen() {
-  // accueil avec raccourcis et message motivation
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [showConsultEtat, setShowConsultEtat] = useState(false);
   const [videoRessource, setVideoRessource] = useState<Ressource | null>(null);
   const [podcastRessource, setPodcastRessource] = useState<Ressource | null>(null);
+
+  // Animations
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const logoScale = useRef(new Animated.Value(0.8)).current;
+  const contentOpacity = useRef(new Animated.Value(0)).current;
+  const contentTranslateY = useRef(new Animated.Value(30)).current;
+
   useEffect(() => {
-    // Charger une ressource vidéo et une podcast pour l'inspiration
+    // Animation du logo
+    Animated.parallel([
+      Animated.timing(logoOpacity, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(logoScale, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Animation du contenu avec délai
+    setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentTranslateY, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, 300);
+  }, []);
+
+  useEffect(() => {
     const fetchInspiration = async () => {
       try {
         const user = await getStoredUser();
         const statuts = await getStatuts();
         let climatId: number | null = null;
         if (user && user.idPers && Array.isArray(statuts)) {
-          // On cherche le dernier statut de l'utilisateur
           const userStatuts = statuts.filter((s) => s.personne === user.idPers);
           if (userStatuts.length > 0) {
             const lastStatut = userStatuts.reduce((latest, current) => {
@@ -35,24 +72,19 @@ export default function HomeScreen() {
           }
         }
         const ressources = await getRessources();
-        console.log('climatId:', climatId);
-        console.log('ressources:', ressources.map(r => ({ id: r.idR, climat: r.climat, typeR: r.typeR, titreR: r.titreR })));
         let filtered = ressources;
         if (climatId !== null) {
           filtered = ressources.filter((r: Ressource) => String(r.climat) === String(climatId));
         }
-        console.log('filtered:', filtered);
 
         const randomFrom = (arr: Ressource[]) => arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null;
 
-        // Vidéo
         let videos = filtered.filter((r: Ressource) => r.typeR === 'video');
         if (videos.length === 0) {
           videos = ressources.filter((r: Ressource) => r.typeR === 'video');
         }
         setVideoRessource(randomFrom(videos));
 
-        // Podcast
         let podcasts = filtered.filter((r: Ressource) => r.typeR === 'podcast');
         if (podcasts.length === 0) {
           podcasts = ressources.filter((r: Ressource) => r.typeR === 'podcast');
@@ -61,17 +93,15 @@ export default function HomeScreen() {
       } catch (e) {
         setVideoRessource(null);
         setPodcastRessource(null);
-        console.error('Erreur fetchInspiration:', e);
       }
     };
     fetchInspiration();
   }, []);
 
   const todayLabel = useMemo(() => {
-    // formatage de la date pour l entete
     const now = new Date();
     let day = now.toLocaleDateString(undefined, { weekday: 'long' });
-    day = day.charAt(0).toUpperCase()+ day.slice(1);
+    day = day.charAt(0).toUpperCase() + day.slice(1);
     const date = now.toLocaleDateString(undefined, { day: '2-digit' });
     let month = now.toLocaleDateString(undefined, { month: 'long' });
     month = month.charAt(0).toUpperCase() + month.slice(1);
@@ -81,7 +111,6 @@ export default function HomeScreen() {
   useEffect(() => {
     const checkStatut = async () => {
       try {
-        // si l user a deja un statut on active le bouton consult etat
         const user = await getStoredUser();
         if (user && user.idPers) {
           const statuts = await getStatuts();
@@ -98,29 +127,34 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <LinearGradient
-      colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
-      style={styles.container}
-    >
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.headerRow}>
-            <Image
-              source={require('../assets/logo.png')}
-              style={styles.logoHeader}
-              resizeMode="contain"
-            />
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Logo Section */}
+        <Animated.View style={[styles.logoSection, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
+          <View style={styles.mascotContainer}>
+            <AnimatedSparkle style={styles.sparkleTop} />
+            <View style={styles.logoGlow}>
+              <Image
+                source={require('../assets/logo.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
+            </View>
           </View>
+          <Text style={styles.appTitle}>CampusZen</Text>
 
           <View style={styles.datePill}>
-            <Ionicons name="calendar-outline" size={16} color={colors.COULEUR_WHITE} />
+            <Ionicons name="calendar-outline" size={14} color={COULEUR_BLEU_FONCE} />
             <Text style={styles.datePillText}>{todayLabel}</Text>
           </View>
+        </Animated.View>
 
+        {/* Content Section */}
+        <Animated.View style={[styles.contentSection, { opacity: contentOpacity, transform: [{ translateY: contentTranslateY }] }]}>
+          {/* Hero Card */}
           <View style={styles.heroCard}>
             <View style={styles.heroIconWrap}>
-              <Ionicons name="cloud" size={40} color={colors.COULEUR_WHITE} />
-              <Ionicons name="sunny" size={18} color={colors.COULEUR_SOLEIL} style={styles.sunIcon} />
+              <Ionicons name="sunny" size={28} color={COULEUR_SOLEIL} />
             </View>
             <View style={styles.heroTextWrap}>
               <Text style={styles.heroTitle}>{t('home_hero_title')}</Text>
@@ -128,218 +162,243 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{t('home_checkin_title')}</Text>
-
-            <View style={styles.gridRow}>
-              <TouchableOpacity
-                style={[styles.actionCard, styles.actionCardPrimary]}
-                activeOpacity={0.9}
-                onPress={() => navigation.navigate('Questionnaire')}
-              >
-                <View style={styles.actionCardTopRow}>
-                  <View style={[styles.actionIcon, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
-                    <Ionicons name="heart-outline" size={20} color={colors.COULEUR_WHITE} />
-                  </View>
-                  <Ionicons name="arrow-forward" size={18} color={colors.COULEUR_WHITE} style={{ opacity: 0.9 }} />
+          {/* Check-in Section */}
+          <Text style={styles.sectionTitle}>{t('home_checkin_title')}</Text>
+          <View style={styles.gridRow}>
+            <AnimatedButton
+              style={[styles.actionCard, styles.actionCardPrimary]}
+              onPress={() => navigation.navigate('Questionnaire')}
+            >
+              <View style={styles.actionCardTopRow}>
+                <View style={styles.actionIcon}>
+                  <Ionicons name="heart-outline" size={20} color={COULEUR_WHITE} />
                 </View>
-                <Text style={styles.actionCardTitle}>{t('home_checkin_cta')}</Text>
-                <Text style={styles.actionCardSubtitle}>{t('home_checkin_hint')}</Text>
-              </TouchableOpacity>
+                <Ionicons name="arrow-forward" size={18} color={COULEUR_WHITE} />
+              </View>
+              <Text style={styles.actionCardTitle}>{t('home_checkin_cta')}</Text>
+              <Text style={styles.actionCardSubtitle}>{t('home_checkin_hint')}</Text>
+            </AnimatedButton>
 
-              <TouchableOpacity
-                style={[
-                  styles.actionCard,
-                  styles.actionCardSecondary,
-                  !showConsultEtat && styles.actionCardDisabled,
-                ]}
-                activeOpacity={0.9}
-                disabled={!showConsultEtat}
-                onPress={() => navigation.navigate('ConsultEtat')}
-              >
-                <View style={styles.actionCardTopRow}>
-                  <View style={[styles.actionIcon, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
-                    <Ionicons name="pulse-outline" size={20} color={colors.COULEUR_WHITE} />
-                  </View>
-                  <Ionicons name="arrow-forward" size={18} color={colors.COULEUR_WHITE} style={{ opacity: 0.9 }} />
+            <AnimatedButton
+              style={[
+                styles.actionCard,
+                styles.actionCardSecondary,
+                !showConsultEtat && styles.actionCardDisabled,
+              ]}
+              onPress={() => showConsultEtat && navigation.navigate('ConsultEtat')}
+            >
+              <View style={styles.actionCardTopRow}>
+                <View style={styles.actionIcon}>
+                  <Ionicons name="pulse-outline" size={20} color={COULEUR_WHITE} />
                 </View>
-                <Text style={styles.actionCardTitle}>{t('consult_status')}</Text>
-                <Text style={styles.actionCardSubtitle}>
-                  {showConsultEtat ? t('home_status_hint') : t('home_status_hint_empty')}
-                </Text>
-              </TouchableOpacity>
+                <Ionicons name="arrow-forward" size={18} color={COULEUR_WHITE} />
+              </View>
+              <Text style={styles.actionCardTitle}>{t('consult_status')}</Text>
+              <Text style={styles.actionCardSubtitle}>
+                {showConsultEtat ? t('home_status_hint') : t('home_status_hint_empty')}
+              </Text>
+            </AnimatedButton>
+          </View>
+
+          {/* Inspiration Section */}
+          <Text style={styles.sectionTitle}>{t('home_inspiration_title')}</Text>
+
+          <TouchableOpacity
+            style={[styles.miniButton, styles.miniButtonVideo]}
+            activeOpacity={0.8}
+            disabled={!videoRessource}
+            onPress={() => {
+              if (videoRessource) {
+                // @ts-ignore
+                if (window && window.open) window.open(videoRessource.lienR, '_blank');
+              }
+            }}
+          >
+            <View style={styles.miniButtonRow}>
+              <View style={[styles.mediaIcon, styles.mediaIconVideo]}>
+                <Ionicons name="play" size={14} color={COULEUR_WHITE} />
+              </View>
+              <Text style={styles.miniButtonText} numberOfLines={1}>
+                {videoRessource ? videoRessource.titreR : t('watch_video')}
+              </Text>
+              <View style={[styles.badge, styles.badgeVideo]}>
+                <Text style={styles.badgeText}>{t('home_video_badge')}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color="#999" />
             </View>
-          </View>
+          </TouchableOpacity>
 
-          <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{t('home_inspiration_title')}</Text>
-
-            <TouchableOpacity
-              style={[styles.miniButton, styles.miniButtonVideo]}
-              activeOpacity={0.9}
-              disabled={!videoRessource}
-              onPress={() => {
-                if (videoRessource) {
-                  // Ouvre le lien de la ressource vidéo
-                  // @ts-ignore
-                  if (window && window.open) window.open(videoRessource.lienR, '_blank');
-                }
-              }}
-            >
-              <View style={styles.miniButtonRow}>
-                <View style={[styles.youtubeIcon, styles.youtubeIconVideo]}>
-                  <Ionicons name="play" size={16} color={colors.COULEUR_WHITE} />
-                </View>
-                <Text style={styles.miniButtonText}>
-                  {videoRessource ? videoRessource.titreR : t('watch_video')}
-                </Text>
-                <View style={[styles.miniBadge, styles.miniBadgeVideo]}>
-                  <Text style={styles.miniBadgeText}>{t('home_video_badge')}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.COULEUR_TEXT_DARK} />
+          <TouchableOpacity
+            style={[styles.miniButton, styles.miniButtonPodcast]}
+            activeOpacity={0.8}
+            disabled={!podcastRessource}
+            onPress={() => {
+              if (podcastRessource) {
+                // @ts-ignore
+                if (window && window.open) window.open(podcastRessource.lienR, '_blank');
+              }
+            }}
+          >
+            <View style={styles.miniButtonRow}>
+              <View style={[styles.mediaIcon, styles.mediaIconPodcast]}>
+                <Ionicons name="mic" size={14} color={COULEUR_WHITE} />
               </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.miniButton, styles.miniButtonPodcast]}
-              activeOpacity={0.9}
-              disabled={!podcastRessource}
-              onPress={() => {
-                if (podcastRessource) {
-                  // Ouvre le lien de la ressource podcast
-                  // @ts-ignore
-                  if (window && window.open) window.open(podcastRessource.lienR, '_blank');
-                }
-              }}
-            >
-              <View style={styles.miniButtonRow}>
-                <View style={[styles.youtubeIcon, styles.youtubeIconPodcast]}>
-                  <Ionicons name="mic" size={16} color={colors.COULEUR_WHITE} />
-                </View>
-                <Text style={styles.miniButtonText}>
-                  {podcastRessource ? podcastRessource.titreR : t('listen_podcast')}
-                </Text>
-                <View style={[styles.miniBadge, styles.miniBadgePodcast]}>
-                  <Text style={styles.miniBadgeText}>{t('home_podcast_badge')}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.COULEUR_TEXT_DARK} />
+              <Text style={styles.miniButtonText} numberOfLines={1}>
+                {podcastRessource ? podcastRessource.titreR : t('listen_podcast')}
+              </Text>
+              <View style={[styles.badge, styles.badgePodcast]}>
+                <Text style={styles.badgeText}>{t('home_podcast_badge')}</Text>
               </View>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
+              <Ionicons name="chevron-forward" size={16} color="#999" />
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  safeArea: {
-    flex: 1,
+    backgroundColor: '#FAFAFA',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 18,
-    paddingTop: 16,
     paddingBottom: 40,
   },
-  headerRow: {
+  // Logo Section
+  logoSection: {
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-    marginTop: 6,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
-  logoHeader: {
-    width: 120,
-    height: 120,
+  mascotContainer: {
+    alignItems: 'center',
+    position: 'relative',
+  },
+  sparkleTop: {
+    position: 'absolute',
+    top: -5,
+    right: -10,
+    zIndex: 1,
+  },
+  logoGlow: {
+    backgroundColor: '#FFF8E7',
+    borderRadius: 80,
+    padding: 15,
+    shadowColor: '#D4A855',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  logoImage: {
+    width: 100,
+    height: 100,
+  },
+  appTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginTop: 12,
   },
   datePill: {
-    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(255,255,255,0.16)',
+    gap: 6,
+    backgroundColor: '#F0F4F8',
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-    marginBottom: 14,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    marginTop: 12,
   },
   datePillText: {
-    color: 'rgba(255,255,255,0.92)',
-    fontSize: 12,
+    color: COULEUR_BLEU_FONCE,
+    fontSize: 13,
     fontWeight: '600',
   },
+  // Content Section
+  contentSection: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  // Hero Card
   heroCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    borderRadius: 18,
+    backgroundColor: '#FFF8E7',
+    borderRadius: 16,
     padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
-    marginBottom: 18,
+    marginBottom: 24,
+    shadowColor: '#D4A855',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   heroIconWrap: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    width: 50,
+    height: 50,
+    borderRadius: 14,
+    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
     marginRight: 14,
-  },
-  sunIcon: {
-    position: 'absolute',
-    top: -6,
-    right: -6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   heroTextWrap: {
     flex: 1,
   },
   heroTitle: {
-    color: colors.COULEUR_WHITE,
+    color: '#1a1a1a',
     fontSize: 16,
-    fontWeight: '800',
-    marginBottom: 6,
+    fontWeight: '700',
+    marginBottom: 4,
   },
   heroSubtitle: {
-    color: 'rgba(255,255,255,0.92)',
-    fontSize: 14,
-    lineHeight: 20,
+    color: '#666',
+    fontSize: 13,
+    lineHeight: 18,
   },
-  sectionContainer: {
-    marginBottom: 25,
-  },
+  // Section
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '800',
-    color: colors.COULEUR_WHITE,
-    marginBottom: 15,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 14,
   },
+  // Grid
   gridRow: {
     flexDirection: 'row',
     gap: 12,
+    marginBottom: 24,
   },
+  // Action Cards
   actionCard: {
     flex: 1,
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 16,
     minHeight: 130,
-    shadowColor: colors.COULEUR_BLACK,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.14,
-    shadowRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
     elevation: 6,
   },
   actionCardPrimary: {
-    backgroundColor: '#2E7CF6',
+    backgroundColor: COULEUR_BLEU_FONCE,
   },
   actionCardSecondary: {
-    backgroundColor: '#6B4EFF',
+    backgroundColor: '#8B7EC8',
+  },
+  actionCardDisabled: {
+    opacity: 0.5,
   },
   actionCardTopRow: {
     flexDirection: 'row',
@@ -348,128 +407,85 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   actionIcon: {
-    width: 34,
-    height: 34,
+    width: 36,
+    height: 36,
     borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   actionCardTitle: {
-    color: colors.COULEUR_WHITE,
-    fontSize: 16,
-    fontWeight: '800',
+    color: COULEUR_WHITE,
+    fontSize: 15,
+    fontWeight: '700',
     marginBottom: 6,
   },
   actionCardSubtitle: {
-    color: 'rgba(255,255,255,0.92)',
-    fontSize: 13,
-    lineHeight: 18,
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 12,
+    lineHeight: 16,
   },
-  actionCardDisabled: {
-    opacity: 0.6,
-  },
-  whiteCardButton: {
-    backgroundColor: colors.COULEUR_WHITE,
-    borderRadius: 16,
+  // Mini Buttons
+  miniButton: {
+    backgroundColor: '#FFF',
+    borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 14,
     marginBottom: 10,
-    shadowColor: colors.COULEUR_BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  whiteCardButtonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  whiteCardIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  whiteCardTitle: {
-    fontSize: 15,
-    color: colors.COULEUR_TEXT_DARK,
-    fontWeight: '800',
-  },
-  whiteCardSubtitle: {
-    marginTop: 2,
-    fontSize: 12,
-    color: 'rgba(0,0,0,0.6)',
-  },
-  miniButton: {
-    backgroundColor: colors.COULEUR_WHITE,
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    marginBottom: 10,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
-    shadowColor: colors.COULEUR_BLACK,
+    borderColor: '#E8E8E8',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.06,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   miniButtonVideo: {
-    borderLeftWidth: 4,
-    borderLeftColor: colors.COULEUR_YOUTUBE,
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderLeftWidth: 3,
+    borderLeftColor: COULEUR_YOUTUBE,
   },
   miniButtonPodcast: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#6B4EFF',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderLeftWidth: 3,
+    borderLeftColor: '#8B7EC8',
   },
   miniButtonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
-  youtubeIcon: {
-    backgroundColor: colors.COULEUR_YOUTUBE,
-    borderRadius: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+  mediaIcon: {
+    borderRadius: 8,
+    padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  youtubeIconVideo: {
-    backgroundColor: colors.COULEUR_YOUTUBE,
+  mediaIconVideo: {
+    backgroundColor: COULEUR_YOUTUBE,
   },
-  youtubeIconPodcast: {
-    backgroundColor: '#6B4EFF',
+  mediaIconPodcast: {
+    backgroundColor: '#8B7EC8',
   },
   miniButtonText: {
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: colors.COULEUR_TEXT_DARK,
-    lineHeight: 18,
+    color: COULEUR_TEXT_DARK,
   },
-  miniBadge: {
+  badge: {
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 999,
+    borderRadius: 12,
   },
-  miniBadgeVideo: {
-    backgroundColor: 'rgba(255, 59, 48, 0.12)',
+  badgeVideo: {
+    backgroundColor: 'rgba(255, 59, 48, 0.1)',
   },
-  miniBadgePodcast: {
-    backgroundColor: 'rgba(107, 78, 255, 0.14)',
+  badgePodcast: {
+    backgroundColor: 'rgba(139, 126, 200, 0.15)',
   },
-  miniBadgeText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: 'rgba(0,0,0,0.72)',
-    letterSpacing: 0.3,
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#666',
+    textTransform: 'uppercase',
   },
 });

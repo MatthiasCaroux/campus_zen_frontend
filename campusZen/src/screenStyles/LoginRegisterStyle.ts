@@ -1,4 +1,5 @@
 import { StyleSheet, Platform } from 'react-native';
+import { COULEUR_BLEU_FONCE } from '../theme/colors';
 
 export const loginRegisterStyle = StyleSheet.create({
   scrollContent: {
@@ -7,8 +8,27 @@ export const loginRegisterStyle = StyleSheet.create({
   },
   wrapper: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#FAFAFA",
     minHeight: 600,
+    justifyContent: "space-between",
+  },
+  // Logo section (centered vertically in top area)
+  logoSection: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 20,
+  },
+  logoTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1a1a1a",
+    marginTop: 10,
+  },
+  // Form section (bottom)
+  formSection: {
+    paddingHorizontal: 40,
+    paddingBottom: 40,
   },
   // Header
   header: {
@@ -31,20 +51,14 @@ export const loginRegisterStyle = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#2d5a27",
+    color: COULEUR_BLEU_FONCE,
   },
-  // Card container
+  // Card container (kept for compatibility, now transparent)
   card: {
-    backgroundColor: "#fff9e8",
-    borderRadius: 25,
-    padding: 30,
-    marginHorizontal: 20,
-    marginTop: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 5,
+    backgroundColor: "transparent",
+    padding: 0,
+    marginHorizontal: 0,
+    marginTop: 0,
   },
   // Mascot area
   mascotContainer: {
@@ -52,9 +66,19 @@ export const loginRegisterStyle = StyleSheet.create({
     marginBottom: 20,
     position: "relative",
   },
+  logoGlow: {
+    backgroundColor: "#FFF8E7",
+    borderRadius: 100,
+    padding: 20,
+    shadowColor: "#D4A855",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 25,
+    elevation: 10,
+  },
   mascotImage: {
-    width: 120,
-    height: 120,
+    width: 130,
+    height: 130,
   },
   sparkle: {
     position: "absolute",
@@ -103,6 +127,11 @@ export const loginRegisterStyle = StyleSheet.create({
     backgroundColor: "#fff",
     marginBottom: 16,
     paddingHorizontal: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   inputIcon: {
     marginRight: 10,
@@ -125,17 +154,22 @@ export const loginRegisterStyle = StyleSheet.create({
   },
   forgotPassword: {
     fontSize: 13,
-    color: "#8B7355",
+    color: COULEUR_BLEU_FONCE,
   },
   // Button
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: COULEUR_BLEU_FONCE,
     paddingVertical: 16,
     borderRadius: 12,
     marginTop: 10,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#2A5A9A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
   },
   buttonText: {
     color: "#fff",
@@ -162,7 +196,7 @@ export const loginRegisterStyle = StyleSheet.create({
     color: "#666",
   },
   registerLink: {
-    color: "#007AFF",
+    color: COULEUR_BLEU_FONCE,
     fontWeight: "600",
   },
   // Legacy styles kept for compatibility
