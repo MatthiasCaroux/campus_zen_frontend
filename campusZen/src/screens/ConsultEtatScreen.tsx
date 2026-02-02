@@ -29,9 +29,10 @@ function getClimatImage(nom: string) {
 const ConsultEtatScreen: React.FC = () => {
   // ecran qui montre le dernier statut de l utilisateur
   const [user, setUser] = useState<any>(null);
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [loading, setLoading] = useState(true);
   const [filteredStatuts, setFilteredStatuts] = useState<any[]>([]);
+  const [totalUserStatuts, setTotalUserStatuts] = useState<number>(0);
   const [climatNom, setClimatNom] = useState<string | null>(null);
   const [climatId, setClimatId] = useState<number | null>(null);
   const [randomMessage, setRandomMessage] = useState<string | null>(null);
@@ -93,6 +94,7 @@ const ConsultEtatScreen: React.FC = () => {
       }
       // on garde seulement ceux du user
       const filtered = statuts.filter((s) => s.personne === userId);
+      setTotalUserStatuts(filtered.length);
       if (filtered.length > 0) {
         // on prend le plus recent
         const lastStatut = filtered.reduce((latest, current) => {
@@ -154,14 +156,23 @@ const ConsultEtatScreen: React.FC = () => {
               }}>
                 <Text style={styles.buttonText}>Consulter la carte des professionnels</Text>
               </Pressable>
-              <View style={styles.buttonWrapper}>
-                <Text style={styles.buttonText}>Voir mes progrès</Text>
-              </View>
+              {totalUserStatuts >= 2 ? (
+                <Pressable style={styles.buttonWrapper} onPress={() => {
+                  navigation.navigate("Evolution");
+                }}>
+                  <Text style={styles.buttonText}>Voir mes progrès</Text>
+                </Pressable>
+              ) : (
+                <View style={[styles.buttonWrapper, styles.buttonDisabled]}>
+                  <Text style={styles.buttonTextDisabled}>Voir mes progrès</Text>
+                  <Text style={styles.buttonHint}>Complétez au moins 2 questionnaires</Text>
+                </View>
+              )}
             </View>
             {/* Affichage des ressources associées au climat */}
             {randomRessource && (
               <View style={{marginTop: 24, width: '100%', alignItems: 'center', justifyContent: 'center'}}>
-                <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 8, textAlign: 'center'}}>Ressource associée au climat :</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 8, textAlign: 'center'}}>Ressource associée :</Text>
                 <View style={[ressourcesStyles.card, {alignSelf: 'center', width: '90%'}]}>
                   <View style={[ressourcesStyles.headerRow, {justifyContent: 'center'}]}>
                     <Ionicons
@@ -262,6 +273,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     marginTop: 10,
+  },
+  buttonDisabled: {
+    backgroundColor: '#e0e0e0',
+    opacity: 0.8,
+  },
+  buttonTextDisabled: {
+    color: '#888',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  buttonHint: {
+    color: '#999',
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 4,
   },
 });
 
