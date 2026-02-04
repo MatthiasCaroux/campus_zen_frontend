@@ -1,9 +1,7 @@
 // config centralisee de l api
 
 // url de base de l api
-export const API_BASE_URL = __DEV__
-  ? 'https://incidents-bouake.com/api/' 
-  : 'https://incidents-bouake.com/api/';
+export const API_BASE_URL = 'https://incidents-bouake.com/api/';
 
 // endpoints de l api
 export const ENDPOINTS = {

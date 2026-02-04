@@ -12,16 +12,32 @@
         "en": "Change Language"
     },
     "login_title": {
-        "fr": "Se Connecter",
-        "en": "Login"
+        "fr": "Votre météo émotionnelle",
+        "en": "Your emotional weather"
     },
-    "email_placeholder": {
+    "login_subtitle": {
+        "fr": "Prenez soin de votre bien-être avec des questionnaires personnalisés et des ressources adaptées.",
+        "en": "Take care of your well-being with personalized questionnaires and tailored resources."
+    },
+    "email_label": {
         "fr": "Email",
         "en": "Email"
     },
-    "password_placeholder": {
+    "email_placeholder": {
+        "fr": "votre@email.fr",
+        "en": "your@email.com"
+    },
+    "password_label": {
         "fr": "Mot de passe",
         "en": "Password"
+    },
+    "password_placeholder": {
+        "fr": "Votre mot de passe",
+        "en": "Your password"
+    },
+    "forgot_password": {
+        "fr": "Mot de passe oublié ?",
+        "en": "Forgot password?"
     },
     "login_button": {
         "fr": "Se connecter",
@@ -32,8 +48,52 @@
         "en": "No account yet?"
     },
     "register_link": {
-        "fr": "S’inscrire",
+        "fr": "S'inscrire",
         "en": "Sign Up"
+    },
+    "register_title": {
+        "fr": "Créer un compte",
+        "en": "Create an account"
+    },
+    "register_subtitle": {
+        "fr": "Rejoignez CampusZen et commencez à prendre soin de votre bien-être dès aujourd'hui.",
+        "en": "Join CampusZen and start taking care of your well-being today."
+    },
+    "confirm_password_label": {
+        "fr": "Confirmer le mot de passe",
+        "en": "Confirm password"
+    },
+    "confirm_password_placeholder": {
+        "fr": "Confirmez votre mot de passe",
+        "en": "Confirm your password"
+    },
+    "register_button": {
+        "fr": "S'inscrire",
+        "en": "Sign Up"
+    },
+    "has_account": {
+        "fr": "Déjà un compte ?",
+        "en": "Already have an account?"
+    },
+    "login_link": {
+        "fr": "Se connecter",
+        "en": "Log In"
+    },
+    "passwords_not_match": {
+        "fr": "Les mots de passe ne correspondent pas",
+        "en": "Passwords do not match"
+    },
+    "register_success": {
+        "fr": "Inscription réussie !",
+        "en": "Registration successful!"
+    },
+    "email_already_used": {
+        "fr": "Email déjà utilisé",
+        "en": "Email already in use"
+    },
+    "register_error": {
+        "fr": "Erreur lors de l'inscription",
+        "en": "Registration error"
     },
     "motivational_message": {
         "fr": "Chaque jour est une nouvelle\nChance de prendre soin de toi.",
@@ -100,7 +160,7 @@
         "en": "2 minutes to rate your well-being."
     },
     "home_status_hint": {
-        "fr": "Vois ta dernière évaluation.",
+        "fr": "Regarde ta dernière évaluation.",
         "en": "See your last saved status."
     },
     "home_status_hint_empty": {

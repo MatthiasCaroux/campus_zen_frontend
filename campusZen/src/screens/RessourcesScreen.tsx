@@ -22,6 +22,13 @@ export default function RessourcesScreen() {
     const [search, setSearch] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
 
+    // Affiche le détail de la première ressource dans la console lors de l'arrivée sur la page
+    React.useEffect(() => {
+        if (ressources && ressources.length > 0) {
+            console.log('Première ressource:', ressources[0]);
+        }
+    }, [ressources]);
+
     const getIcon = (type: string) => {
         switch (type) {
             case "article": return "document-text-outline";
