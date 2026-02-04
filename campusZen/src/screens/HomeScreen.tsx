@@ -16,6 +16,7 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [showConsultEtat, setShowConsultEtat] = useState(false);
+  const [hasAnsweredToday, setHasAnsweredToday] = useState(false);
   const [videoRessource, setVideoRessource] = useState<Ressource | null>(null);
   const [podcastRessource, setPodcastRessource] = useState<Ressource | null>(null);
 
@@ -118,18 +119,55 @@ export default function HomeScreen() {
           const statuts = await getStatuts();
           const hasStatut = Array.isArray(statuts) && statuts.some((s) => s.personne === user.idPers);
           setShowConsultEtat(hasStatut);
+          
+          // Vérifier si l'utilisateur a déjà répondu aujourd'hui
+          const userStatuts = Array.isArray(statuts) ? statuts.filter((s) => s.personne === user.idPers) : [];
+          const answered = hasStatusToday(userStatuts);
+          setHasAnsweredToday(answered);
         } else {
           setShowConsultEtat(false);
+          setHasAnsweredToday(false);
         }
       } catch {
         setShowConsultEtat(false);
+        setHasAnsweredToday(false);
       }
     };
     checkStatut();
   }, []);
 
+  // Fonction pour formater une date en YYYY-MM-DD
+  const formatDateToString = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Fonction pour vérifier si un statut existe pour aujourd'hui
+  const hasStatusToday = (statuts: any[]): boolean => {
+    if (!Array.isArray(statuts)) return false;
+    const today = formatDateToString(new Date());
+    return statuts.some((s) => {
+      const statusDate = s.dateStatut ? formatDateToString(new Date(s.dateStatut)) : '';
+      return statusDate === today;
+    });
+  };
+
   const launchRandomQuestionnaire = async () => {
     try {
+      // Vérifier si l'utilisateur a déjà un statut aujourd'hui
+      const user = await getStoredUser();
+      if (user && user.idPers) {
+        const statuts = await getStatuts();
+        const userStatuts = Array.isArray(statuts) ? statuts.filter((s) => s.personne === user.idPers) : [];
+        
+        if (hasStatusToday(userStatuts)) {
+          Alert.alert('Limitation quotidienne', 'Vous avez déjà répondu à un questionnaire aujourd\'hui. Vous pouvez consulter votre état en accédant à "Mon état".');
+          return;
+        }
+      }
+
       const data = await apiClient.get('/questionnaires/');
       const questionnaires = Array.isArray(data) ? data : [];
       
@@ -192,8 +230,13 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>{t('home_checkin_title')}</Text>
           <View style={styles.gridRow}>
             <AnimatedButton
-              style={[styles.actionCard, styles.actionCardPrimary]}
+              style={[
+                styles.actionCard,
+                styles.actionCardPrimary,
+                hasAnsweredToday && styles.actionCardDisabled,
+              ]}
               onPress={launchRandomQuestionnaire}
+              disabled={hasAnsweredToday}
             >
               <View style={styles.actionCardTopRow}>
                 <View style={styles.actionIcon}>
@@ -202,7 +245,9 @@ export default function HomeScreen() {
                 <Ionicons name="arrow-forward" size={18} color={COULEUR_WHITE} />
               </View>
               <Text style={styles.actionCardTitle}>{t('home_checkin_cta')}</Text>
-              <Text style={styles.actionCardSubtitle}>{t('home_checkin_hint')}</Text>
+              <Text style={styles.actionCardSubtitle}>
+                {hasAnsweredToday ? 'Reviens demain pour un nouveau questionnaire' : t('home_checkin_hint')}
+              </Text>
             </AnimatedButton>
 
             <AnimatedButton
