@@ -19,8 +19,10 @@ export const CLIMAT_SCORES: Record<string, number> = {
   'vent frais': 80,
   'nuageux': 60,
   'quand le vent souffle': 40,
-  'pluvieux': 30,
-  'tempête': 10,
+  'pluvieux': 20,
+  // Support both naming variants: 'orageux' and 'tempête' map to the lowest score
+  'orageux': 0,
+  'tempête': 0,
 };
 
 // Couleurs associées aux climats pour le graphique
@@ -30,6 +32,7 @@ export const CLIMAT_COLORS: Record<string, string> = {
   'nuageux': '#B0C4DE',
   'quand le vent souffle': '#778899',
   'pluvieux': '#4682B4',
+  'orageux': '#2F4F4F',
   'tempête': '#2F4F4F',
 };
 
