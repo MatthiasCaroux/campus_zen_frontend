@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { COULEUR_BLEU_FONCE, COULEUR_HEADER_BLEU, COULEUR_FOND_BLEU_CLAIR, COULEUR_WHITE, COULEUR_SOLEIL, COULEUR_TEXT_DARK, COULEUR_YOUTUBE } from "../theme/colors";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar, Image, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar, Image, Animated, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../context/LanguageContext';
 import { getStoredUser, getStatuts } from '../services/AuthService';
 import { getRessources } from '../services/RessourceProvider';
+import { apiClient } from '../services/apiClient';
 import Ressource from '../types/Ressource';
 import AnimatedSparkle from '../components/AnimatedSparkle';
 import AnimatedButton from '../components/AnimatedButton';
@@ -127,6 +128,30 @@ export default function HomeScreen() {
     checkStatut();
   }, []);
 
+  const launchRandomQuestionnaire = async () => {
+    try {
+      const data = await apiClient.get('/questionnaires/');
+      const questionnaires = Array.isArray(data) ? data : [];
+      
+      if (questionnaires.length === 0) {
+        Alert.alert('Erreur', 'Aucun questionnaire disponible');
+        return;
+      }
+
+      // Sélectionner un questionnaire au hasard
+      const randomIndex = Math.floor(Math.random() * questionnaires.length);
+      const selectedQuestionnaire = questionnaires[randomIndex];
+
+      // Naviguer directement vers les questions
+      navigation.navigate('Questions', { 
+        idQuestionnaire: selectedQuestionnaire.idQuestionnaire 
+      });
+    } catch (err: any) {
+      Alert.alert('Erreur', 'Impossible de charger les questionnaires');
+      console.error('Erreur:', err);
+    }
+  };
+
   return (
     <LinearGradient
       colors={[COULEUR_HEADER_BLEU, COULEUR_FOND_BLEU_CLAIR]}
@@ -168,7 +193,7 @@ export default function HomeScreen() {
           <View style={styles.gridRow}>
             <AnimatedButton
               style={[styles.actionCard, styles.actionCardPrimary]}
-              onPress={() => navigation.navigate('Questionnaire')}
+              onPress={launchRandomQuestionnaire}
             >
               <View style={styles.actionCardTopRow}>
                 <View style={styles.actionIcon}>
