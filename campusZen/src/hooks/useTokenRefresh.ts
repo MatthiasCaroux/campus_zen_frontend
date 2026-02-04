@@ -1,12 +1,21 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 import { refreshToken } from "../services/AuthService";
 import { getRefreshToken, setAccessToken } from "../services/SecureStorage";
 import { TOKEN_CONFIG } from "../constants/tokenConfig";
 
 // hook pour refresh le access token
 export const useTokenRefresh = () => {
+  const isWeb = Platform.OS === "web";
+  
   // renvoie true si on a pu regenerer un access token
   const handleTokenRefresh = async (userData: any): Promise<boolean> => {
+    // sur web: les tokens sont dans HttpOnly cookies, refresh géré automatiquement par le backend
+    if (isWeb) {
+      return true;
+    }
+    
+    // sur mobile: refresh manuel avec le refresh token du SecureStore
     const tokenRefresh = await getRefreshToken();
     
     if (!tokenRefresh) {

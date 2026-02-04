@@ -14,6 +14,8 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      // envoyer les cookies HttpOnly automatiquement sur web
+      withCredentials: true,
     });
 
     this.setupInterceptors();
@@ -24,6 +26,8 @@ class ApiClient {
     // requetes sortantes
     this.axiosInstance.interceptors.request.use(
       async (config) => {
+        // sur mobile natif uniquement : injecter le Bearer token
+        // sur web : les HttpOnly cookies sont envoyés automatiquement
         const token = await getAccessToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;

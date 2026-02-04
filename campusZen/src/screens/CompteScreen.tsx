@@ -76,7 +76,9 @@ export default function CompteScreen() {
             <Ionicons name="person-circle" size={80} color={colors.COULEUR_WHITE} />
           </View>
           <Text style={compteStyles.welcomeText}>{t('hello')} !</Text>
-          <Text style={compteStyles.emailText}>{user.emailPers}</Text>
+          <View style={compteStyles.emailPill}>
+            <Text style={compteStyles.emailText}>{user.emailPers}</Text>
+          </View>
         </View>
 
         {/* carte infos */}

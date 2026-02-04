@@ -27,7 +27,6 @@ function getClimatImage(nom: string) {
 }
 
 const ConsultEtatScreen: React.FC = () => {
-  // ecran qui montre le dernier statut de l utilisateur
   const [user, setUser] = useState<any>(null);
   const navigation = useNavigation<any>();
   const [loading, setLoading] = useState(true);
@@ -68,7 +67,6 @@ const ConsultEtatScreen: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // user local puis on recupere le dernier statut cote api
         const data = await getStoredUser();
         if (data) {
           setUser(data);
@@ -77,6 +75,7 @@ const ConsultEtatScreen: React.FC = () => {
           }
         }
       } catch (error) {
+        // Erreur silencieuse
       } finally {
         setLoading(false);
       }
@@ -92,18 +91,15 @@ const ConsultEtatScreen: React.FC = () => {
         setClimatNom(null);
         return;
       }
-      // on garde seulement ceux du user
       const filtered = statuts.filter((s) => s.personne === userId);
       setTotalUserStatuts(filtered.length);
       if (filtered.length > 0) {
-        // on prend le plus recent
         const lastStatut = filtered.reduce((latest, current) => {
           return new Date(current.dateStatut) > new Date(latest.dateStatut) ? current : latest;
         }, filtered[0]);
         setFilteredStatuts([lastStatut]);
         if (lastStatut.climat) {
           try {
-            // detail climat + message motivation
             const climatData = await getClimatById(lastStatut.climat);
             setClimatNom(climatData.nomClimat);
             setClimatId(lastStatut.climat);
@@ -156,6 +152,7 @@ const ConsultEtatScreen: React.FC = () => {
               }}>
                 <Text style={styles.buttonText}>Consulter la carte des professionnels</Text>
               </Pressable>
+              
               {totalUserStatuts >= 2 ? (
                 <Pressable style={styles.buttonWrapper} onPress={() => {
                   navigation.navigate("Evolution");
@@ -169,7 +166,7 @@ const ConsultEtatScreen: React.FC = () => {
                 </View>
               )}
             </View>
-            {/* Affichage des ressources associées au climat */}
+
             {randomRessource && (
               <View style={{marginTop: 24, width: '100%', alignItems: 'center', justifyContent: 'center'}}>
                 <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 8, textAlign: 'center'}}>Ressource associée :</Text>
@@ -260,37 +257,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    letterSpacing: 0.5,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#5DB2F7',
-  },
-  loadingText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: '600',
-    marginTop: 10,
-  },
-  buttonDisabled: {
-    backgroundColor: '#e0e0e0',
-    opacity: 0.8,
-  },
-  buttonTextDisabled: {
-    color: '#888',
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-    letterSpacing: 0.5,
-  },
-  buttonHint: {
-    color: '#999',
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 4,
-  },
-});
-
-export default ConsultEtatScreen;
+    letterSpacing:

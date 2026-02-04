@@ -9,13 +9,13 @@ import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
-const COLLAPSED_PERCENT = 0.40; 
-const EXPANDED_PERCENT = 0.85;  
+const COLLAPSED_PERCENT = 0.40;
+const EXPANDED_PERCENT = 0.85;
 const DEFAULT_REGION: Region = {
     // region par defaut si la localisation est refusee ou indisponible
     latitude: -0.4814965375088253,
     longitude: 15.89751099904558,
-    latitudeDelta: 0.5, 
+    latitudeDelta: 0.5,
     longitudeDelta: 0.5,
   }
 
@@ -29,13 +29,13 @@ export default function MapsScreen() {
   const [nonVisiblePros, setNonVisiblePros] = useState<Professionnel[]>([]);
 
   const [currentRegion, setCurrentRegion] = useState<Region>(DEFAULT_REGION);
-  
+
   const mapRef = useRef<any>(null);
   const isAnimatingRef = useRef(false);
 
   const sheetHeightCollapsed = SCREEN_HEIGHT * COLLAPSED_PERCENT;
   const sheetHeightExpanded = SCREEN_HEIGHT * EXPANDED_PERCENT;
-  const minY = SCREEN_HEIGHT - sheetHeightCollapsed; 
+  const minY = SCREEN_HEIGHT - sheetHeightCollapsed;
   const maxY = SCREEN_HEIGHT - sheetHeightExpanded;
 
   const sheetY = useRef(new Animated.Value(minY)).current;
@@ -46,7 +46,7 @@ export default function MapsScreen() {
     try {
       // demande la permission puis recupere la position
       const { status } = await Location.requestForegroundPermissionsAsync();
-      
+
       if (status !== 'granted') {
         console.log('Permission de localisation refusée');
         setCurrentRegion(DEFAULT_REGION);
@@ -62,12 +62,12 @@ export default function MapsScreen() {
       const userRegion: Region = {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.5, 
+        latitudeDelta: 0.5,
         longitudeDelta: 0.5,
       };
 
       setCurrentRegion(userRegion);
-      
+
       if (mapRef.current && mapRef.current.animateToRegion) {
         mapRef.current.animateToRegion(userRegion, 1000);
       }
@@ -87,7 +87,7 @@ export default function MapsScreen() {
   }, []);
 
     const lastY = useRef(minY);
-  
+
     const panResponder = useRef(
       PanResponder.create({
         onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dy) > 5,
@@ -100,7 +100,7 @@ export default function MapsScreen() {
         onPanResponderMove: (_, gesture) => {
           // calcule la nouvelle position avec le delta du geste
           const newPos = lastY.current + gesture.dy;
-          
+
           // limite le deplacement entre maxy et miny
           // ne peut pas descendre en dessous de la position minimale
           if (newPos >= maxY && newPos <= minY) {
@@ -117,11 +117,11 @@ export default function MapsScreen() {
           // calcule la position finale
           const finalY = lastY.current + gesture.dy;
           const midPoint = (maxY + minY) / 2;
-          
+
           // si on est au dessus du milieu on ouvre
           // sinon on revient a la position minimale
           const shouldExpand = finalY < midPoint;
-  
+
           Animated.spring(sheetY, {
             toValue: shouldExpand ? maxY : minY,
             useNativeDriver: false,
@@ -137,7 +137,7 @@ export default function MapsScreen() {
   // filtre les pros en fonction de la region visible sur la carte
   const filterProfessionnelsByRegion = (region: Region) => {
     if (!professionnels || professionnels.length === 0) return;
-    
+
     // evite de refiltrer pendant un recentrage automatique
     if (isAnimatingRef.current) return;
 
@@ -176,20 +176,20 @@ export default function MapsScreen() {
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
       };
-      
+
       // react native maps mobile
       if (mapRef.current.animateToRegion) {
         mapRef.current.animateToRegion(newRegion, 500);
       }
       // sur web il faudra peut etre implementer un flyto dans le composant map
-      
+
       // reactive le filtrage apres l animation
       setTimeout(() => {
         isAnimatingRef.current = false;
       }, 700);
     }
   };
- 
+
   const handleViewDetails = (proId: number) => {
     navigation.navigate('ProDetailsScreen', { proId: proId });
   };
@@ -233,7 +233,7 @@ export default function MapsScreen() {
         </View>
         <Text style={mapStyles.proAddress}>{pro.adressePro}</Text>
       </TouchableOpacity>
-      
+
       {selectedPro === pro.idPro && (
         <TouchableOpacity
           style={mapStyles.detailsButton}
@@ -310,7 +310,7 @@ export default function MapsScreen() {
       <View style={mapStyles.dragHandleContainer}>
         <View style={mapStyles.dragHandle} />
       </View>
-      
+
       <View style={mapStyles.listHeader}>
         <Text style={mapStyles.listTitle}>Liste des professionnels</Text>
         <Text style={mapStyles.listSubtitle}>Sélectionne un professionnel pour centrer la carte</Text>
@@ -370,5 +370,3 @@ export default function MapsScreen() {
   </SafeAreaView>
   );
 }
-
-

@@ -6,9 +6,9 @@ const isWeb = Platform.OS === "web";
 
 export async function saveTokens(accessToken: string, refreshToken: string) {
     if (isWeb) {
-        // sur web on stocke en cookies
-        saveCookie("accessToken", accessToken);
-        saveCookie("refreshToken", refreshToken);
+        // sur web, les tokens sont gérés par des HttpOnly cookies (backend)
+        // pas besoin de les stocker manuellement
+        return;
     } else {
         // sur mobile on stocke dans secure store
         await SecureStore.setItemAsync("accessToken", accessToken);
@@ -18,10 +18,8 @@ export async function saveTokens(accessToken: string, refreshToken: string) {
 
 export async function getTokens() {
     if (isWeb) {
-        // cookies cote web
-        const accessToken = getCookie("accessToken");
-        const refreshToken = getCookie("refreshToken");
-        return { accessToken, refreshToken };
+        // sur web, tokens dans HttpOnly cookies (non accessibles en JS)
+        return { accessToken: null, refreshToken: null };
     } else {
         // secure store cote mobile
         const accessToken = await SecureStore.getItemAsync("accessToken");
@@ -32,9 +30,8 @@ export async function getTokens() {
 
 export async function deleteTokens() {
     if (isWeb) {
-        // suppression cookies
-        deleteCookie("accessToken");
-        deleteCookie("refreshToken");
+        // sur web, appeler /logout pour supprimer les HttpOnly cookies
+        return;
     } else {
         // suppression secure store
         await SecureStore.deleteItemAsync("accessToken");
@@ -44,21 +41,24 @@ export async function deleteTokens() {
 
 export async function getAccessToken() {
     if (isWeb) {
-        return getCookie("accessToken");
+        // tokens dans HttpOnly cookies (gérés automatiquement)
+        return null;
     }
     return SecureStore.getItemAsync("accessToken");
 }
 
 export async function getRefreshToken() {
     if (isWeb) {
-        return getCookie("refreshToken");
+        // tokens dans HttpOnly cookies (gérés automatiquement)
+        return null;
     }
     return await SecureStore.getItemAsync("refreshToken");
 }
 
 export async function setAccessToken(newAccessToken: string) {
     if (isWeb) {
-        saveCookie("accessToken", newAccessToken);
+        // tokens gérés par HttpOnly cookies backend
+        return;
     } else {
         await SecureStore.setItemAsync("accessToken", newAccessToken);
     }
@@ -66,7 +66,8 @@ export async function setAccessToken(newAccessToken: string) {
 
 export async function setRefreshToken(newRefreshToken: string) {
     if (isWeb) {
-        saveCookie("refreshToken", newRefreshToken);
+        // tokens gérés par HttpOnly cookies backend
+        return;
     } else {
         await SecureStore.setItemAsync("refreshToken", newRefreshToken);
     }
