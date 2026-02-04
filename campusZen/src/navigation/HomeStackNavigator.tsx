@@ -4,6 +4,7 @@ import HomeScreen from "../screens/HomeScreen";
 import QuestionnaireScreen from "../screens/QuestionnaireScreen";
 import QuestionsScreen from "../screens/QuestionsScreen";
 import ConsultEtatScreen from "../screens/ConsultEtatScreen";
+import EvolutionScreen from "../screens/EvolutionScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +36,11 @@ export default function HomeStackNavigator() {
         name="ConsultEtat"
         component={ConsultEtatScreen}
         options={{ title: "Mon état", headerShown: true }}
+      />
+      <Stack.Screen
+        name="Evolution"
+        component={EvolutionScreen}
+        options={{ title: "Mon évolution", headerShown: true }}
       />
     </Stack.Navigator>
   );
