@@ -1,6 +1,8 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import * as colors from "../theme/colors.js";
 import { login as apiLogin } from "../services/AuthService";
 import { AuthContext } from "../context/AuthContext";
 import { loginRegisterStyle } from "../screenStyles/LoginRegisterStyle";
@@ -90,18 +92,22 @@ export default function LoginScreen({ navigation }: any) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#FAFAFA" }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+    <LinearGradient
+      colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
+      style={{ flex: 1 }}
     >
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={loginRegisterStyle.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: "transparent" }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
-        <View style={loginRegisterStyle.wrapper}>
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={loginRegisterStyle.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[loginRegisterStyle.wrapper, { backgroundColor: "transparent" }]}>
           {/* Header with language selector */}
           <View style={loginRegisterStyle.header}>
             <View />
@@ -112,15 +118,12 @@ export default function LoginScreen({ navigation }: any) {
           <Animated.View style={[loginRegisterStyle.logoSection, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
             <View style={loginRegisterStyle.mascotContainer}>
               <AnimatedSparkle style={loginRegisterStyle.sparkleTop} />
-              <View style={loginRegisterStyle.logoGlow}>
-                <Image
-                  source={require('../assets/logo.png')}
-                  style={loginRegisterStyle.mascotImage}
-                  resizeMode="contain"
-                />
-              </View>
+              <Image
+                source={require('../assets/logo.png')}
+                style={loginRegisterStyle.mascotImage}
+                resizeMode="contain"
+              />
             </View>
-            <Text style={loginRegisterStyle.logoTitle}>CampusZen</Text>
             <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
             <Text style={loginRegisterStyle.subtitle}>{t('login_subtitle')}</Text>
           </Animated.View>
@@ -181,8 +184,9 @@ export default function LoginScreen({ navigation }: any) {
               </Text>
             </TouchableOpacity>
           </Animated.View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }

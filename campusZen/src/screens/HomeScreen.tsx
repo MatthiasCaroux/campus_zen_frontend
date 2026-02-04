@@ -386,10 +386,10 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   actionCardPrimary: {
-    backgroundColor: '#5F8F7D',
+    backgroundColor: '#2E7CF6',
   },
   actionCardSecondary: {
-    backgroundColor: '#1E3A5F',
+    backgroundColor: '#6b4EFF',
   },
   actionCardDisabled: {
     opacity: 0.5,
