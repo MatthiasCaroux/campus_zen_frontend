@@ -1,7 +1,7 @@
 // config centralisee de l api
 
 // url de base de l api
-export const API_BASE_URL = 'http://localhost:8000/api/';
+export const API_BASE_URL = 'https://incidents-bouake.com/api/';
 
 // endpoints de l api
 export const ENDPOINTS = {

@@ -183,24 +183,6 @@ const EvolutionScreen: React.FC = () => {
         />
       </View>
 
-      {/* Légende compacte */}
-      <View style={styles.legendWrap}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.legendScroll}
-        >
-          {Object.entries(CLIMAT_SCORES)
-            .sort((a, b) => b[1] - a[1])
-            .map(([nom]) => (
-              <View key={nom} style={styles.legendCompactItem}>
-                <Image source={getClimatImage(nom)} style={styles.legendImageSmall} resizeMode="contain" />
-                <Text style={styles.legendTextSmall}>{nom.charAt(0).toUpperCase() + nom.slice(1)}</Text>
-              </View>
-            ))}
-        </ScrollView>
-      </View>
-
       {/* Historique détaillé */}
       <View style={styles.historyContainer}>
         <Text style={styles.historyTitle}>Historique (10 derniers)</Text>
