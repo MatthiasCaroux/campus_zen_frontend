@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { COULEUR_BLEU_FONCE, COULEUR_WHITE, COULEUR_SOLEIL, COULEUR_TEXT_DARK, COULEUR_YOUTUBE } from "../theme/colors";
+import { COULEUR_BLEU_FONCE, COULEUR_HEADER_BLEU, COULEUR_FOND_BLEU_CLAIR, COULEUR_WHITE, COULEUR_SOLEIL, COULEUR_TEXT_DARK, COULEUR_YOUTUBE } from "../theme/colors";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar, Image, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { getRessources } from '../services/RessourceProvider';
 import Ressource from '../types/Ressource';
 import AnimatedSparkle from '../components/AnimatedSparkle';
 import AnimatedButton from '../components/AnimatedButton';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -127,24 +128,24 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+    <LinearGradient
+      colors={[COULEUR_HEADER_BLEU, COULEUR_FOND_BLEU_CLAIR]}
+      style={styles.gradientContainer}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Logo Section */}
         <Animated.View style={[styles.logoSection, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
           <View style={styles.mascotContainer}>
             <AnimatedSparkle style={styles.sparkleTop} />
-            <View style={styles.logoGlow}>
-              <Image
-                source={require('../assets/logo.png')}
-                style={styles.logoImage}
-                resizeMode="contain"
-              />
-            </View>
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
-          <Text style={styles.appTitle}>CampusZen</Text>
-
           <View style={styles.datePill}>
-            <Ionicons name="calendar-outline" size={14} color={COULEUR_BLEU_FONCE} />
+            <Ionicons name="calendar-outline" size={14} color={COULEUR_WHITE} />
             <Text style={styles.datePillText}>{todayLabel}</Text>
           </View>
         </Animated.View>
@@ -253,15 +254,18 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
         </Animated.View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  gradientContainer: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+  },
+  safeArea: {
+    flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   scrollContent: {
@@ -284,38 +288,28 @@ const styles = StyleSheet.create({
     right: -10,
     zIndex: 1,
   },
-  logoGlow: {
-    backgroundColor: '#FFF8E7',
-    borderRadius: 80,
-    padding: 15,
-    shadowColor: '#D4A855',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 8,
-  },
   logoImage: {
-    width: 100,
-    height: 100,
+    width: 135,
+    height: 135,
   },
   appTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: COULEUR_WHITE,
     marginTop: 12,
   },
   datePill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#F0F4F8',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 20,
     marginTop: 12,
   },
   datePillText: {
-    color: COULEUR_BLEU_FONCE,
+    color: COULEUR_WHITE,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -328,13 +322,13 @@ const styles = StyleSheet.create({
   heroCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF8E7',
+    backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
-    shadowColor: '#D4A855',
+    shadowColor: '#0F2E5A',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 3,
   },
@@ -370,7 +364,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: COULEUR_WHITE,
     marginBottom: 14,
   },
   // Grid
@@ -392,10 +386,10 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   actionCardPrimary: {
-    backgroundColor: COULEUR_BLEU_FONCE,
+    backgroundColor: '#5F8F7D',
   },
   actionCardSecondary: {
-    backgroundColor: '#8B7EC8',
+    backgroundColor: '#1E3A5F',
   },
   actionCardDisabled: {
     opacity: 0.5,
@@ -427,16 +421,16 @@ const styles = StyleSheet.create({
   },
   // Mini Buttons
   miniButton: {
-    backgroundColor: '#FFF',
+    backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#E8E8E8',
-    shadowColor: '#000',
+    borderColor: 'rgba(255,255,255,0.6)',
+    shadowColor: '#0F2E5A',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
   },
