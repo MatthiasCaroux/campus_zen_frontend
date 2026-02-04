@@ -1,12 +1,15 @@
-<<<<<<< HEAD:campusZen/screens/LoginScreen.tsx
-import React, { useState, useContext, useRef } from "react";
-import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import React, { useState, useContext, useRef, useEffect } from "react";
+import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import * as colors from "../theme/colors.js";
 import { login as apiLogin } from "../services/AuthService";
 import { AuthContext } from "../context/AuthContext";
-import { loginRegisterStyle } from "../src/screenStyles/LoginRegisterStyle";
-import { useTranslation } from "../src/context/LanguageContext";
-import LanguageSelector from "../src/components/LanguageSelector";
+import { loginRegisterStyle } from "../screenStyles/LoginRegisterStyle";
+import { useTranslation } from "../context/LanguageContext";
+import LanguageSelector from "../components/LanguageSelector";
+import AnimatedSparkle from "../components/AnimatedSparkle";
+import AnimatedButton from "../components/AnimatedButton";
 
 export default function LoginScreen({ navigation }: any) {
   const [emailPers, setEmail] = useState("");
@@ -18,8 +21,47 @@ export default function LoginScreen({ navigation }: any) {
   const emailInputRef = useRef<View>(null);
   const passwordInputRef = useRef<View>(null);
 
+  // Animations d'entrée
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const logoScale = useRef(new Animated.Value(0.8)).current;
+  const formOpacity = useRef(new Animated.Value(0)).current;
+  const formTranslateY = useRef(new Animated.Value(30)).current;
+
   const { login, setUser } = useContext(AuthContext);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    // Animation du logo
+    Animated.parallel([
+      Animated.timing(logoOpacity, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(logoScale, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Animation du formulaire avec délai
+    setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(formOpacity, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(formTranslateY, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, 300);
+  }, []);
 
   const scrollToInput = (inputRef: React.RefObject<View>) => {
     setTimeout(() => {
@@ -50,48 +92,44 @@ export default function LoginScreen({ navigation }: any) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#ffffff" }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+    <LinearGradient
+      colors={[colors.COULEUR_HEADER_BLEU, colors.COULEUR_FOND_BLEU_CLAIR]}
+      style={{ flex: 1 }}
     >
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={loginRegisterStyle.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: "transparent" }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
-        <View style={loginRegisterStyle.wrapper}>
-          {/* Header */}
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={loginRegisterStyle.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[loginRegisterStyle.wrapper, { backgroundColor: "transparent" }]}>
+          {/* Header with language selector */}
           <View style={loginRegisterStyle.header}>
-            <View style={loginRegisterStyle.headerLogoContainer}>
-              <Image
-                source={require('../assets/logo.png')}
-                style={loginRegisterStyle.headerLogo}
-                resizeMode="contain"
-              />
-              <Text style={loginRegisterStyle.headerTitle}>CampusZen</Text>
-            </View>
+            <View />
             <LanguageSelector compact />
           </View>
 
-          {/* Card container */}
-          <View style={loginRegisterStyle.card}>
-            {/* Mascot with sparkles */}
+          {/* Logo section - centered */}
+          <Animated.View style={[loginRegisterStyle.logoSection, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
             <View style={loginRegisterStyle.mascotContainer}>
-              <Text style={[loginRegisterStyle.sparkle, loginRegisterStyle.sparkleTop]}>✦</Text>
+              <AnimatedSparkle style={loginRegisterStyle.sparkleTop} />
               <Image
                 source={require('../assets/logo.png')}
                 style={loginRegisterStyle.mascotImage}
                 resizeMode="contain"
               />
-              <Text style={[loginRegisterStyle.sparkle, loginRegisterStyle.sparkleLeft]}>☁</Text>
             </View>
-
-            {/* Title & Subtitle */}
             <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
             <Text style={loginRegisterStyle.subtitle}>{t('login_subtitle')}</Text>
+          </Animated.View>
 
+          {/* Form section - bottom */}
+          <Animated.View style={[loginRegisterStyle.formSection, { opacity: formOpacity, transform: [{ translateY: formTranslateY }] }]}>
             {/* Email field */}
             <Text style={loginRegisterStyle.label}>{t('email_label')}</Text>
             <View ref={emailInputRef} style={loginRegisterStyle.inputContainer}>
@@ -132,10 +170,10 @@ export default function LoginScreen({ navigation }: any) {
             </View>
 
             {/* Login button */}
-            <TouchableOpacity style={loginRegisterStyle.button} onPress={handleLogin}>
+            <AnimatedButton style={loginRegisterStyle.button} onPress={handleLogin}>
               <Text style={loginRegisterStyle.buttonText}>{t('login_button')}</Text>
               <Ionicons name="arrow-forward" size={18} color="#fff" />
-            </TouchableOpacity>
+            </AnimatedButton>
 
             {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
 
@@ -145,130 +183,10 @@ export default function LoginScreen({ navigation }: any) {
                 {t('no_account')} <Text style={loginRegisterStyle.registerLink}>{t('register_link')}</Text>
               </Text>
             </TouchableOpacity>
+          </Animated.View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
-=======
-import React, { useState, useContext, useRef, useEffect } from "react";
-import { View, TextInput, Text, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { login as apiLogin } from "../services/AuthService";
-import { AuthContext } from "../context/AuthContext";
-import { loginRegisterStyle } from "../screenStyles/LoginRegisterStyle";
-import { useTranslation } from "../context/LanguageContext";
-import LanguageSelector from "../components/LanguageSelector";
-
-export default function LoginScreen({ navigation }: any) {
-  // ecran de connexion
-  const [emailPers, setEmail] = useState("");
-  const [passwordPers, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-
-  const scrollViewRef = useRef<ScrollView>(null);
-  const emailInputRef = useRef<View>(null);
-  const passwordInputRef = useRef<View>(null);
-
-  const { login, setUser } = useContext(AuthContext);
-  const { t } = useTranslation();
-
-  const scrollToInput = (inputRef: React.RefObject<View>) => {
-    // petit scroll auto pour que le champ reste visible quand le clavier s ouvre
-    setTimeout(() => {
-      inputRef.current?.measureLayout(
-        scrollViewRef.current as any,
-        (x, y) => {
-          scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
-        },
-        () => {}
-      );
-    }, 100);
-  };
-
-  const handleLogin = async () => {
-    try {
-      // appel api puis stockage du user et des tokens
-      const data = await apiLogin(emailPers, passwordPers);
-      const user = { idPers: data.idPers, emailPers, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.endRefresh };
-      await setUser(user);
-      await login(data.access, data.refresh);
-      setMessage("Connexion réussie ✅");
-    } catch (error: any) {
-      // on essaye d afficher un message propre si l api renvoie un detail
-      if (error?.response?.data?.detail?.[0]) {
-        setMessage(error.response.data.detail[0] + " ❌");
-      } else {
-        setMessage("Erreur de connexion ❌");
-      }
-    }
-  };
-
-  return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#ffffff" }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-    >
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={loginRegisterStyle.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={loginRegisterStyle.wrapper}>
-
-          {/* Card container */}
-          <View style={loginRegisterStyle.card}>
-
-            <Image
-              source={require('../assets/logo.png')}
-              style={loginRegisterStyle.logo}
-              resizeMode="contain"
-            />
-
-            <LanguageSelector />
-            <Text style={loginRegisterStyle.title}>{t('login_title')}</Text>
-
-            <View ref={emailInputRef}>
-              <TextInput
-                placeholder={t('email_placeholder')}
-                value={emailPers}
-                onChangeText={setEmail}
-                onFocus={() => scrollToInput(emailInputRef)}
-                style={loginRegisterStyle.input}
-              />
-            </View>
-
-            <View ref={passwordInputRef}>
-              <TextInput
-                placeholder={t('password_placeholder')}
-                value={passwordPers}
-                onChangeText={setPassword}
-                secureTextEntry
-                onFocus={() => scrollToInput(passwordInputRef)}
-                style={loginRegisterStyle.input}
-              />
-            </View>
-
-            <TouchableOpacity style={loginRegisterStyle.button} onPress={handleLogin}>
-              <Text style={loginRegisterStyle.buttonText}>{t('login_button')}</Text>
-            </TouchableOpacity>
-
-            {message ? <Text style={loginRegisterStyle.message}>{message}</Text> : null}
-
-            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-              <Text style={loginRegisterStyle.registerText}>
-                {t('no_account')} <Text style={loginRegisterStyle.registerLink}>{t('register_link')}</Text>
-              </Text>
-            </TouchableOpacity>
-
-          </View>
-
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
-}
-
->>>>>>> 52ae23e41c04ff897017e98d47ad1487547f8434:campusZen/src/screens/LoginScreen.tsx
