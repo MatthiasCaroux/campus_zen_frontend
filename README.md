@@ -76,7 +76,7 @@ expo --version
 ### 1. Cloner le repository
 
 ```bash
-git clone <URL-du-repository>
+git clone https://github.com/MatthiasCaroux/campus_zen_frontend.git
 cd campus_zen_frontend/campusZen
 ```
 
