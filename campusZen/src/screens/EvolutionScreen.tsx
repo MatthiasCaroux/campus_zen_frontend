@@ -153,10 +153,6 @@ const EvolutionScreen: React.FC = () => {
 
   // calculate responsive chart width to avoid overflow on small phones
   const chartWidth = Math.max(280, Math.min(screenWidth - 40, 600));
-  // Calibrate left-offset: react-native-chart-kit reserves space for Y labels
-  // even when hidden. Use a dynamic negative yLabelsOffset to compensate.
-  // Tweak the multiplier if needed on specific devices (0.08 worked well).
-  const yLabelsOffset = -Math.round(chartWidth * 0.08);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
@@ -164,19 +160,18 @@ const EvolutionScreen: React.FC = () => {
       <Text style={styles.subtitle}>Suivez l'évolution de votre bien-être</Text>
 
       {/* Graphique d'évolution */}
-      <View style={[styles.chartContainer, { width: chartWidth, marginLeft: 'auto', marginRight: 'auto', padding: 0 }]}>
+      <View style={styles.chartContainer}>
         <LineChart
           data={chartData}
           width={chartWidth}
           height={160}
           chartConfig={chartConfig}
           bezier
-          style={{ ...styles.chart, overflow: 'hidden', borderRadius: 12, paddingLeft: 0, marginLeft: 0 }}
+          style={styles.chart}
           yAxisSuffix=""
           yAxisInterval={1}
           withHorizontalLabels={false}
           withVerticalLines={false}
-          yLabelsOffset={yLabelsOffset}
           fromZero
           segments={4}
           withInnerLines={false}
@@ -186,7 +181,7 @@ const EvolutionScreen: React.FC = () => {
       {/* Historique détaillé */}
       <View style={styles.historyContainer}>
         <Text style={styles.historyTitle}>Historique (10 derniers)</Text>
-        {statuts.map((statut, index) => (
+        {[...statuts].reverse().map((statut, index) => (
           <View key={statut.idStatut || index} style={styles.historyItem}>
             <Image source={getClimatImage(statut.climatNom)} style={styles.historyImage} resizeMode="contain" />
             <View style={styles.historyInfo}>
@@ -248,13 +243,15 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     alignItems: 'center',
+    alignSelf: 'center',
     marginBottom: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: 12,
-    padding: 8,
+    padding: 12,
+    overflow: 'hidden',
   },
   chart: {
-    borderRadius: 16,
+    borderRadius: 12,
   },
   legendWrap: {
     marginBottom: 10,
