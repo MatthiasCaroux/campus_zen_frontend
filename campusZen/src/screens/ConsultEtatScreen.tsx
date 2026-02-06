@@ -257,4 +257,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    letterSpacing:
+    letterSpacing: 0.5,
+  },
+  buttonDisabled: {
+    backgroundColor: '#f0f0f0',
+  },
+  buttonTextDisabled: {
+    color: '#999',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  buttonHint: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#5DB2F7',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: 10,
+  },
+});
+
+export default ConsultEtatScreen;
