@@ -29,6 +29,7 @@ const ConsultEtatScreen: React.FC = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [filteredStatuts, setFilteredStatuts] = useState<any[]>([]);
+  const [totalUserStatuts, setTotalUserStatuts] = useState<number>(0);
   const [climatNom, setClimatNom] = useState<string | null>(null);
   const [climatId, setClimatId] = useState<number | null>(null);
   const [randomMessage, setRandomMessage] = useState<string | null>(null);
@@ -62,6 +63,7 @@ const ConsultEtatScreen: React.FC = () => {
       }
       // on garde seulement ceux du user
       const filtered = statuts.filter((s) => s.personne === userId);
+      setTotalUserStatuts(filtered.length);
       if (filtered.length > 0) {
         // on prend le plus recent
         const lastStatut = filtered.reduce((latest, current) => {
@@ -119,13 +121,20 @@ const ConsultEtatScreen: React.FC = () => {
           <View style={styles.buttonContainer}>
             <Pressable style={styles.buttonWrapper} onPress={() => {
               navigation.goBack();
-              navigation.navigate("Maps");
+              (navigation as any).navigate("Maps");
               }}>
               <Text style={styles.buttonText}>Consulter la carte des professionnels</Text>
             </Pressable>
-            <View style={styles.buttonWrapper}>
-              <Text style={styles.buttonText}>Voir mes progrès</Text>
-            </View>
+            {totalUserStatuts >= 2 ? (
+              <Pressable style={styles.buttonWrapper} onPress={() => (navigation as any).navigate("Evolution")}>
+                <Text style={styles.buttonText}>Voir mes progrès</Text>
+              </Pressable>
+            ) : (
+              <View style={[styles.buttonWrapper, styles.buttonDisabled]}>
+                <Text style={styles.buttonTextDisabled}>Voir mes progrès</Text>
+                <Text style={styles.buttonHint}>Complétez au moins 2 questionnaires</Text>
+              </View>
+            )}
           </View>
         </>
       )}
@@ -180,6 +189,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     letterSpacing: 0.5,
+  },
+  buttonDisabled: {
+    backgroundColor: '#f0f0f0',
+  },
+  buttonTextDisabled: {
+    color: '#999',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  buttonHint: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 8,
   },
   loadingContainer: {
     flex: 1,
