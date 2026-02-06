@@ -46,3 +46,11 @@ Thumbs.db
 
 # Docker
 .docker/
+launchProject.sh
+notes.txt
+collapseV*
+TokenManagement/
+
+# Build des application mobiles
+*.ipa
+*.apk
