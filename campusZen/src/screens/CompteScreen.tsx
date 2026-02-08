@@ -85,7 +85,7 @@ export default function CompteScreen() {
           </View>
           <Text style={compteStyles.welcomeText}>{t('hello')} !</Text>
           <View style={compteStyles.emailPill}>
-            <Text style={compteStyles.emailText}>{user.emailPers}</Text>
+            <Text style={compteStyles.emailText}>{user.login}</Text>
           </View>
         </View>
 
