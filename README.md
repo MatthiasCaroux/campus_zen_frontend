@@ -113,6 +113,16 @@ Une fois le serveur démarré, choisir la plateforme :
 - **Web** : Appuyer sur `w` dans le terminal
 - **Expo Go** : Scannez le QR code avec l'app Expo Go
 
+### Build de l'APK Android
+
+Pour générer un fichier APK Android en local :
+
+```bash
+npx eas build -p android --profile preview --local
+```
+
+> ⚠️ **Note** : Cette commande fonctionne uniquement sur Mac et Linux. Windows n'est pas supporté pour les builds locaux Android.
+
 ## 📁 Structure du projet
 
 ```
