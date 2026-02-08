@@ -1,8 +1,8 @@
-# Campus Zen - Frontend Mobile
+# CampusZen - Frontend Mobile
 
 <div align="center">
 
-**Application mobile** pour la plateforme Campus Zen
+**Application mobile** pour la plateforme CampusZen
 
 [![React Native](https://img.shields.io/badge/React%20Native-0.81-blue.svg)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-54-black.svg)](https://expo.dev/)
@@ -23,7 +23,7 @@
 
 ## 🎯 Aperçu
 
-Campus Zen Frontend est une **application mobile cross-platform** (iOS/Android) permettant aux étudiants de :
+CampusZen Frontend est une **application mobile cross-platform** (iOS/Android) permettant aux étudiants de :
 
 ✅ Se connecter de manière sécurisée  
 ✅ Répondre à des questionnaires interactifs  
