@@ -22,10 +22,10 @@ export async function getRandomMessageByClimatId(idclimat: number): Promise<stri
 }
 
 // inscription
-export const register = async (emailPers: string, passwordPers: string) => {
+export const register = async (login: string, passwordPers: string) => {
   try {
     const data = await apiClient.post(ENDPOINTS.AUTH.REGISTER, {
-      emailPers,
+      login,
       passwordPers,
     });
     return data;
@@ -36,10 +36,10 @@ export const register = async (emailPers: string, passwordPers: string) => {
 };
 
 // connexion
-export const login = async (emailPers: string, password: string) => {
+export const login = async (login: string, password: string) => {
   try {
     const data = await apiClient.post(ENDPOINTS.AUTH.LOGIN, {
-      emailPers,
+      login,
       password,
     });
     return data;

@@ -27,6 +27,14 @@
         "fr": "votre@email.fr",
         "en": "your@email.com"
     },
+    "login_label": {
+        "fr": "Identifiant",
+        "en": "Username"
+    },
+    "login_placeholder": {
+        "fr": "Votre identifiant",
+        "en": "Your username"
+    },
     "password_label": {
         "fr": "Mot de passe",
         "en": "Password"
@@ -90,6 +98,10 @@
     "email_already_used": {
         "fr": "Email déjà utilisé",
         "en": "Email already in use"
+    },
+    "login_already_used": {
+        "fr": "Identifiant déjà utilisé",
+        "en": "Username already in use"
     },
     "register_error": {
         "fr": "Erreur lors de l'inscription",

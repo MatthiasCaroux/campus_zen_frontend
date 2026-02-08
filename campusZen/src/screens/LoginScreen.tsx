@@ -12,7 +12,7 @@ import AnimatedSparkle from "../components/AnimatedSparkle";
 import AnimatedButton from "../components/AnimatedButton";
 
 export default function LoginScreen({ navigation }: any) {
-  const [emailPers, setEmail] = useState("");
+  const [loginInput, setLoginInput] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -77,8 +77,8 @@ export default function LoginScreen({ navigation }: any) {
 
   const handleLogin = async () => {
     try {
-      const data = await apiLogin(emailPers, passwordPers);
-      const user = { idPers: data.idPers, emailPers, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.endRefresh };
+      const data = await apiLogin(loginInput, passwordPers);
+      const user = { idPers: data.idPers, login: loginInput, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.endRefresh };
       await setUser(user);
       await login(data.access, data.refresh);
       setMessage("Connexion réussie");
@@ -130,18 +130,17 @@ export default function LoginScreen({ navigation }: any) {
 
           {/* Form section - bottom */}
           <Animated.View style={[loginRegisterStyle.formSection, { opacity: formOpacity, transform: [{ translateY: formTranslateY }] }]}>
-            {/* Email field */}
-            <Text style={loginRegisterStyle.label}>{t('email_label')}</Text>
+            {/* Login field */}
+            <Text style={loginRegisterStyle.label}>{t('login_label')}</Text>
             <View ref={emailInputRef} style={loginRegisterStyle.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color="#999" style={loginRegisterStyle.inputIcon} />
+              <Ionicons name="person-outline" size={20} color="#999" style={loginRegisterStyle.inputIcon} />
               <TextInput
-                placeholder={t('email_placeholder')}
+                placeholder={t('login_placeholder')}
                 placeholderTextColor="#999"
-                value={emailPers}
-                onChangeText={setEmail}
+                value={loginInput}
+                onChangeText={setLoginInput}
                 onFocus={() => scrollToInput(emailInputRef)}
                 style={loginRegisterStyle.input}
-                keyboardType="email-address"
                 autoCapitalize="none"
               />
             </View>
@@ -149,9 +148,6 @@ export default function LoginScreen({ navigation }: any) {
             {/* Password field */}
             <View style={loginRegisterStyle.passwordHeader}>
               <Text style={loginRegisterStyle.label}>{t('password_label')}</Text>
-              <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-                <Text style={loginRegisterStyle.forgotPassword}>{t('forgot_password')}</Text>
-              </TouchableOpacity>
             </View>
             <View ref={passwordInputRef} style={loginRegisterStyle.inputContainer}>
               <Ionicons name="lock-closed-outline" size={20} color="#999" style={loginRegisterStyle.inputIcon} />

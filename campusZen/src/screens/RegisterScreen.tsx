@@ -9,7 +9,7 @@ import AnimatedSparkle from "../components/AnimatedSparkle";
 import AnimatedButton from "../components/AnimatedButton";
 
 export default function RegisterScreen({ navigation }: any) {
-  const [emailPers, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -81,12 +81,12 @@ export default function RegisterScreen({ navigation }: any) {
     }
 
     try {
-      await apiRegister(emailPers, passwordPers);
+      await apiRegister(login, passwordPers);
       setMessage(t('register_success'));
       setTimeout(() => navigation.navigate("Login"), 1500);
     } catch (error) {
       if (typeof error === "object" && error !== null && "status" in error && (error as any).status === 400) {
-        setMessage(t('email_already_used'));
+        setMessage(t('login_already_used'));
       } else {
         setMessage(t('register_error'));
       }
@@ -131,18 +131,17 @@ export default function RegisterScreen({ navigation }: any) {
 
           {/* Form section - bottom */}
           <Animated.View style={[loginRegisterStyle.formSection, { opacity: formOpacity, transform: [{ translateY: formTranslateY }] }]}>
-            {/* Email field */}
-            <Text style={loginRegisterStyle.label}>{t('email_label')}</Text>
+            {/* Login field */}
+            <Text style={loginRegisterStyle.label}>{t('login_label')}</Text>
             <View ref={emailInputRef} style={loginRegisterStyle.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color="#999" style={loginRegisterStyle.inputIcon} />
+              <Ionicons name="person-outline" size={20} color="#999" style={loginRegisterStyle.inputIcon} />
               <TextInput
-                placeholder={t('email_placeholder')}
+                placeholder={t('login_placeholder')}
                 placeholderTextColor="#999"
-                value={emailPers}
-                onChangeText={setEmail}
+                value={login}
+                onChangeText={setLogin}
                 onFocus={() => scrollToInput(emailInputRef)}
                 style={loginRegisterStyle.input}
-                keyboardType="email-address"
                 autoCapitalize="none"
               />
             </View>
