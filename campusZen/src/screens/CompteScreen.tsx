@@ -5,6 +5,7 @@ import { compteStyles } from "../screenStyles/CompteStyle";
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, SafeAreaView, Platform, StatusBar } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 import * as colors from '../theme/colors';
 import { useTranslation } from "../context/LanguageContext";
@@ -14,6 +15,7 @@ import LanguageSelector from "../components/LanguageSelector";
 export default function CompteScreen() {
   // ecran compte infos user + langue + logout
   const { logout } = useContext(AuthContext);
+  const navigation = useNavigation<any>();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -69,6 +71,12 @@ export default function CompteScreen() {
       style={compteStyles.gradientContainer}
     >
       <SafeAreaView style={compteStyles.safeArea}>
+        <TouchableOpacity 
+          style={compteStyles.floatingAboutButton} 
+          onPress={() => navigation.navigate('About')}
+        >
+          <Ionicons name="information-circle" size={28} color={colors.COULEUR_WHITE} />
+        </TouchableOpacity>
         <ScrollView contentContainerStyle={compteStyles.container}>
         {/* section profil */}
         <View style={compteStyles.profileSection}>

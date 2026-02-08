@@ -54,3 +54,4 @@ TokenManagement/
 # Build des application mobiles
 *.ipa
 *.apk
+token.txt
