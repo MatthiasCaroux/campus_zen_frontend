@@ -12,7 +12,7 @@ import AnimatedSparkle from "../components/AnimatedSparkle";
 import AnimatedButton from "../components/AnimatedButton";
 
 export default function LoginScreen({ navigation }: any) {
-  const [login, setLogin] = useState("");
+  const [loginInput, setLoginInput] = useState("");
   const [passwordPers, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -77,8 +77,8 @@ export default function LoginScreen({ navigation }: any) {
 
   const handleLogin = async () => {
     try {
-      const data = await apiLogin(login, passwordPers);
-      const user = { idPers: data.idPers, login, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.endRefresh };
+      const data = await apiLogin(loginInput, passwordPers);
+      const user = { idPers: data.idPers, login: loginInput, role: data.role, lastConnection: data.lastConnection, endAccess: data.endAccess, endRefresh: data.endRefresh };
       await setUser(user);
       await login(data.access, data.refresh);
       setMessage("Connexion réussie");
@@ -137,8 +137,8 @@ export default function LoginScreen({ navigation }: any) {
               <TextInput
                 placeholder={t('login_placeholder')}
                 placeholderTextColor="#999"
-                value={login}
-                onChangeText={setLogin}
+                value={loginInput}
+                onChangeText={setLoginInput}
                 onFocus={() => scrollToInput(emailInputRef)}
                 style={loginRegisterStyle.input}
                 autoCapitalize="none"
